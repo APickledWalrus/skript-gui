@@ -1,0 +1,15 @@
+name: TuSKe
+main: me.tuke.sktuke.TuSKe
+version: 1.7
+author: Tuke_Nuke
+softdepend: [Skript, SimpleClans, Legendchat, Marriage, ProtocolSupport, ViaVersion, Landlord, Umbaska, SkQuery]
+commands:
+  tuske:
+    description: Main command for TuSKe
+    usage: /tuske
+    permission: TuSKe.admin
+    permission-message: §cYou don't have permission for this command!
+permissions:
+  TuSKe.admin:
+    description: Access to /tuske.
+    default: op

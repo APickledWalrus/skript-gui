@@ -1,0 +1,26 @@
+#It will check for new update everytime the server starts or
+#when someone use the command /tuske update check
+
+check-for-new-update: true
+
+#It will auto update the plugin. When there is a new version,
+#the plugin will download it and update when the server restarts.
+#Warning: I can't guarantee that the plugin is free of bugs that
+#can come in newest updates. I don't recommend to use in your main
+#server.
+#You can still download/update your plugin by command, see more in
+#/tuske update
+
+auto-update: false
+
+#Use metrics to send anonymous data about your server. The data that
+#is sent are:
+#
+#Players currently online (not max player count)
+#Version of the server (the same version you see in /version)
+#Version of this plugin
+#
+#If you don't agree with this, you can set it to false freely.
+#These values will be used only for statistic for this plugin.
+
+use-metrics: true

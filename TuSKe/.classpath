@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.7.0_80"/>
+	<classpathentry kind="lib" path="C:/Users/leand/Downloads/spigot-1.10-R0.1-SNAPSHOT-latest.jar"/>
+	<classpathentry kind="lib" path="C:/Users/leand/Downloads/spigot-1.9.4-R0.1-SNAPSHOT-latest.jar"/>
+	<classpathentry kind="lib" path="E:/desktop 4/Server/spigot-1.8.7.jar"/>
+	<classpathentry kind="lib" path="C:/Users/leand/Downloads/spigot-1.7.10-SNAPSHOT-b1657.jar"/>
+	<classpathentry kind="lib" path="C:/Users/leand/Desktop/skript plug/Skript 2.2 Fixes V8b.jar"/>
+	<classpathentry kind="lib" path="C:/Users/leand/Downloads/SimpleClans.jar"/>
+	<classpathentry kind="lib" path="C:/Users/leand/Downloads/LegendChat.jar"/>
+	<classpathentry kind="lib" path="C:/Users/leand/Downloads/Zenchantments1.8.jar"/>
+	<classpathentry kind="lib" path="C:/Users/leand/Downloads/Marriage.jar"/>
+	<classpathentry kind="lib" path="C:/Users/leand/Downloads/GriefPrevention.jar"/>
+	<classpathentry kind="lib" path="E:/desktop 4/Server/plugins/Vault.jar"/>
+	<classpathentry kind="lib" path="C:/Users/leand/Downloads/VipZero.jar"/>
+	<classpathentry kind="lib" path="C:/Users/leand/Downloads/BankMaster.jar"/>
+	<classpathentry kind="lib" path="C:/Users/leand/Desktop/plugins/ProtocolSupport.jar"/>
+	<classpathentry kind="lib" path="C:/Users/leand/Downloads/ViaVersion-0.9.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/leand/Desktop/Server/Servidor 1.9/spigot-1.9-.jar"/>
+	<classpathentry kind="lib" path="E:/Landlord.jar"/>
+	<classpathentry kind="lib" path="C:/Users/leand/Downloads/Slimefun_v3.6.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/leand/Downloads/Thirst-2.0.1.jar"/>
+	<classpathentry kind="lib" path="E:/desktop 4/Server/plugins/ProtocolLib.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
