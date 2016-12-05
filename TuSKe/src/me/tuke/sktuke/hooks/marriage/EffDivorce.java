@@ -1,6 +1,5 @@
 package me.tuke.sktuke.hooks.marriage;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -13,7 +12,6 @@ import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
-import me.tuke.sktuke.events.customevent.DivorceEvent;
 
 public class EffDivorce extends Effect{
 	private Expression<Player> p;
@@ -34,11 +32,7 @@ public class EffDivorce extends Effect{
 	protected void execute(Event e) {
 		Player p = this.p.getSingle(e);
 		Marriage marry = (Marriage) MarriageAPI.getInstance();
-		DivorceEvent de = new DivorceEvent(p);
-		if (marry.getMPlayer(p.getUniqueId()).isMarried())
-    		Bukkit.getServer().getPluginManager().callEvent(de);
-			if (de.isCancelled())
-				return;
+		if (p != null && marry.getMPlayer(p.getUniqueId()).isMarried())
 			marry.getMPlayer(p.getUniqueId()).divorce();
 		
 		

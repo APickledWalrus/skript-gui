@@ -18,6 +18,8 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
+import me.tuke.sktuke.TuSKe;
+import me.tuke.sktuke.recipe.RecipeManager;
 
 public class ExprResultOfRecipe extends SimpleExpression<ItemStack>{
 
@@ -54,7 +56,7 @@ public class ExprResultOfRecipe extends SimpleExpression<ItemStack>{
 			if (item.getAmount() <= 0)
 				item.setAmount(1);
 			return new ItemStack[] {item};
-		}
+		}		
 		if ( this.is.getAll(e) == null || this.is.getAll(e).length >9)
 			return null;
 		ItemStack[] i = (ItemStack[]) this.is.getAll(e);

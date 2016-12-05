@@ -1,10 +1,7 @@
 package me.tuke.sktuke.effects;
 
-import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.ShapedRecipe;
 
 import javax.annotation.Nullable;
 
@@ -23,6 +20,7 @@ public class EffRegisterRecipe extends Effect{
 	private Expression<ItemStack> result;
 	private Expression<ItemStack> ingredients;
 	private Expression<Number> exp = null;
+	private Expression<String> shape = null;
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -42,14 +40,13 @@ public class EffRegisterRecipe extends Effect{
 
 	@Override
 	protected void execute(Event e) {
-		TuSKe.debug(result.getSingle(e));
 		if (result.getSingle(e) != null){
-			TuSKe.debug(type);
 			switch (type){
 			case 0:
 				if (ingredients.getArray(e).length <= 0)
 					return;
-				TuSKe.getRecipeManager().registerRecipe(new CustomShapedRecipe(result.getSingle(e), ingredients.getArray(e)));
+				String[] shapes = shape != null && shape.getArray(e).length <= 3 ? shape.getArray(e) : new String[]{"abc", "def", "ghi"};
+				TuSKe.getRecipeManager().registerRecipe(new CustomShapedRecipe(result.getSingle(e), ingredients.getArray(e), shapes));
 				break;
 			case 1:
 				if (ingredients.getArray(e).length <= 0)
@@ -59,7 +56,7 @@ public class EffRegisterRecipe extends Effect{
 			case 2:
 				if (ingredients.getSingle(e) == null)
 					return;
-				float n = exp != null && exp.getSingle(e).intValue() > 0 ? exp.getSingle(e).floatValue() : 0F;
+				float n = exp != null && exp.getSingle(e).floatValue() > 0 ? exp.getSingle(e).floatValue() : 0F;
 				TuSKe.getRecipeManager().registerRecipe(new CustomFurnaceRecipe(result.getSingle(e), ingredients.getSingle(e), n));
 				break;
 			}

@@ -2,12 +2,12 @@ package me.tuke.sktuke.expressions;
 
 import javax.annotation.Nullable;
 
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.skript.util.Date;
 
-public class ExprFirstLogin extends SimplePropertyExpression<Player, Date>{
+public class ExprFirstLogin extends SimplePropertyExpression<OfflinePlayer, Date>{
 
 	@Override
 	public Class<? extends Date> getReturnType() {
@@ -16,7 +16,7 @@ public class ExprFirstLogin extends SimplePropertyExpression<Player, Date>{
 
 	@Override
 	@Nullable
-	public Date convert(Player p) {
+	public Date convert(OfflinePlayer p) {
 		return new Date(p.getFirstPlayed());
 	}
 

@@ -8,12 +8,14 @@ public class CustomShapedRecipe extends ShapedRecipe{
 	
 	private ItemStack[] items = null;
 	
-	public CustomShapedRecipe(ItemStack r, ItemStack[] items){
+	public CustomShapedRecipe(ItemStack r, ItemStack[] items, String...shapes){
 		super(r);
-		shape("abc", "def", "ghi");
+		shape(shapes); //TODO Check if not null when registering the items below \/
+		
 		char c = 'a';
 		for (int x = 0; x < items.length; x++){
 			if (items[x].getType() != Material.AIR)
+				this.
 				setIngredient(c, items[x].getData());
 			if (items[x] != null && items[x].isSimilar(new ItemStack(items[x].getType(), items[x].getAmount(), items[x].getDurability())))
 				items[x] = null;

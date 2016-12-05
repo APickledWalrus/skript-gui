@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
@@ -15,6 +16,7 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
+import me.tuke.sktuke.TuSKe;
 
 public class ExprItemsOfRecipe extends SimpleExpression<ItemStack>{
 	
@@ -48,6 +50,7 @@ public class ExprItemsOfRecipe extends SimpleExpression<ItemStack>{
 		if (this.r.getSingle(e) == null)
 			return null;
 		Object r = this.r.getSingle(e);
+		TuSKe.debug(r, TuSKe.getRecipeManager().getItems((Recipe)r));
 		if (r instanceof ShapelessRecipe)
 			return  ((ShapelessRecipe) r).getIngredientList().toArray(new ItemStack[((ShapelessRecipe) r).getIngredientList().size()]);
 		else if (r instanceof ShapedRecipe){

@@ -13,7 +13,7 @@ public class LegendConfig {
 	private File file;
 	private YamlConfiguration y = new YamlConfiguration();
 	
-	LegendConfig(TuSKe instance){
+	public LegendConfig(TuSKe instance){
 		file = new File(instance.getDataFolder(), "tags.yml");
 	}
 	

@@ -1,6 +1,5 @@
 package me.tuke.sktuke;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
@@ -14,15 +13,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import ch.njol.util.StringUtils;
-import me.tuke.sktuke.blockeffect.Parser;
 import me.tuke.sktuke.customenchantment.CustomEnchantment;
 import me.tuke.sktuke.customenchantment.EnchantConfig;
 import me.tuke.sktuke.customenchantment.EnchantManager;
 import me.tuke.sktuke.gui.GUIManager;
 import me.tuke.sktuke.nms.NMS;
 import me.tuke.sktuke.recipe.RecipeManager;
+import me.tuke.sktuke.register.Register;
 import me.tuke.sktuke.util.LegendConfig;
-import me.tuke.sktuke.util.Register;
 
 public class TuSKe extends JavaPlugin {
 	private static NMS nms;
@@ -30,20 +28,23 @@ public class TuSKe extends JavaPlugin {
 	private static long time = System.currentTimeMillis();
 	private static GUIManager gui;
 	private static RecipeManager recipes;
-	private SkUnityUpdater updater;
+	private GitHubUpdater updater;
 	private static boolean hasSupport = hasNMS();
-	private boolean autoUpdate, updateCheck, metrics;
+	private static Register reg;
 	
 	@Override
 	public void onEnable() {
 		plugin = this;
-		if (Register.hasPlugin("Skript")){
+		reg = new Register(this);
+		if (reg.hasPlugin("Skript")){
 			loadConfig();
 			gui = new GUIManager();
-			Integer[] registred = Register.load(this);
-			updater = new SkUnityUpdater(this, this.getFile(), 7397);
+			Integer[] registred = reg.load();
+			if (registred == null)
+				return;
+			updater = new GitHubUpdater(this, this.getFile(), "https://github.com/Tuke-Nuke/TuSKe/releases");
 			recipes = new RecipeManager();
-			if (metrics)
+			if (getConfig().getBoolean("use_metrics"))
 				try {
 					Metrics metrics = new Metrics(this);
 					metrics.start();
@@ -52,7 +53,7 @@ public class TuSKe extends JavaPlugin {
 					log("A error occured when trying to start the Metrics.");
 				}
 			log("Loaded sucessfully a total of " + registred[0] + " events, " + registred[1] + " conditions, " + registred[2] + " expressions" + ((registred[4] == 0) ? " and "+ registred[3] + " effects" : ", " + registred[3] + " effects and " + registred[4] + " custom enchantment" + ((registred[4] > 1) ? "s" : "")) + ". Enjoy ^-^");
-			if (updateCheck || autoUpdate)
+			if (getConfig().getBoolean("updater.check_for_new_update"))
 				checkUpdate();
 				
 		} else {
@@ -65,8 +66,8 @@ public class TuSKe extends JavaPlugin {
 	public void onDisable() {
 		gui.clearAll();
 		HandlerList.unregisterAll(this);
-		if(updateCheck && autoUpdate && updater.hasDownloadReady(true)){
-			updater.updatePlugin(false);
+		if(getConfig().getBoolean("updater.check_for_new_update") && getConfig().getBoolean("updater.auto_update") && updater.hasDownloadReady(true)){
+			updater.updatePlugin();
 		}
 		
 		
@@ -77,7 +78,7 @@ public class TuSKe extends JavaPlugin {
 		if (cmd.getName().equalsIgnoreCase("tuske")){
 			if (arg.length > 0 && arg[0].equalsIgnoreCase("update")){
 				if (arg.length > 1 && arg[1].equalsIgnoreCase("download")){
-					if (updater.hasDownloadReady(false) && autoUpdate)
+					if (updater.hasDownloadReady(false) && getConfig().getBoolean("updater.auto_update"))
 						sender.sendMessage("§e[§cTuSKe§e] §3Already have a downloaded file ready to be updated.");
 					else if (!updater.isLatestVersion()){
 						sender.sendMessage("§e[§cTuSKe§e] §3Downloading the latest version...");
@@ -88,7 +89,7 @@ public class TuSKe extends JavaPlugin {
 					} else
 						sender.sendMessage("§e[§cTuSKe§e] §3The plugin is already running the latest version!");
 				} else if (arg.length > 1 && arg[1].equalsIgnoreCase("plugin")){
-					if (!updateCheck)
+					if (!getConfig().getBoolean("updater.check_for_new_update"))
 						sender.sendMessage("§e[§cTuSKe§e] §3The option'");
 					if (!updater.isLatestVersion() || updater.hasDownloadReady(true)){
 						if (!updater.hasDownloadReady(false))
@@ -96,32 +97,32 @@ public class TuSKe extends JavaPlugin {
 								sender.sendMessage("§e[§cTuSKe§e] §3A error occured when trying to download latest version. Maybe SkUnity is down?");
 								return true;
 							}
-						autoUpdate = true;
+						getConfig().set("updater.auto_update", true);
 						sender.sendMessage("§e[§cTuSKe§e] §3The plugin will update when the server restarts.");
 					} else
 						sender.sendMessage("§e[§cTuSKe§e] §3The plugin is already running the latest version!");
 				} else if (arg.length > 1 && arg[1].equalsIgnoreCase("check")){
 					sender.sendMessage("§e[§cTuSKe§e] §3Checking for update...");
+					updater.checkForUpdate(true);
 					Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable(){
 
 						@Override
 						public void run() {
-							if (!updater.checkForUpdate(false))
-								sender.sendMessage("§e[§cTuSKe§e] §3A error occured when trying to check for latest version. Maybe SkUnity is down?");
-							else if (!updater.isLatestVersion()){
+							//if (false)
+							//	sender.sendMessage("§e[§cTuSKe§e] §3A error occured when trying to check for latest version. Maybe GitHub is down?");
+							if (!updater.isLatestVersion()){
 								sender.sendMessage("§e[§cTuSKe§e] §3New update available: §cv" + updater.getLatestVersion());
 								if (sender instanceof Player)
 									sendDownloadRaw(sender);
 								else
 									sender.sendMessage(new String[]{
-										"§3Check what's new: §c" + updater.getChangeLogURL(),
-										"§3Download it: §c" + updater.getDownloadURL(),
+										"§3Check what's new: §c" + updater.getDownloadURL(),
 										"§3You can download and update it with §c/tuske update§3."
 									});
 							} else
 								sender.sendMessage("§e[§cTuSKe§e] §3You are running the latest version: §cv" + updater.getLatestVersion());
 							
-						}}, 0L);
+						}}, 1L);
 				} else {
 					sender.sendMessage(new String[]{
 						"§e[§cTuSKe§e] §3Main commands of §c"+ arg[0]+"§3:",
@@ -207,10 +208,6 @@ public class TuSKe extends JavaPlugin {
 							"§4/§c" + label + " " + arg[0] + " toggle §e> §3Enable/disable a enchantment.",
 							"§4/§c" + label + " " + arg[0] + " give §e> §3Add a enchantment to your held item.",
 						});
-			} else if (arg.length > 1 && arg[0].matches("debug")){
-				long start = System.currentTimeMillis();
-					new Parser().parser(arg[1]);
-				sender.sendMessage("Time: " + (System.currentTimeMillis() - start));
 			} else {
 				sender.sendMessage(new String[]{
 					"§e[§cTuSKe§e] §3Main commands:",
@@ -239,11 +236,7 @@ public class TuSKe extends JavaPlugin {
 		return sb.toString();
 	}
 	private boolean isInteger(String arg){
-		try {
-			Integer.valueOf(arg);
-			return true;
-		} catch (Exception e){}
-		return false;
+		return arg.matches("\\d+");
 	}
 	private String left(String s, int d){
 		StringBuilder sb = new StringBuilder(d);
@@ -254,16 +247,13 @@ public class TuSKe extends JavaPlugin {
 	}
 	
 	private void loadConfig(){
-		File f = new File(getDataFolder(), "config.yml");
-		if (!f.exists())
-			saveResource("config.yml", false);
-		autoUpdate = getConfig().isBoolean("auto-update") ? getConfig().getBoolean("auto-update") : false;
-		updateCheck = getConfig().isBoolean("check-for-new-update") ? getConfig().getBoolean("check-for-new-update") : true;
-		metrics = getConfig().isBoolean("use-metrics") ? getConfig().getBoolean("use-metrics") : true;
-		
+		SimpleConfig sc = new SimpleConfig(this);
+		sc.loadDefault();;
+		sc.save();		
 	}
 	private void sendDownloadRaw(CommandSender s){
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw "+ s.getName() +" [{\"text\":\"\\u00a73Click \"},{\"text\":\"\\u00a7chere\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"\\u00a73Link to\n\\u00a7cSkUnity\n\\u00a7cForums\"},\"clickEvent\":{\"action\":\"open_url\",\"value\":\""+updater.getChangeLogURL()+"\"}},{\"text\":\" \\u00a73to \\u00a73see \\u00a73what's \\u00a73new, \\u00a73click \"}, {\"text\":\"\\u00a7chere\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"\\u00a73Link to download\"},\"clickEvent\":{\"action\":\"open_url\",\"value\":\""+updater.getDownloadURL()+"\"}},{\"text\":\" \\u00a73to \\u00a73download \\u00a73or \\u00a73use \\u00a73the \\u00a73command \"},{\"text\":\"\\u00a7c/tuske \\u00a7cupdate \\u00a7cdownload\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"/tuske update download\"}},{\"text\":\" \\u00a73to \\u00a73download \\u00a73directly \\u00a73to \\u00a73TuSKe's \\u00a73folder. \\u00a73And \\u00a73you \\u00a73can \\u00a73use \"},{\"text\":\"\\u00a7c/tuske \\u00a7cupdate \\u00a7cplugin\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"/tuske update plugin\"}}]");
+		if (s instanceof Player)
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw "+ s.getName() +" [{\"text\":\"\\u00a73Click \"},{\"text\":\"\\u00a7chere\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"\\u00a73Link to\n\\u00a77Git\u00a78Hub\"},\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://"+updater.getDownloadURL()+"\"}},{\"text\":\" \\u00a73to \\u00a73see \\u00a73what's \\u00a73new, \\u00a73click \"}, {\"text\":\"\\u00a7chere\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"\\u00a73Link to download\"},\"clickEvent\":{\"action\":\"open_url\",\"value\":\""+updater.getDownloadURL()+"\"}},{\"text\":\" \\u00a73to \\u00a73download \\u00a73or \\u00a73use \\u00a73the \\u00a73command \"},{\"text\":\"\\u00a7c/tuske \\u00a7cupdate \\u00a7cdownload\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"/tuske update download\"}},{\"text\":\" \\u00a73to \\u00a73download \\u00a73directly \\u00a73to \\u00a73TuSKe's \\u00a73folder. \\u00a73And \\u00a73you \\u00a73can \\u00a73use \"},{\"text\":\"\\u00a7c/tuske \\u00a7cupdate \\u00a7cplugin\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"/tuske update plugin\"}}]");
 	}
 	public static RecipeManager getRecipeManager(){
 		return recipes;
@@ -273,7 +263,7 @@ public class TuSKe extends JavaPlugin {
 		return gui;
 	}
 	public static LegendConfig getLegendConfig(){
-		return Register.config;
+		return reg.config;
 	}
 	public static void log(String msg){
 		log(msg, Level.INFO);
@@ -323,25 +313,27 @@ public class TuSKe extends JavaPlugin {
 		return Bukkit.getServerName().equalsIgnoreCase("LendaryCraft");
 	}*/
 	private void checkUpdate(){
+		log("Checking for latest update...");
+		updater.checkForUpdate(true);
 		Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable(){
 			
 			@Override
 			public void run() {
-				log("Checking for latest update...");
-				if (updater.checkForUpdate(true))
+				if (updater.getLatestVersion() != null)
 					if (!updater.isLatestVersion()){
-						if (autoUpdate){
-							updater.downloadLatest();
-							log("Downloaded the latest version. The plugin will be updated when the server restarts.");
+						if (getConfig().getBoolean("updater.auto_update")){
+							if (updater.downloadLatest())
+								log("Downloaded the latest version. The plugin will be updated when the server restarts.");
+							else
+								log("A error occurred while checking for new updates.\n" + updater.getLastException().getMessage());
 						} else{
 							log("New update available: v" + updater.getLatestVersion());
-							log("Check what's new: " + updater.getChangeLogURL());
-							log("Download it: " + updater.getThreadURL() + "/1");
+							log("Check what's new in: " + updater.getDownloadURL());
 							log("You can download and update it with /tuske update.");
 						}
 					} else
 						log("No new update was found!");
-			}}, 1L);
+			}}, 10L);
 	}
 	public static Long getTime(){
 		return time;
