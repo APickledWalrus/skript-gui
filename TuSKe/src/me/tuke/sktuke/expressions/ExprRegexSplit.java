@@ -2,19 +2,18 @@ package me.tuke.sktuke.expressions;
 
 import org.bukkit.event.Event;
 
-import java.util.regex.PatternSyntaxException;
-
 import javax.annotation.Nullable;
 
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
+import me.tuke.sktuke.util.Regex;
 
 public class ExprRegexSplit extends SimpleExpression<String>{
 
 	private Expression<String> str;
-	private Expression<String> regex;
+	private Expression<?> regex;
 	@Override
 	public Class<? extends String> getReturnType() {
 		return String.class;
@@ -29,7 +28,7 @@ public class ExprRegexSplit extends SimpleExpression<String>{
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
 		str = (Expression<String>) arg[0];
-		regex = (Expression<String>) arg[1];
+		regex = arg[1];
 		return true;
 	}
 
@@ -42,13 +41,9 @@ public class ExprRegexSplit extends SimpleExpression<String>{
 	@Nullable
 	protected String[] get(Event e) {
 		String string = str.getSingle(e);
-		String pattern = regex.getSingle(e);
-		if (string != null && pattern != null)
-			try {
-			return string.split(pattern);
-			} catch (PatternSyntaxException pse){
-				return new String[]{string};
-			}
+		final Regex reg = regex.getSingle(e) instanceof String ? new Regex((String)regex.getSingle(e)) : (Regex)regex.getSingle(e);
+		if (string != null && reg != null && reg.isPatternParsed())
+			return string.split(reg.getRegex());
 		return null;
 	}
 

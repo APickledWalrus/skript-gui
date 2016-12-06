@@ -6,17 +6,19 @@ import javax.annotation.Nullable;
 import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.util.Checker;
 import ch.njol.util.Kleenean;
+import me.tuke.sktuke.util.Regex;
 
 public class CondRegexMatch extends Condition{
 	private Expression<String> str;
-	private Expression<String> regex;
+	private Expression<?> regex;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
 		str = (Expression<String>) arg[0];
-		regex = (Expression<String>) arg[1];
+		regex = arg[1];
 		setNegated(arg1 == 1);
 		return true;
 	}
@@ -30,15 +32,15 @@ public class CondRegexMatch extends Condition{
 	public boolean check(Event e) {
 		if (str.getSingle(e) == null || regex.getSingle(e) == null)
 			return false;
-		boolean r = false;
-		try {
-			r = str.getSingle(e).matches(regex.getSingle(e));
-		} catch (Exception ee) {
+		final Regex reg = regex.getSingle(e) instanceof String ? new Regex((String)regex.getSingle(e)) : (Regex)regex.getSingle(e);
+		if (!reg.isPatternParsed())
 			return false;
-		}
-		if (isNegated())
-			r = !r;
-		return r;
+		return str.check(e, new Checker<String>() {
+
+			@Override
+			public boolean check(String arg) {
+				return arg.matches(reg.getRegex());
+			}}, isNegated());
 	}
 
 }

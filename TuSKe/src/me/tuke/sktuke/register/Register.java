@@ -1,10 +1,7 @@
 package me.tuke.sktuke.register;
 
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import javax.annotation.Nullable;
 
@@ -30,7 +27,6 @@ import br.com.devpaulo.legendchat.channels.types.Channel;
 import ch.njol.skript.*;
 import ch.njol.skript.classes.*;
 import ch.njol.skript.classes.Comparator;
-import ch.njol.skript.expressions.ExprParse;
 import ch.njol.skript.expressions.base.*;
 import ch.njol.skript.lang.*;
 import ch.njol.skript.lang.Effect;
@@ -553,14 +549,14 @@ public class Register{
 			newPropertyExpression(ExprTagChat.class, 1, "[chat] tag %string%", "player");
 			newPropertyExpression(ExprPlayerTags.class, 1, "[chat] tags", "player");
 			newPropertyExpression(ExprMuteLeftTime.class, 1, "mute (left|remaining) time", "player");
-			newPropertyExpression(ExprDefaultChannel.class, 1, "default channel of %player%", "%player%'[s] default channel");
-			newPropertyExpression(ExprSpyState.class, 1, "spy state of %player%", "%player%'[s] spy state");
-			newPropertyExpression(ExprHideState.class, 1, "hide state of %player%", "%player%'[s] hide state");
+			newPropertyExpression(ExprDefaultChannel.class, 1, "default channel", "player");
+			newPropertyExpression(ExprSpyState.class, 1, "spy state", "player");
+			newPropertyExpression(ExprHideState.class, 1, "hide state", "player");
 		}
 		if (boo[2]){
-			newPropertyExpression(ExprPartnerOf.class, 1, "partner of %player%", "%player%'[s] partner");
-			newPropertyExpression(ExprGenderOf.class, 1, "gender of %player%", "%player%'[s] gender");
-			newPropertyExpression(ExprMarryHome.class, 1, "marry home of %player%", "%player%'[s] marry home");
+			newPropertyExpression(ExprPartnerOf.class, 1, "partner", "player");
+			newPropertyExpression(ExprGenderOf.class, 1, "gender", "player");
+			newPropertyExpression(ExprMarryHome.class, 1, "marry home", "player");
 		}
 		if(boo[3]){
 			newPropertyExpression(ExprPlayerVersion.class, 1, "(mc|minecraft) version", "player");			
@@ -582,14 +578,11 @@ public class Register{
 			newPropertyExpression(ExprOnlineTime.class, 1,"online time", "player");
 			newPropertyExpression(ExprLastDamage.class, 1, "last damage", "livingentity");
 			newPropertyExpression(ExprLastDamageCause.class, 1, "last damage cause", "livingentity");
-			TuSKe.debug(Bukkit.getVersion(), Bukkit.getBukkitVersion());
 			newPropertyExpression(ExprHorseStyle.class, 1, "horse style", "entity");
 			newPropertyExpression(ExprHorseColor.class, 1, "horse color", "entity");
-			newPropertyExpression(ExprHorseVariant.class, 1, "horse variant of %entity%", "%entity%'[s] horse variant");
+			newPropertyExpression(ExprHorseVariant.class, 1, "horse variant", "entity");
 			newPropertyExpression(ExprRabbitType.class, 1, "rabbit type", "entity");
 			newPropertyExpression(ExprCatType.class, 1, "(cat|ocelot) type", "entity");
-			newSimpleExpression(ExprDropsOfBlock.class, 1, "drops of %block% [(with|using) %-itemstack%]", "%block%'[s] drops [(with|using) %-itemstack%]");
-			newSimpleExpression(ExprListPaged.class, 1, "page %number% of %objects% with %number% lines");
 			newPropertyExpression(ExprRecipesOf.class, 1, "[all] recipes", "itemstack");
 			newPropertyExpression(ExprItemsOfRecipe.class, 1, "[all] ingredients", "recipe");
 			newPropertyExpression(ExprResultOfRecipe.class, 1, "result item", "itemstacks/recipe");
@@ -598,6 +591,8 @@ public class Register{
 			newSimpleExpression(ExprAnvilItem.class, 0, "[event-]item-(one|two|result|three)");
 			newSimpleExpression(ExprInventoryMoveInv.class, 0, "[event-]inventory-(one|two)");
 			newSimpleExpression(ExprInventoryMoveSlot.class, 0, "[event-]slot-(one|two)");
+			newSimpleExpression(ExprDropsOfBlock.class, 1, "drops of %block% [(with|using) %-itemstack%]", "%block%'[s] drops [(with|using) %-itemstack%]");
+			newSimpleExpression(ExprListPaged.class, 1, "page %number% of %objects% with %number% lines");
 			//1.1
 			newPropertyExpression(ExprMaxDurability.class, 1, "max durability", "itemstack");
 			//1.5
@@ -606,7 +601,7 @@ public class Register{
 			newSimpleExpression(ExprItemCustomEnchant.class, 1, "%itemstack% with custom enchantment[s] %customenchantments%");
 			//1.5.3
 			newPropertyExpression(ExprMaxLevel.class, 1, "max level", "customenchantment");
-			newPropertyExpression(ExprRarity.class, 1, "rarity", "%customenchantment%");
+			newPropertyExpression(ExprRarity.class, 1, "rarity", "customenchantment");
 			newPropertyExpression(ExprLoreName.class, 1, "[lore] name", "customenchantment");
 			newPropertyExpression(ExprLeatherColor.class, 1, "[leather] (0¦red|1¦green|2¦blue) colo[u]r", "-itemstacks/colors");
 			newSimpleExpression(ExprEnabled.class, 1, "enabled for %customenchantment%");
@@ -649,6 +644,7 @@ public class Register{
 			newSimpleExpression(ExprRegexReplace.class, 1, "regex replace [all] [pattern] %string% with [group[s]] %string% in %string%");
 			//1.7.1
 			newSimpleExpression(ExprUUIDOfflinePlayer.class, 1, "offline player from [uuid] %string%");
+			newSimpleExpression(ExprParseRegexError.class, 1, "[last] regex [parser] error");
 			
 			
 		}
@@ -824,16 +820,9 @@ public class Register{
 			@Nullable
 			public Regex parse(String s, ParseContext arg1) {			
 				if (arg1 == ParseContext.COMMAND){
-					try {
-					return new Regex(Pattern.compile(s).pattern());
-					} catch (PatternSyntaxException e){
-						try {
-							Field f = ExprParse.class.getDeclaredField("lastError");
-							f.setAccessible(true);
-							f.set(null, e.getMessage());
-						} catch (Exception e1) {
-						}
-					}
+					Regex reg = new Regex(s);
+					if (reg.isPatternParsed())
+						return reg;
 				}
 				return null;
 			}

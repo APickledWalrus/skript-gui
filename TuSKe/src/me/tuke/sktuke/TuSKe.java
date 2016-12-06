@@ -52,8 +52,8 @@ public class TuSKe extends JavaPlugin {
 				} catch (IOException e) {
 					log("A error occured when trying to start the Metrics.");
 				}
-			float f = result[4];
-			log("Loaded sucessfully a total of " + result[0] + " events, " + result[1] + " conditions, " + result[2] + " expressions and "+ result[3] + " effects in " +f+ " ms. Enjoy ^-^");
+			float f = result[4]/1000;
+			log("Loaded sucessfully a total of " + result[0] + " events, " + result[1] + " conditions, " + result[2] + " expressions and "+ result[3] + " effects in " +f+ " seconds. Enjoy ^-^");
 			if (getConfig().getBoolean("updater.check_for_new_update"))
 				checkUpdate();
 				
@@ -315,11 +315,11 @@ public class TuSKe extends JavaPlugin {
 	}*/
 	private void checkUpdate(){
 		log("Checking for latest update...");
-		updater.checkForUpdate(true);
 		Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable(){
 			
 			@Override
 			public void run() {
+				updater.checkForUpdate(true);
 				if (updater.getLatestVersion() != null)
 					if (!updater.isLatestVersion()){
 						if (getConfig().getBoolean("updater.auto_update")){

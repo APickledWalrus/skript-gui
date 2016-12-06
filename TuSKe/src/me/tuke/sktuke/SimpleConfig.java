@@ -52,6 +52,11 @@ public class SimpleConfig{
 			"#",
 			"#true if you want to disable. (not implemented yet)");
 		setDefault("disable.SomeExample", true);
+		setDefault("debug_mode", false, 
+			"#This option will be for future things of TuSKe.",
+			"#It will just show some debug messages if needed.",
+			"#So far, it doesn't do nothing, only prevent some testing debug messages",
+			"#that can be inside the code.");
 		//replace the old config with the new one.
 		String str = "use-metrics";
 		if (pl.getConfig().isBoolean(str)){
