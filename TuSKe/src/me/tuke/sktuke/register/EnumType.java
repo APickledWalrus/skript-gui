@@ -27,7 +27,7 @@ public class EnumType {
 
 			@Override
 			public String toString(T e, int arg1) {
-				return e.name().toLowerCase().replace("_", " ");
+				return EnumType.toString(e);
 			}
 
 			@Override
@@ -42,5 +42,8 @@ public class EnumType {
 			
 		}));
 
+	}
+	public static String toString(Enum<?> e){
+		return e.name().toLowerCase().replaceAll("_", " ");
 	}
 }

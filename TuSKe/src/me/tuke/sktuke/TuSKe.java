@@ -39,8 +39,8 @@ public class TuSKe extends JavaPlugin {
 		if (reg.hasPlugin("Skript")){
 			loadConfig();
 			gui = new GUIManager();
-			Integer[] registred = reg.load();
-			if (registred == null)
+			Integer[] result = reg.load();
+			if (result == null)
 				return;
 			updater = new GitHubUpdater(this, this.getFile(), "https://github.com/Tuke-Nuke/TuSKe/releases");
 			recipes = new RecipeManager();
@@ -52,7 +52,8 @@ public class TuSKe extends JavaPlugin {
 				} catch (IOException e) {
 					log("A error occured when trying to start the Metrics.");
 				}
-			log("Loaded sucessfully a total of " + registred[0] + " events, " + registred[1] + " conditions, " + registred[2] + " expressions" + ((registred[4] == 0) ? " and "+ registred[3] + " effects" : ", " + registred[3] + " effects and " + registred[4] + " custom enchantment" + ((registred[4] > 1) ? "s" : "")) + ". Enjoy ^-^");
+			float f = result[4];
+			log("Loaded sucessfully a total of " + result[0] + " events, " + result[1] + " conditions, " + result[2] + " expressions and "+ result[3] + " effects in " +f+ " ms. Enjoy ^-^");
 			if (getConfig().getBoolean("updater.check_for_new_update"))
 				checkUpdate();
 				
