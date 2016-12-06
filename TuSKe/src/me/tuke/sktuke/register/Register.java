@@ -1,7 +1,10 @@
 package me.tuke.sktuke.register;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.annotation.Nullable;
 
@@ -27,6 +30,7 @@ import br.com.devpaulo.legendchat.channels.types.Channel;
 import ch.njol.skript.*;
 import ch.njol.skript.classes.*;
 import ch.njol.skript.classes.Comparator;
+import ch.njol.skript.expressions.ExprParse;
 import ch.njol.skript.expressions.base.*;
 import ch.njol.skript.lang.*;
 import ch.njol.skript.lang.Effect;
@@ -48,6 +52,7 @@ import me.tuke.sktuke.hooks.marriage.*;
 import me.tuke.sktuke.hooks.simpleclans.*;
 import me.tuke.sktuke.listeners.*;
 import me.tuke.sktuke.util.LegendConfig;
+import me.tuke.sktuke.util.Regex;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.events.*;
 
@@ -71,6 +76,7 @@ public class Register{
 		    Bukkit.getServer().getPluginManager().disablePlugin(instance);
 			return null;
 		}
+		long start = System.currentTimeMillis();
 		Skript.registerAddon(instance);
 		EnchantConfig.loadEnchants();
 		ArrayList<Boolean> boo = new ArrayList<>(); //excluding the skript dependencie since isn't needed on registration
@@ -86,7 +92,7 @@ public class Register{
 		if (booleans[4])
 			booleans[4] = Skript.classExists("com.jcdesimp.landlord.persistantData.LowOwnedLand");
 		registerEvents(booleans);
-		//registerClassInfos(booleans); //It needs to be before the expressions (I added before effect and conditions too just to future updates)
+		registerClassInfos(booleans); //It needs to be before the expressions (I added before effect and conditions too just to future updates)
 		//cause some expressions get some class info.
 		registerConditions(booleans);
 		registerEffects(booleans);
@@ -94,7 +100,7 @@ public class Register{
 		registerEventValues(booleans);
 		//Skript.registerCondition(CondIsMoving.class, "%player% is( (moving|walking)|(n't| not) stopped)", "%player% is((n't| not) (moving|walking)| stopped)");
 		//Skript.registerCondition(CondCanSpawn.class , "(1¦monster|2¦animal)[s] can spawn (at|in) %location/world/string%", "%entitytype% can spawn (at|in) %location/world/string%", "(1¦monster|2¦animal)[s] can('t| not) spawn (at|in) %location/world/string%", "%entitytype% can('t| not) spawn (at|in) %location/world/string%");
-		Classes.registerClass(new ClassInfo<CEnchant>(CEnchant.class, "customenchantment").user(new String[]{"custom ?enchantment"}).name("Custom Enchantment").defaultExpression(new EventValueExpression(CEnchant.class)).parser(new Parser<CEnchant>(){
+		/*Classes.registerClass(new ClassInfo<CEnchant>(CEnchant.class, "customenchantment").user(new String[]{"custom ?enchantment"}).name("Custom Enchantment").defaultExpression(new EventValueExpression(CEnchant.class)).parser(new Parser<CEnchant>(){
 
 			@Override
 			@Nullable
@@ -122,7 +128,7 @@ public class Register{
 				return ".+";
 			}
 			
-		}));
+		}));*/
 		//
 		//
 		Bukkit.getServer().getPluginManager().registerEvents(new InventoryCheck(instance), instance);
@@ -133,7 +139,7 @@ public class Register{
 			for (Player p: Bukkit.getOnlinePlayers()){
 				OnlineStatusCheck.setTime(p, System.currentTimeMillis());
 			}
-		return new Integer[]{evt, cond, expr, eff, 0}; //Enchantments will be loaded after the server started.
+		return new Integer[]{evt, cond, expr, eff, (int) (System.currentTimeMillis() - start)}; //Enchantments will be loaded after the server started.
 	}
 	public boolean hasPlugin(String plugin){
 		return Bukkit.getServer().getPluginManager().getPlugin(plugin) != null;
@@ -314,7 +320,7 @@ public class Register{
 				new Getter<String, GUIActionEvent>() {
 					@Override
 					public String get(GUIActionEvent event) {
-						return event.getClickEvent().getClick().name().toLowerCase().replaceAll("_", " ");
+						return EnumType.toString(event.getClickEvent().getClick());
 					}
 				}, 0);
 		EventValues.registerEventValue(InventoryDragEvent.class, Inventory.class,
@@ -343,7 +349,7 @@ public class Register{
 				new Getter<String, InventoryDragEvent>() {
 					@Override
 					public String get(InventoryDragEvent event) {
-						return event.getType().name().toLowerCase().replace("_", " ");
+						return EnumType.toString(event.getType());
 					}
 				}, 0);
 		
@@ -619,7 +625,7 @@ public class Register{
 			newSimpleExpression(ExprEvaluateFunction.class, 1, "result of function %string% [with %-objects%[, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%]]");
 			// 1.6.6
 			newSimpleExpression(ExprDraggedSlots.class, 0, "[event-]dragged(-| )slots");
-			newSimpleExpression(ExprDraggedItem.class, 1, "[event-][old(-| )]dragged(-| )item");
+			newSimpleExpression(ExprDraggedItem.class, 0, "[event-][old(-| )]dragged(-| )item");
 			newSimpleExpression(ExprDroppedExp.class, 1, "[the] dropped [e]xp[erience] [orb[s]]");
 			//1.6.8
 			newSimpleExpression(ExprSplitCharacter.class, 1, "split %string% (with|by|using) %number% [char[aracter][s]]", "%string% [split] (with|by|using) %number% [char[aracter][s]]");
@@ -650,7 +656,7 @@ public class Register{
 	}
 	public void registerClassInfos(Boolean... boo){
 		if (boo[0]){	
-			Classes.registerClass(new ClassInfo<Clan>(Clan.class, "clan").user(new String[] { "clan" }).name("clan").defaultExpression(new EventValueExpression(Clan.class)).parser(new Parser<Clan>() {
+			Classes.registerClass(new ClassInfo<Clan>(Clan.class, "clan").user("clan").name("clan").defaultExpression(new EventValueExpression(Clan.class)).parser(new Parser<Clan>() {
 				@Override
 			    @Nullable
 			    public Clan parse(String s, ParseContext context) {
@@ -671,7 +677,7 @@ public class Register{
 			}));			
 		}
 		if (boo[1]){
-			Classes.registerClass(new ClassInfo<Channel>(Channel.class, "channel").user(new String[] { "channel" }).name("Channel").parser(new Parser<Channel>() {
+			Classes.registerClass(new ClassInfo<Channel>(Channel.class, "channel").user("channel").name("Channel").parser(new Parser<Channel>() {
 				@Override
 			    @Nullable
 			    public Channel parse(String s, ParseContext context) {
@@ -711,7 +717,7 @@ public class Register{
 			new EnumType(Gender.class, "gender", "gender");
 		}
 		if (boo[4]){
-			Classes.registerClass(new ClassInfo<LowOwnedLand>(LowOwnedLand.class, "landclaim").user(new String[]{"landclaim"}).name("Land Claim").defaultExpression(new EventValueExpression(LowOwnedLand.class)).parser(new Parser<LowOwnedLand>(){
+			Classes.registerClass(new ClassInfo<LowOwnedLand>(LowOwnedLand.class, "landclaim").user("land ?claim").name("Land Claim").defaultExpression(new EventValueExpression(LowOwnedLand.class)).parser(new Parser<LowOwnedLand>(){
 
 				@Override
 				public String getVariableNamePattern() {
@@ -738,7 +744,7 @@ public class Register{
 			final Map<String, String> fixflags = new HashMap<String, String>();
 			for (String key : Landlord.getInstance().getFlagManager().getRegisteredFlags().keySet())
 				fixflags.put(Landlord.getInstance().getFlagManager().getRegisteredFlags().get(key).getDisplayName().toUpperCase(), key);
-			Classes.registerClass(new ClassInfo<Landflag>(Landflag.class, "landflag").user(new String[]{"landflag"}).name("Land Flag").defaultExpression(new EventValueExpression(Landflag.class)).parser(new Parser<Landflag>(){
+			Classes.registerClass(new ClassInfo<Landflag>(Landflag.class, "landflag").user("land ?flag").name("Land Flag").defaultExpression(new EventValueExpression(Landflag.class)).parser(new Parser<Landflag>(){
 
 				@Override
 				public String getVariableNamePattern() {
@@ -768,7 +774,7 @@ public class Register{
 		}
 		//Genral types
 		if (Classes.getExactClassInfo(Recipe.class) == null){
-			Classes.registerClass(new ClassInfo<Recipe>(Recipe.class, "recipe").user(new String[]{"recipe"}).name("Recipe").defaultExpression(new EventValueExpression(Recipe.class)).parser(new Parser<Recipe>(){
+			Classes.registerClass(new ClassInfo<Recipe>(Recipe.class, "recipe").user("recipe").name("Recipe").defaultExpression(new EventValueExpression(Recipe.class)).parser(new Parser<Recipe>(){
 	
 				@Override
 				@Nullable
@@ -812,7 +818,47 @@ public class Register{
 		if (Classes.getExactClassInfo(ClickType.class) == null){
 			new EnumType(ClickType.class, "clicktype", "click ?(action|type)?");					
 		} 
-		Classes.registerClass(new ClassInfo<CEnchant>(CEnchant.class, "customenchantment").user(new String[]{"custom ?enchantment"}).name("Custom Enchantment").defaultExpression(new EventValueExpression(CEnchant.class)).parser(new Parser<CEnchant>(){
+		Classes.registerClass(new ClassInfo<Regex>(Regex.class, "regex").user("reg(ular )?ex(pression)?").name("Regular expression").defaultExpression(new EventValueExpression(Regex.class)).parser(new Parser<Regex>(){
+
+			@Override
+			@Nullable
+			public Regex parse(String s, ParseContext arg1) {			
+				if (arg1 == ParseContext.COMMAND){
+					try {
+					return new Regex(Pattern.compile(s).pattern());
+					} catch (PatternSyntaxException e){
+						try {
+							Field f = ExprParse.class.getDeclaredField("lastError");
+							f.setAccessible(true);
+							f.set(null, e.getMessage());
+						} catch (Exception e1) {
+						}
+					}
+				}
+				return null;
+			}
+			@Override
+			public boolean canParse(ParseContext pc){
+				return pc == ParseContext.COMMAND;
+			}
+
+			@Override
+			public String toString(Regex reg, int arg1) {
+				return reg.getRegex();
+			}
+
+			@Override
+			public String toVariableNameString(Regex reg) {
+				return reg.getRegex();
+			}
+			
+			@Override
+			public String getVariableNamePattern() {
+				return ".+";
+			}
+			
+		}));
+		Classes.registerClass(new ClassInfo<CEnchant>(CEnchant.class, "customenchantment").user("custom ?enchantment").name("Custom Enchantment").defaultExpression(new EventValueExpression(CEnchant.class)).parser(new Parser<CEnchant>(){
 
 			@Override
 			@Nullable
@@ -844,7 +890,8 @@ public class Register{
 	}
 
 	public <E extends Expression<T>, T> void newPropertyExpression(Class<E> c, int amount, String property, String from){
-		expr += amount;
+		if (instance.getConfig().isSet("disable." + c.getSimpleName()) && instance.getConfig().getBoolean("disable." + c.getSimpleName()))
+			return;
 		Class<T> ret;
 		try {
 			ret = (Class<T>) c.newInstance().getReturnType();
@@ -852,11 +899,13 @@ public class Register{
 			TuSKe.log("Couldn't register the expression '" + property + " of " + from + "'. Error message: " + e.getMessage(), Level.WARNING);
 			return;
 		}
+		expr += amount;
 		Skript.registerExpression(c, ret, ExpressionType.PROPERTY, "[the] " + property + " of %" + from + "%", "%" + from + "%'[s] " + property);
 		
 	}
 	public <E extends Expression<T>, T> void newSimpleExpression(Class<E> c, int amount, String... syntax){
-		expr += amount;
+		if (instance.getConfig().isSet("disable." + c.getSimpleName()) && instance.getConfig().getBoolean("disable." + c.getSimpleName()))
+			return;
 		Class<T> ret;
 		try {
 			ret = (Class<T>) c.newInstance().getReturnType();
@@ -864,18 +913,25 @@ public class Register{
 			TuSKe.log("Couldn't register the expression '" + syntax[0] + "'. Error message: " + e.getMessage(), Level.WARNING);
 			return;
 		}
+		expr += amount;
 		Skript.registerExpression(c, ret, ExpressionType.SIMPLE, syntax);
 		
 	}
 	public <E extends Condition> void newCondition(Class<E> c, int amount, String... syntax){
+		if (instance.getConfig().isSet("disable." + c.getSimpleName()) && instance.getConfig().getBoolean("disable." + c.getSimpleName()))
+			return;
 		cond+= amount;
 		Skript.registerCondition(c, syntax);
 	}
 	public <E extends Effect> void newEffect(Class<E> c, int amount, String... syntax){
+		if (instance.getConfig().isSet("disable." + c.getSimpleName()) && instance.getConfig().getBoolean("disable." + c.getSimpleName()))
+			return;
 		eff+= amount;
 		Skript.registerEffect(c, syntax);
 	}
 	public <E extends SkriptEvent> void newEvent(Class<E> c, Class<? extends Event> event, int amount, String name, String... syntax){
+		if (instance.getConfig().isSet("disable." + event.getSimpleName()) && instance.getConfig().getBoolean("disable." + event.getSimpleName()))
+			return;
 		evt+= amount;
 		Skript.registerEvent(name, c, event, syntax);
 	}

@@ -44,6 +44,14 @@ public class SimpleConfig{
 			"#Download pre-releases.",
 			"#Note: pre-releases versions shoudln't be used in your main server.",
 			"#It's just to test new incomming features only!!");
+		addComentsAbove("disable", 
+			"#This option will be for future things of TuSKe.",
+			"#It will be used when there is some features that isn't available",
+			"#or uncompatible with your version. For now, it doesn't do nothing",
+			"#but it tends to disable some crashing expression or lagging event",
+			"#",
+			"#true if you want to disable. (not implemented yet)");
+		setDefault("disable.SomeExample", true);
 		//replace the old config with the new one.
 		String str = "use-metrics";
 		if (pl.getConfig().isBoolean(str)){
@@ -59,22 +67,30 @@ public class SimpleConfig{
 		}
 	}
 	private boolean setDefault(String path, Object value, String... comments){
-		if (!map.containsKey(path)){
-			map.put(path, (map.size() > 0 ? "\n" : "")+ StringUtils.join(comments, "\n"));
-		}
-		if (!pl.getConfig().isSet(path)){
-			pl.getConfig().set(path, value);
-			return true;
+		if (!map.containsKey(path) ){
+			TuSKe.debug(path, comments != null, comments.length);
+			if (comments.length > 0)
+				addComentsAbove(path, comments);
+			if (!pl.getConfig().isSet(path)){
+				pl.getConfig().set(path, value);
+				return true;
+			}
 		}
 		return false;
 		
 	
 	}
+	private boolean addComentsAbove(String path, String... comments){
+		if (!map.containsKey(path)){
+			map.put(path, (map.size() > 0 ? "\n" : "")+ StringUtils.join(comments, "\n"));
+			return true;
+		}
+		return false;
+	}
 	public void save(){
 		try {			
 			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(pl.getDataFolder(), "config.yml")));
 			String str = saveToString();
-			//TuSKe.log("\n\n\t\t\tTeste\n\n" + str + "\n\n\n\n\n");
 			bw.write(str);
 			bw.flush();
 			bw.close();
@@ -93,9 +109,8 @@ public class SimpleConfig{
 			}
 			comment = comment.replaceAll("\n", "\n" + space) + "\n";
 			String regex = keyToRegex(key);
-			TuSKe.debug(key, last, "-" +space+ "-", regex, comment);
 			if (!key.equalsIgnoreCase(regex))
-				toFile = toFile.replaceFirst("(?s)"+ regex, "$1$2" +  comment + "$3");
+				toFile = toFile.replaceFirst("(?s)"+ regex, "$1$2" +  comment + space + "$3");
 			else
 				toFile = toFile.replaceFirst(key, comment + key);
 		}

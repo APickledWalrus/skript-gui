@@ -18,8 +18,6 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
-import me.tuke.sktuke.TuSKe;
-import me.tuke.sktuke.recipe.RecipeManager;
 
 public class ExprResultOfRecipe extends SimpleExpression<ItemStack>{
 
