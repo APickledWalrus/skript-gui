@@ -75,7 +75,7 @@ public class Register{
 		long start = System.currentTimeMillis();
 		Skript.registerAddon(instance);
 		EnchantConfig.loadEnchants();
-		ArrayList<Boolean> boo = new ArrayList<>(); //excluding the skript dependencie since isn't needed on registration
+		ArrayList<Boolean> boo = new ArrayList<>();
 		List<String> depends = instance.getDescription().getSoftDepend();
 		for (int x = 1; x < depends.size(); x++){
 			if (x == 1 || x == 5){
@@ -96,37 +96,6 @@ public class Register{
 		registerEventValues(booleans);
 		//Skript.registerCondition(CondIsMoving.class, "%player% is( (moving|walking)|(n't| not) stopped)", "%player% is((n't| not) (moving|walking)| stopped)");
 		//Skript.registerCondition(CondCanSpawn.class , "(1¦monster|2¦animal)[s] can spawn (at|in) %location/world/string%", "%entitytype% can spawn (at|in) %location/world/string%", "(1¦monster|2¦animal)[s] can('t| not) spawn (at|in) %location/world/string%", "%entitytype% can('t| not) spawn (at|in) %location/world/string%");
-		/*Classes.registerClass(new ClassInfo<CEnchant>(CEnchant.class, "customenchantment").user(new String[]{"custom ?enchantment"}).name("Custom Enchantment").defaultExpression(new EventValueExpression(CEnchant.class)).parser(new Parser<CEnchant>(){
-
-			@Override
-			@Nullable
-			public CEnchant parse(String s, ParseContext arg1) {
-				int l = 0;
-				if (s.matches(".*\\s{1,}\\d{1,}$")){
-					l = Integer.valueOf(s.split(" ")[s.split(" ").length-1]);
-					s = s.replace(" " + l,"");
-				}
-				return (EnchantManager.isCustomByID(s)) ? new CEnchant(CustomEnchantment.getByID(s), l) : null;
-			}
-
-			@Override
-			public String toString(CEnchant ce, int arg1) {
-				return ce.getEnchant().getId();
-			}
-
-			@Override
-			public String toVariableNameString(CEnchant ce) {
-				return "ce:" + ce.getEnchant().getId();
-			}
-			
-			@Override
-			public String getVariableNamePattern() {
-				return ".+";
-			}
-			
-		}));*/
-		//
-		//
 		Bukkit.getServer().getPluginManager().registerEvents(new InventoryCheck(instance), instance);
 		Bukkit.getServer().getPluginManager().registerEvents(new OnlineStatusCheck(instance), instance);
 		Bukkit.getServer().getPluginManager().registerEvents(new EnchantCheck(instance), instance);
@@ -525,7 +494,7 @@ public class Register{
 		newEffect(EffExecutePermission.class, 1, "[execute] [the] command %strings% by %players% with perm[ission] %string%", "[execute] [the] %players% command %strings% with perm[ission] %string%", "(let|make) %players% execute [[the] command] %strings% with perm[ission] %string%");
 		//1.7.1
 		Skript.registerEffect(EffRegisterRecipe.class, 
-				"(create|register) [new] [custom] shaped recipe with (return|result) %itemstack% using [ingredients] %itemstacks% [with shape %strings%]",
+				"(create|register) [new] [custom] shaped recipe with (return|result) %itemstack% using [ingredients] %itemstacks% [with shape %-strings%]",
 				"(create|register) [new] [custom] shapeless recipe with (return|result) %itemstack% using [ingredients] %itemstacks%",
 				"(create|register) [new] [custom] furnace recipe with (return|result) %itemstack% using [source] %itemstack% [[and] with experience %-number%]");
 	}

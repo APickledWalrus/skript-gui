@@ -23,34 +23,23 @@ public class RecipeManager implements Listener{
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPrepare(PrepareItemCraftEvent e){
-		long start = System.currentTimeMillis();
 		Recipe rec = getIfContainsCustomRecipe(e.getRecipe());
 		if (rec != null){
-			//TuSKe.debug("\n\nPassou " + e.getRecipe(), rec, Arrays.toString(getItems(e.getRecipe())) + "\n", Arrays.toString(getItems(rec)) + "\n\n");
-			
-			long start1 = System.currentTimeMillis();
-			ItemStack[] ite = e.getViewers().get(0).getInventory().getContents();
-			TuSKe.debug(arrayItemsContains(ite,ite));
-			TuSKe.debug(System.currentTimeMillis() - start1);
-			start1 = System.currentTimeMillis();
-			TuSKe.debug(arrayItemsContains2(ite, ite));
-			TuSKe.debug(System.currentTimeMillis() - start1);
-			//if (!areArrayItemsEqual(getItems(rec), e.getInventory().getMatrix(), true))
-			//	e.getInventory().setResult(new ItemStack(Material.AIR));
+			if (!areArrayItemsEqual(getItems(rec), e.getInventory().getMatrix(), true))
+				e.getInventory().setResult(new ItemStack(Material.AIR));
 		}
-		//Some debug messages, it will be removed
-		//TuSKe.debug(Arrays.toString(e.getInventory().getMatrix()));
-		TuSKe.debug(System.currentTimeMillis() - start);
 	}
 	public void registerRecipe(Recipe rec){
-
-		if (rec instanceof CustomShapedRecipe || rec instanceof CustomShapelessRecipe || rec instanceof CustomFurnaceRecipe)		
-			if (getIfContainsCustomRecipe(rec) == null && getItems(rec) != null){
+		if (rec instanceof CustomShapedRecipe || rec instanceof CustomShapelessRecipe || rec instanceof CustomFurnaceRecipe){
+			if (getIfContainsCustomRecipe(rec) != null)
+				return;
+			if (getItems(rec) != null){
 				recipes.add(rec);
 				if (recipes.size() == 1)
 					Bukkit.getPluginManager().registerEvents(this, TuSKe.getInstance());
 			}
-		TuSKe.debug("Size: "  + recipes.size());
+		}
+		TuSKe.debug("Registred: " + recipes.size());
 		Bukkit.addRecipe(rec);
 	}
 	
@@ -79,7 +68,6 @@ public class RecipeManager implements Listener{
 				if (item1[x] != null && item2[y] != null && item1[x].isSimilar(item2[y]))
 					if (++count == item1.length)
 						return true;
-		TuSKe.debug("Count: " + count);
 		return false;
 	}
 	public ItemStack[] compareArrayItems(ItemStack[] item1, ItemStack[] item2, boolean sameItemMeta){
@@ -92,12 +80,9 @@ public class RecipeManager implements Listener{
 					item1[x] = new ItemStack(Material.AIR);
 				if (item2[x] == null)
 					item2[x] = new ItemStack(Material.AIR);
-				ItemStack i1 = item1[x];
-				ItemStack i2 = item2[x];
-				TuSKe.debug(i1, i2);
-				if (/*i1 != null && */i1.getDurability() == 32767)
-					i1.setDurability((short)0);				
-				if (/*i1 != null && i2 != null && */i1.getType() != i2.getType() && i1.getAmount() > i2.getAmount() && i1.getDurability() != i2.getDurability())
+				if (/*i1 != null && */item1[x].getDurability() == 32767)
+					item1[x].setDurability((short)0);				
+				if (/*i1 != null && i2 != null && */item1[x].getType() != item2[x].getType() && item1[x].getAmount() > item2[x].getAmount() && item1[x].getDurability() != item2[x].getDurability())
 					return null;
 				/*else if (i1 == null && i2 != null && i2.getType() == Material.AIR)
 					continue;
@@ -110,11 +95,9 @@ public class RecipeManager implements Listener{
 					item1[x] = new ItemStack(Material.AIR);
 				if (item2[x] == null)
 					item2[x] = new ItemStack(Material.AIR);
-				ItemStack i1 = item1[x];
-				ItemStack i2 = item2[x];
-				if (/*i1 != null && */i1.getDurability() == 32767)
-					i1.setDurability((short)0);
-				if (/*i1 != null && i2 != null &&*/ !i1.isSimilar(i2))
+				if (/*i1 != null && */item1[x].getDurability() == 32767)
+					item1[x].setDurability((short)0);
+				if (/*i1 != null && i2 != null &&*/ !item1[x].isSimilar(item2[x]))
 					return null;
 				/*else if (i1 == null && i2 != null && i2.getType() == Material.AIR)
 					continue;

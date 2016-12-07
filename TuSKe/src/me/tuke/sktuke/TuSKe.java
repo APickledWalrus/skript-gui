@@ -52,8 +52,8 @@ public class TuSKe extends JavaPlugin {
 				} catch (IOException e) {
 					log("A error occured when trying to start the Metrics.");
 				}
-			float f = result[4]/1000;
-			log("Loaded sucessfully a total of " + result[0] + " events, " + result[1] + " conditions, " + result[2] + " expressions and "+ result[3] + " effects in " +f+ " seconds. Enjoy ^-^");
+			double d = result[4]/1000;
+			log("Loaded sucessfully a total of " + result[0] + " events, " + result[1] + " conditions, " + result[2] + " expressions and "+ result[3] + " effects in " +d+ " seconds. Enjoy ^-^");
 			if (getConfig().getBoolean("updater.check_for_new_update"))
 				checkUpdate();
 				
