@@ -39,7 +39,6 @@ public class RecipeManager implements Listener{
 					Bukkit.getPluginManager().registerEvents(this, TuSKe.getInstance());
 			}
 		}
-		TuSKe.debug("Registred: " + recipes.size());
 		Bukkit.addRecipe(rec);
 	}
 	

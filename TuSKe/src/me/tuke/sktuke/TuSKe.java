@@ -273,6 +273,8 @@ public class TuSKe extends JavaPlugin {
 		plugin.getLogger().log(lvl, msg);
 	}
 	public static void debug(Object... objects){
+		if (!plugin.getConfig().getBoolean("debug_mode"))
+			return;
 		log("[Debug] " + StringUtils.join(objects, " || "));
 	}
 	public static boolean hasSupport(){
