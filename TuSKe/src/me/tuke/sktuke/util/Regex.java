@@ -14,7 +14,7 @@ public class Regex{
 			Pattern.compile(regex);
 		} catch (PatternSyntaxException e){
 			reg = null;
-			ExprParseRegexError.parserError = e.getMessage();
+			ExprParseRegexError.parserError = e.getMessage().replace('\r', ' ');
 		}
 	}
 	public String getRegex(){
