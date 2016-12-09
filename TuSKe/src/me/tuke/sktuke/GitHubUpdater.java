@@ -38,7 +38,6 @@ public class GitHubUpdater {
 	private String URL = null;
 	private String UPDATE_TITLE = null;
 	private String LATEST_VERSION = null;
-	private boolean PRE_RELEASE = false;//Not used yet
 	private Exception lastException = null;
 
 	/**
@@ -55,10 +54,6 @@ public class GitHubUpdater {
 		URL = gitHubUrl;
 		
 		
-	}
-	public GitHubUpdater downloadPreReleases(boolean value){
-		PRE_RELEASE = value;
-		return this;
 	}
 	/**
 	 * Use it to check for latest update. It will get the latest version and download link.<p>

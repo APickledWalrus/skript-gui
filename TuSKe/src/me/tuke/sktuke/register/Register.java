@@ -493,10 +493,11 @@ public class Register{
 		newEffect(EffRegisterPermission.class, 1,"(register|create) master permission %string%");
 		newEffect(EffExecutePermission.class, 1, "[execute] [the] command %strings% by %players% with perm[ission] %string%", "[execute] [the] %players% command %strings% with perm[ission] %string%", "(let|make) %players% execute [[the] command] %strings% with perm[ission] %string%");
 		//1.7.1
-		Skript.registerEffect(EffRegisterRecipe.class, 
+		newEffect(EffRegisterRecipe.class, 1,
 				"(create|register) [new] [custom] shaped recipe with (return|result) %itemstack% using [ingredients] %itemstacks% [with shape %-strings%]",
 				"(create|register) [new] [custom] shapeless recipe with (return|result) %itemstack% using [ingredients] %itemstacks%",
 				"(create|register) [new] [custom] furnace recipe with (return|result) %itemstack% using [source] %itemstack% [[and] with experience %-number%]");
+		newEffect(EffEjectRecord.class, 1, "eject record (of|from|) %block%");
 	}
 	public void registerExpressions(Boolean... boo){
 		if (boo[0]){
@@ -614,6 +615,8 @@ public class Register{
 			//1.7.1
 			newSimpleExpression(ExprUUIDOfflinePlayer.class, 1, "offline player from [uuid] %string%");
 			newSimpleExpression(ExprParseRegexError.class, 1, "[last] regex [parser] error");
+			newPropertyExpression(ExprJukeboxRecord.class, 1, "[jukebox] record", "block");
+			
 			
 			
 		}
