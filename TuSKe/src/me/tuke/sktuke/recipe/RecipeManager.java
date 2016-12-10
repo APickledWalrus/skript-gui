@@ -25,8 +25,9 @@ public class RecipeManager implements Listener{
 	public void onPrepare(PrepareItemCraftEvent e){
 		Recipe rec = getIfContainsCustomRecipe(e.getRecipe());
 		if (rec != null){
-			if (!areArrayItemsEqual(getItems(rec), e.getInventory().getMatrix(), true))
+			if (!areArrayItemsEqual(getItems(rec), e.getInventory().getMatrix(), true)){
 				e.getInventory().setResult(new ItemStack(Material.AIR));
+			}
 		}
 	}
 	public void registerRecipe(Recipe rec){

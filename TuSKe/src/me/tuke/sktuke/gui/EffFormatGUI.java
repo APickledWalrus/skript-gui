@@ -1,6 +1,5 @@
 package me.tuke.sktuke.gui;
 
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -22,17 +21,16 @@ import ch.njol.skript.lang.function.Function;
 import ch.njol.skript.lang.function.Functions;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.TuSKe;
-import me.tuke.sktuke.gui.GUI.ActionType;
 
 public class EffFormatGUI extends Effect{
-	private ActionType at;
+	private int Type;
 	private boolean toClose;
 	private Function<?> f;
 	private List<Expression<?>> ob = new ArrayList<Expression<?>>();
 	private Expression<String> perm;
 	private Expression<String> cmd;
 	private Expression<CommandSender> sender;
-	private Expression<?> p;
+	private Expression<Player> p;
 	private Expression<Number> s;
 	private Expression<ItemStack> i;
 	private Expression<?> ct;
@@ -45,33 +43,31 @@ public class EffFormatGUI extends Effect{
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
 		int max = arg.length;
 		s = (Expression<Number>) arg[0];
-		p = arg[1];
-		i = (Expression<ItemStack>) arg[2].getConvertedExpression(ItemStack.class);
+		p = (Expression<Player>) arg[1];
+		i = (Expression<ItemStack>) arg[2]/*.getConvertedExpression(ItemStack.class)*/;
 		toClose = arg3.mark > 0;
+		Type = arg1;
 		if (arg3.mark == 2)
 			inv = (Expression<Inventory>) arg[3];
 		switch (arg1){
 		case 4: 
 			runEvent = true;
-			at = ActionType.NOTHING; break;
+			break;
 		case 1: 
 			toClose = true;
 			ct = arg[4];
-		case 0: at = ActionType.NOTHING; break;
+		case 0:  break;
 		case 2: 
-			at = ActionType.RUN_COMMAND;
 			sender = (Expression<CommandSender>) arg[4];
 			cmd = (Expression<String>) arg[5];
 			perm =  arg[6] != null ? (Expression<String>) arg[6] : null;
 			break;
 		case 3:
-			at = ActionType.RUN_FUNCTION;
 			f = Functions.getFunction(arg3.regexes.get(0).group(0).replaceAll(" ", ""));
 			if (f == null){
 				Skript.error("There isn't any function called '" + arg3.regexes.get(0).group(0).replaceAll(" ", "") + "'.");
 				return false;
 			}
-
 			for (int x = 4; x < max - 2; x++)
 				if (arg[x] != null)
 					ob.add(arg[x].getConvertedExpression(Object.class));
@@ -90,52 +86,51 @@ public class EffFormatGUI extends Effect{
 
 	@Override
 	protected void execute(Event e) {
-		if (this.p.getArray(e) != null && this.s.getArray(e) != null && this.i.getSingle(e) != null && !this.i.getSingle(e).getType().equals(Material.AIR)){
-			Object[] p = this.p.getArray(e);
+		if (this.p.getArray(e) != null && this.s.getArray(e) != null && this.i.getSingle(e) != null){
+			Player[] p = this.p.getArray(e);
 			Number[] slots = this.s.getArray(e);
 			for (int x = 0; x < slots.length; x++)
 				for(int y = 0; y < p.length; y++){
-					Runnable rn = null;
-					switch(at){
-					case NOTHING: break;
-					case RUN_COMMAND: 
-						final CommandSender s = sender != null ? sender.getSingle(e) : (Player)p[y];
-						final String pe = perm != null ? perm.getSingle(e) : null;
-						final String c = cmd.getSingle(e);
-						rn = new Runnable(){
-							@Override
-							public void run() {
-								TuSKe.getGUIManager().runCommand(s, c, pe);
-							}};
+					if (p[y] == null)
 						break;
-					case RUN_FUNCTION:
-						final Object[][] obj = TuSKe.getGUIManager().getParam(f, ob, e);
-						rn = new Runnable(){
-							
-							@Override
-							public void run() {
-								f.execute(obj);
-							}};
-						break;
-					}
-					GUI gui = new GUI(rn, (i2 != null && i2.getSingle(e) != null ? i2.getSingle(e) : null), (ct != null ? getFromObject(ct.getSingle(e)) : null));
-					if (p[y] instanceof Player){
-						Inventory inv = ((Player)p[y]).getOpenInventory().getTopInventory();
+					Inventory inv = p[y].getOpenInventory().getTopInventory();
+					if (slots[x] != null && slots[x].intValue() >= 0 && slots[x].intValue() < inv.getSize()){
+						Runnable rn = null;
+						switch(Type){
+						case 2: 
+							final CommandSender s = sender != null ? sender.getSingle(e) : (Player)p[y];
+							final String pe = perm != null ? perm.getSingle(e) : null;
+							final String c = cmd.getSingle(e);
+							rn = new Runnable(){
+								@Override
+								public void run() {
+									TuSKe.getGUIManager().runCommand(s, c, pe);
+								}};
+							break;
+						case 3:
+							final Object[][] obj = TuSKe.getGUIManager().getParam(f, ob, e);
+							rn = new Runnable(){
+								
+								@Override
+								public void run() {
+									f.execute(obj);
+								}};
+							break;
+						}
+						GUI gui = new GUI(rn, (i2 != null && i2.getSingle(e) != null ? i2.getSingle(e) : null), (ct != null ? getFromObject(ct.getSingle(e)) : null));
 						
-						if (slots[x] != null && slots[x].intValue() >= 0 && slots[x].intValue() < inv.getSize() && p[y] != null && !inv.getType().equals(InventoryType.PLAYER) && !inv.getType().equals(InventoryType.CRAFTING)){
+						if (slots[x] != null && slots[x].intValue() >= 0 && slots[x].intValue() < inv.getSize() /*&& !inv.getType().equals(InventoryType.PLAYER)*/ && !inv.getType().equals(InventoryType.CRAFTING)){
 							
 							if (runEvent)
-								gui.toCallEvent(true);
+								gui.toCallEvent(runEvent);
 							else
 								gui.toClose(toClose);
 							if (this.inv != null)
 								gui.toOpenInventory(this.inv.getSingle(e));								
 							TuSKe.getGUIManager().newGUI(inv, slots[x].intValue(), i.getSingle(e), gui);
-						}
-					} else if (p[y] instanceof String && slots[x].intValue() < 54)
-						TuSKe.getGUIManager().addToGroupGUI((String) p[y], slots[x].intValue(), this.i, gui);
-					
-					
+						}		
+						
+					}
 				}
 		}
 	}

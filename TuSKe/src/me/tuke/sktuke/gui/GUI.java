@@ -5,15 +5,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class GUI {
-	public enum ActionType{
-		NOTHING(0),
-		RUN_COMMAND(1),
-		RUN_FUNCTION(2);
-		public int id;
-		ActionType(int id){
-			this.id = id;
-		}
-	}
 	private boolean toClose = false;
 	private boolean toCall = false;
 	private ClickType ct = null;

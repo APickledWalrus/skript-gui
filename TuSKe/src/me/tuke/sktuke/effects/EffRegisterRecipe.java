@@ -30,6 +30,9 @@ public class EffRegisterRecipe extends Effect{
 		ingredients = (Expression<ItemStack>) arg[1];
 		if (arg1 > 2)
 			exp = (Expression<Number>) arg[2];
+		else if (arg1 == 0){
+			shape = (Expression<String>) arg[2];
+		}
 		return true;
 	}
 

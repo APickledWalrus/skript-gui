@@ -25,9 +25,7 @@ import br.com.devpaulo.legendchat.api.events.*;
 import br.com.devpaulo.legendchat.channels.ChannelManager;
 import br.com.devpaulo.legendchat.channels.types.Channel;
 import ch.njol.skript.*;
-import ch.njol.skript.classes.*;
 import ch.njol.skript.classes.Comparator;
-import ch.njol.skript.expressions.base.*;
 import ch.njol.skript.lang.*;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.util.*;
@@ -498,6 +496,7 @@ public class Register{
 				"(create|register) [new] [custom] shapeless recipe with (return|result) %itemstack% using [ingredients] %itemstacks%",
 				"(create|register) [new] [custom] furnace recipe with (return|result) %itemstack% using [source] %itemstack% [[and] with experience %-number%]");
 		newEffect(EffEjectRecord.class, 1, "eject record (of|from|) %block%");
+		
 	}
 	public void registerExpressions(Boolean... boo){
 		if (boo[0]){
@@ -624,7 +623,7 @@ public class Register{
 	}
 	public void registerClassInfos(Boolean... boo){
 		if (boo[0]){	
-			Classes.registerClass(new ClassInfo<Clan>(Clan.class, "clan").user("clan").name("clan").defaultExpression(new EventValueExpression(Clan.class)).parser(new Parser<Clan>() {
+			new SimpleType<Clan>(Clan.class, "clan"){
 				@Override
 			    @Nullable
 			    public Clan parse(String s, ParseContext context) {
@@ -634,18 +633,15 @@ public class Register{
 			    public String toString(Clan c, int flags) {
 			    	return c.getName().toString();
 			    }
-			   @Override
-			   public String toVariableNameString(Clan c) {
-			    	return c.toString().toLowerCase();
-			   	}
 			    @Override
-			    public String getVariableNamePattern() {
-			        return ".+"; 
-			    }
-			}));			
+			    public String toVariableNameString(Clan c) {
+			    	return c.toString().toLowerCase();
+			    	
+				}}.register();
+					
 		}
 		if (boo[1]){
-			Classes.registerClass(new ClassInfo<Channel>(Channel.class, "channel").user("channel").name("Channel").parser(new Parser<Channel>() {
+			new SimpleType<Channel>(Channel.class, "channel"){
 				@Override
 			    @Nullable
 			    public Channel parse(String s, ParseContext context) {
@@ -661,12 +657,7 @@ public class Register{
 			   @Override
 			   public String toVariableNameString(Channel c) {
 			    	return c.toString().toLowerCase();
-			   	}
-			    @Override
-			    public String getVariableNamePattern() {
-			        return ".+"; 
-			    }
-			}));
+			   	}}.register();
 			Comparators.registerComparator(Channel.class, Channel.class, new Comparator(){
 
 				@Override
@@ -681,17 +672,10 @@ public class Register{
 			});
 			
 		}
-		if (boo[2]){
+		if (boo[2])
 			new EnumType(Gender.class, "gender", "gender");
-		}
 		if (boo[4]){
-			Classes.registerClass(new ClassInfo<LowOwnedLand>(LowOwnedLand.class, "landclaim").user("land ?claim").name("Land Claim").defaultExpression(new EventValueExpression(LowOwnedLand.class)).parser(new Parser<LowOwnedLand>(){
-
-				@Override
-				public String getVariableNamePattern() {
-					return ".+";
-				}
-
+			new SimpleType<LowOwnedLand>(LowOwnedLand.class, "landclaim", "land ?claim"){
 				@Override
 				@Nullable
 				public LowOwnedLand parse(String s, ParseContext arg1) {
@@ -706,25 +690,19 @@ public class Register{
 				@Override
 				public String toVariableNameString(LowOwnedLand ol) {
 					return "ownedland:" + ol.getId();
-				}
-				
-			}));
-			final Map<String, String> fixflags = new HashMap<String, String>();
-			for (String key : Landlord.getInstance().getFlagManager().getRegisteredFlags().keySet())
-				fixflags.put(Landlord.getInstance().getFlagManager().getRegisteredFlags().get(key).getDisplayName().toUpperCase(), key);
-			Classes.registerClass(new ClassInfo<Landflag>(Landflag.class, "landflag").user("land ?flag").name("Land Flag").defaultExpression(new EventValueExpression(Landflag.class)).parser(new Parser<Landflag>(){
-
-				@Override
-				public String getVariableNamePattern() {
-					return ".+";
-				}
-
-				
+				}}.register();
+			final Map<String, Landflag> fixflags = new HashMap<>();
+			for (String key : Landlord.getInstance().getFlagManager().getRegisteredFlags().keySet()){
+				Landflag lf = Landlord.getInstance().getFlagManager().getRegisteredFlags().get(key);
+				fixflags.put(lf.getDisplayName().toUpperCase(), lf);
+			}
+			
+			new SimpleType<Landflag>(Landflag.class, "landflag", "land ?flag"){
 				@Override
 				@Nullable
 				public Landflag parse(String s, ParseContext arg1) {
 					if (fixflags.containsKey(s.toUpperCase()))
-						return Landlord.getInstance().getFlagManager().getRegisteredFlags().get(fixflags.get(s.toUpperCase()));
+						return fixflags.get(s.toUpperCase());
 					return null;
 				}
 
@@ -736,14 +714,12 @@ public class Register{
 				@Override
 				public String toVariableNameString(Landflag lf) {
 					return "ownedland:" + lf.getDisplayName().toLowerCase();
-				}
-				
-			}));
+					
+				}}.register();
 		}
 		//Genral types
 		if (Classes.getExactClassInfo(Recipe.class) == null){
-			Classes.registerClass(new ClassInfo<Recipe>(Recipe.class, "recipe").user("recipe").name("Recipe").defaultExpression(new EventValueExpression(Recipe.class)).parser(new Parser<Recipe>(){
-	
+			new SimpleType<Recipe>(Recipe.class, "recipe"){
 				@Override
 				@Nullable
 				public Recipe parse(String s, ParseContext arg1) {
@@ -771,14 +747,7 @@ public class Register{
 					else if (r instanceof FurnaceRecipe)
 						return "furnacerecipe:" + r.toString().split("@")[1];
 					return null;
-				}
-				
-				@Override
-				public String getVariableNamePattern() {
-					return ".+";
-				}
-				
-			}));
+				}}.register();;
 		}
 		if (Classes.getExactClassInfo(InventoryType.class) == null){
 			new EnumType(InventoryType.class, "inventorytype", "inventory ?type");
@@ -786,8 +755,7 @@ public class Register{
 		if (Classes.getExactClassInfo(ClickType.class) == null){
 			new EnumType(ClickType.class, "clicktype", "click ?(action|type)?");					
 		} 
-		Classes.registerClass(new ClassInfo<Regex>(Regex.class, "regex").user("reg(ular )?ex(pression)?").name("Regular expression").defaultExpression(new EventValueExpression(Regex.class)).parser(new Parser<Regex>(){
-
+		new SimpleType<Regex>(Regex.class, "regex", "reg(ular )?ex(pression)?", "Regular expression"){
 			@Override
 			@Nullable
 			public Regex parse(String s, ParseContext arg1) {			
@@ -799,10 +767,9 @@ public class Register{
 				return null;
 			}
 			@Override
-			public boolean canParse(ParseContext pc){
-				return pc == ParseContext.COMMAND;
+			public boolean canParse(ParseContext arg1){
+				return arg1 == ParseContext.COMMAND;
 			}
-
 			@Override
 			public String toString(Regex reg, int arg1) {
 				return reg.getRegex();
@@ -811,16 +778,9 @@ public class Register{
 			@Override
 			public String toVariableNameString(Regex reg) {
 				return reg.getRegex();
-			}
+			}}.register();
 			
-			@Override
-			public String getVariableNamePattern() {
-				return ".+";
-			}
-			
-		}));
-		Classes.registerClass(new ClassInfo<CEnchant>(CEnchant.class, "customenchantment").user("custom ?enchantment").name("Custom Enchantment").defaultExpression(new EventValueExpression(CEnchant.class)).parser(new Parser<CEnchant>(){
-
+		new SimpleType<CEnchant>(CEnchant.class, "customenchantment", "custom ?enchantment"){
 			@Override
 			@Nullable
 			public CEnchant parse(String s, ParseContext arg1) {
@@ -840,14 +800,7 @@ public class Register{
 			@Override
 			public String toVariableNameString(CEnchant ce) {
 				return "ce:" + ce.getEnchant().getId();
-			}
-			
-			@Override
-			public String getVariableNamePattern() {
-				return ".+";
-			}
-			
-		}));
+			}}.register();
 	}
 
 	public <E extends Expression<T>, T> void newPropertyExpression(Class<E> c, int amount, String property, String from){

@@ -2,10 +2,7 @@ package me.tuke.sktuke.gui;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -22,8 +19,7 @@ import ch.njol.skript.lang.function.Parameter;
 import me.tuke.sktuke.TuSKe;
 
 public class GUIManager {
-	private HashMap<Inventory, Map<Integer, Set<GUI>>> invs = new HashMap<>();
-	private HashMap<String, GroupGUI> groups = new HashMap<>();
+	private HashMap<Inventory, HashMap<Integer, GUI[]>> invs = new HashMap<>();
 	
 	public boolean isGUI(Inventory inv, int slot){
 		return invs.containsKey(inv) && invs.get(inv).containsKey(slot);
@@ -35,63 +31,29 @@ public class GUIManager {
 		return isGUI(inv, slot) ? getGUI(invs.get(inv).get(slot), ct) : null;
 	}
 	public void newGUI(Inventory inv, int slot, ItemStack item, GUI gui){
-		if (!isAllowedType(gui.getClickType()))
-			gui.withClickType(null);
-		//GUI gui = new GUI(rn, item2, ct); 
 		addToListener(inv, slot, item, gui);
-	}
-	public void addToGroupGUI(String id, int slot, Expression<ItemStack> item, GUI gui){
-		GroupGUI gg = groups.containsKey(id.toLowerCase()) ? groups.get(id.toLowerCase()) : new GroupGUI();
-		gg.newSlot(slot, item, gui);
-		if (!groups.containsKey(id.toLowerCase()))
-			groups.put(id.toLowerCase(), gg);
-	}
-	/*public void formatGroupGUI(Event e, String id, Player p){
-		if (groups.containsKey(id.toLowerCase())){
-			GroupGUI gg = groups.get(id.toLowerCase());
-			Inventory inv = p.getOpenInventory().getTopInventory();
-			invs.put(inv, gg.getGUIs());
-			//for (Set<GUI> gui : gg.getGUIs().values())
-			//	for (GUI gui2 : gui)
-			//		gui2.setEvent(e);
-			ItemStack[] items = gg.getArrayItems(e);
-			if(items.length > inv.getSize()){
-				items = Arrays.copyOfRange(items, 0, inv.getSize());
-			}
-			
-			inv.setContents(items);
-		}
-	}*/
-	
-	private GUI getGUI(Set<GUI> guis, ClickType ct){
-		for (GUI gui : guis){
-			if ((gui.getClickType() == null && ct == null) || (gui.getClickType() != null && ct != null && gui.getClickType().equals(ct)))
-				return gui;
-		}
-		if (ct != null)
-			return getGUI(guis, null);
-		return null;
+	}	
+	private GUI getGUI(GUI[] guis, ClickType ct){
+		int index = getIndex(ct);
+		return guis[index] != null? guis[index] : guis[0];
 	}
 	private void addToListener(Inventory inv, int slot, ItemStack item, GUI gui){
-		Map<Integer, Set<GUI>> guislot = new HashMap<Integer, Set<GUI>>();
-		Set<GUI> guis = new HashSet<GUI>();
-		if (invs.containsKey(inv)){
-			guislot = invs.get(inv);
-			invs.remove(inv);
-			if (guislot.containsKey(slot))
-				guis = guislot.get(slot);
+		GUI[] guis2 = null;
+		HashMap<Integer,GUI[]> guislot2 = new HashMap<>();
+		if (invs.containsKey(inv) && (guislot2 = invs.get(inv)).containsKey(slot)){
+			guislot2.get(slot)[getIndex(gui.getClickType())] = gui;
+		} else {
+			guis2 = new GUI[ClickType.values().length - 2];
+			guis2[getIndex(gui.getClickType())] = gui;
+			guislot2.put(slot, guis2);
+			
 		}
-		GUI gui2 = getGUI(guis, gui.getClickType());
-		if (gui2 != null)
-			guis.remove(gui2);
-		guis.add(gui);
-		guislot.put(slot, guis);
-		invs.put(inv, guislot);
+		invs.put(inv, guislot2);
 		inv.setItem(slot, item);
 	}
 	public void remove(Inventory inv, int slot){
 		inv.setItem(slot, new ItemStack(Material.AIR));
-		Map<Integer, Set<GUI>> map = invs.get(inv);
+		HashMap<Integer, GUI[]> map = invs.get(inv);
 		map.remove(slot);
 		if (map.size() > 0)
 			invs.put(inv, map);
@@ -137,8 +99,7 @@ public class GUIManager {
 			default:
 				break;
 		}
-			return true;
-		
+		return true;
 	}
 	private Expression<?> getDefault(Parameter<?> param){
 		Field field = null;
@@ -161,5 +122,14 @@ public class GUIManager {
 				cmd = cmd.substring(1);
 			Skript.dispatchCommand(sender, cmd);
 		}
+	}
+	private int getIndex(ClickType ct){
+		if (ct == null)
+			return 0;
+		int index = ct.ordinal() + 1;
+		if (index > 6)
+			index -=2;
+		TuSKe.debug(ct, index, ct.ordinal());
+		return ct.ordinal();
 	}
 }

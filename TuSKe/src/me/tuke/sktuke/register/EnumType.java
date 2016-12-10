@@ -16,7 +16,7 @@ public class EnumType {
 			@Override
 			@Nullable
 			public T parse(String name, ParseContext arg1) {
-				name = name.toUpperCase().replace(" ", "_");
+				name = fromString(name);
 				if (name.startsWith(c.getSimpleName().toUpperCase() + "."))
 					name = name.split("\\.")[1];
 				try {
@@ -45,5 +45,8 @@ public class EnumType {
 	}
 	public static String toString(Enum<?> e){
 		return e.name().toLowerCase().replaceAll("_", " ");
+	}
+	public static String fromString(String str){
+		return str.toUpperCase().replaceAll("\\s+", "_");
 	}
 }
