@@ -129,7 +129,6 @@ public class GUIManager {
 		int index = ct.ordinal() + 1;
 		if (index > 6)
 			index -=2;
-		TuSKe.debug(ct, index, ct.ordinal());
-		return ct.ordinal();
+		return index;
 	}
 }
