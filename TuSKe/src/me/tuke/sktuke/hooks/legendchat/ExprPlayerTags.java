@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.legendchat;
 
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
 
@@ -12,7 +12,7 @@ import me.tuke.sktuke.TuSKe;
 
 public class ExprPlayerTags extends SimpleExpression<String>{
 
-	private Expression<Player> p;
+	private Expression<OfflinePlayer> p;
 	@Override
 	public Class<? extends String> getReturnType() {
 		return String.class;
@@ -26,7 +26,7 @@ public class ExprPlayerTags extends SimpleExpression<String>{
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
-		this.p = (Expression<Player>) arg[0];
+		this.p = (Expression<OfflinePlayer>) arg[0];
 		return true;
 	}
 

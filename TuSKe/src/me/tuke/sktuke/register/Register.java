@@ -10,6 +10,7 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
 import org.bukkit.event.*;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerItemDamageEvent;
@@ -73,11 +74,12 @@ public class Register{
 		long start = System.currentTimeMillis();
 		Skript.registerAddon(instance);
 		EnchantConfig.loadEnchants();
-		ArrayList<Boolean> boo = new ArrayList<>();
+		ArrayList<Boolean> boo = new ArrayList<>(); //an array to get the dependencies
 		List<String> depends = instance.getDescription().getSoftDepend();
 		for (int x = 1; x < depends.size(); x++){
 			if (x == 1 || x == 5){
 				boo.add(hasPlugin(depends.get(++x)) || hasPlugin(depends.get(x))); // SimpleClas and SimpleClansLegacy are the same plugin, just with different names (idk why).
+				//and it is
 			}else{
 				boo.add(hasPlugin(depends.get(x))); // Just to get the right 
 			}
@@ -515,8 +517,8 @@ public class Register{
 			newSimpleExpression(ExprLegendchatMessage.class, 0, "l[egend]c[hat] message");
 			newSimpleExpression(ExprTellMessage.class, 0, "tell message");
 			newSimpleExpression(ExprTellReceiver.class, 0, "[tell] receiver");
-			newPropertyExpression(ExprTagChat.class, 1, "[chat] tag %string%", "player");
-			newPropertyExpression(ExprPlayerTags.class, 1, "[chat] tags", "player");
+			newPropertyExpression(ExprTagChat.class, 1, "[chat] tag %string%", "offlineplayer");
+			newPropertyExpression(ExprPlayerTags.class, 1, "[chat] tags", "offlineplayer");
 			newPropertyExpression(ExprMuteLeftTime.class, 1, "mute (left|remaining) time", "player");
 			newPropertyExpression(ExprDefaultChannel.class, 1, "default channel", "player");
 			newPropertyExpression(ExprSpyState.class, 1, "spy state", "player");
@@ -549,7 +551,8 @@ public class Register{
 			newPropertyExpression(ExprLastDamageCause.class, 1, "last damage cause", "livingentity");
 			newPropertyExpression(ExprHorseStyle.class, 1, "horse style", "entity");
 			newPropertyExpression(ExprHorseColor.class, 1, "horse color", "entity");
-			newPropertyExpression(ExprHorseVariant.class, 1, "horse variant", "entity");
+			if (Skript.getMinecraftVersion().isSmallerThan(new Version(1, 11)))
+				newPropertyExpression(ExprHorseVariant.class, 1, "horse variant", "entity");
 			newPropertyExpression(ExprRabbitType.class, 1, "rabbit type", "entity");
 			newPropertyExpression(ExprCatType.class, 1, "(cat|ocelot) type", "entity");
 			newPropertyExpression(ExprRecipesOf.class, 1, "[all] recipes", "itemstack");
@@ -615,6 +618,7 @@ public class Register{
 			newSimpleExpression(ExprUUIDOfflinePlayer.class, 1, "offline player from [uuid] %string%");
 			newSimpleExpression(ExprParseRegexError.class, 1, "[last] regex [parser] error");
 			newPropertyExpression(ExprJukeboxRecord.class, 1, "[jukebox] record", "block");
+			newSimpleExpression(ExprDamageModifier.class, 1, "damage [modifier] %damagemodifier%");
 			
 			
 			
@@ -801,6 +805,8 @@ public class Register{
 			public String toVariableNameString(CEnchant ce) {
 				return "ce:" + ce.getEnchant().getId();
 			}}.register();
+		//1.7.1
+		new EnumType(DamageModifier.class, "damagemodifier", "damage ?modifier");
 	}
 
 	public <E extends Expression<T>, T> void newPropertyExpression(Class<E> c, int amount, String property, String from){

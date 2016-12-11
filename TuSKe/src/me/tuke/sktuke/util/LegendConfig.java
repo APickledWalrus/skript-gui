@@ -4,8 +4,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import me.tuke.sktuke.TuSKe;
 
@@ -17,7 +17,7 @@ public class LegendConfig {
 		file = new File(instance.getDataFolder(), "tags.yml");
 	}
 	
-	public Map<String, String> getPlayerTags(Player p){
+	public Map<String, String> getPlayerTags(OfflinePlayer p){
 		Map<String, String> map = new HashMap<String, String>();
 		if (file.exists()){
 			
@@ -32,7 +32,7 @@ public class LegendConfig {
 		return map;	
 		
 	}
-	public String getPlayerTag (Player p, String Tag){
+	public String getPlayerTag (OfflinePlayer p, String Tag){
 		if (file.exists()){
 			if (p != null && Tag != null){
 				if (hasOldData(p))
@@ -43,7 +43,7 @@ public class LegendConfig {
 		}
 		return null;
 	}
-	public void setPlayerTag(Player p, String Tag, String Value){
+	public void setPlayerTag(OfflinePlayer p, String Tag, String Value){
 		if (!getFile().exists())
 			createTagFile();
 		if (getTagFile() != null && p != null && Tag != null && Value != null){
@@ -62,7 +62,7 @@ public class LegendConfig {
 		}
 		return null;
 	}
-	public void clearTag(Player p, String Tag){
+	public void clearTag(OfflinePlayer p, String Tag){
 		if (getFile().exists()){
 			if (hasOldData(p))
 				convertToUUID(p);
@@ -80,15 +80,16 @@ public class LegendConfig {
 		return file;
 	}
 	
-	private boolean hasOldData(Player p){
+	private boolean hasOldData(OfflinePlayer p){
 		return getTagFile().getConfigurationSection(p.getName()) != null;
 	}
-	private void convertToUUID(Player p){
-		if (hasOldData(p))
+	private void convertToUUID(OfflinePlayer p){
+		if (hasOldData(p)){
 			for (String s : getTagFile().getConfigurationSection(p.getName()).getKeys(false)){
 				setPlayerTag(p, s, getTagFile().getString(p.getName() + "." + s));
-				getTagFile().set(p.getName(), null);
 			}
+			getTagFile().set(p.getName(), null);
+		}
 	}
 	
 	public void createTagFile(){

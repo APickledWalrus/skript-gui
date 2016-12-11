@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.legendchat;
 
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Event;
 
 import javax.annotation.Nullable;
@@ -16,7 +16,7 @@ import me.tuke.sktuke.TuSKe;
 
 public class ExprTagChat extends SimpleExpression<String>{
 
-	private Expression<Player> p;
+	private Expression<OfflinePlayer> p;
 	private Expression<String> tag;
 	@Override
 	public Class<? extends String> getReturnType() {
@@ -32,11 +32,11 @@ public class ExprTagChat extends SimpleExpression<String>{
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
 		if (arg1 == 0){
-			this.p = (Expression<Player>) arg[1];
-			this.tag = (Expression<String>) arg[0];
+			p = (Expression<OfflinePlayer>) arg[1];
+			tag = (Expression<String>) arg[0];
 		} else {
-			this.p = (Expression<Player>) arg[0];
-			this.tag = (Expression<String>) arg[1];
+			p = (Expression<OfflinePlayer>) arg[0];
+			tag = (Expression<String>) arg[1];
 		}
 		return true;
 	}
@@ -49,12 +49,16 @@ public class ExprTagChat extends SimpleExpression<String>{
 	@Override
 	@Nullable
 	protected String[] get(Event e) {
-		return new String[] {TuSKe.getLegendConfig().getPlayerTag(this.p.getSingle(e), this.tag.getSingle(e))};
+		if (p.getSingle(e) == null || tag.getSingle(e) == null)
+			return new String[0];
+		return new String[] {TuSKe.getLegendConfig().getPlayerTag(p.getSingle(e), tag.getSingle(e))};
 	}
 
 	public void change(Event e, Object[] delta, ChangeMode mode){
-		Player p = this.p.getSingle(e);
-		String s = this.tag.getSingle(e);
+		OfflinePlayer p = this.p.getSingle(e);
+		String s = tag.getSingle(e);
+		if (p == null)
+			return;
 		if (mode == ChangeMode.SET){
 			if ((String) delta[0] != null)
 				TuSKe.getLegendConfig().setPlayerTag(p, s, (String) delta[0]);

@@ -39,9 +39,9 @@ public class TuSKe extends JavaPlugin {
 		if (reg.hasPlugin("Skript")){
 			loadConfig();
 			gui = new GUIManager();
-			Integer[] result = reg.load();
+			Integer[] result = reg.load();//array of amount of registered things
 			if (result == null)
-				return;
+				return;//in case it started while skript is already loaded.
 			updater = new GitHubUpdater(this, this.getFile(), "https://github.com/Tuke-Nuke/TuSKe/releases");
 			recipes = new RecipeManager();
 			if (getConfig().getBoolean("use_metrics"))
