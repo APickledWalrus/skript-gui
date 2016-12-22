@@ -2,6 +2,7 @@ package me.tuke.sktuke;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,7 +16,11 @@ public class SimpleConfig{
 		pl = plugin;
 		File f = new File(plugin.getDataFolder(), "config.yml");
 		if (!f.exists()){
-			f.mkdirs();
+			try {
+				f.createNewFile();
+			} catch (IOException e) {
+				TuSKe.log("Couldn't create a config file. " + e.getMessage(), Level.SEVERE);
+			}
 		}
 	}
 	public void loadDefault(){

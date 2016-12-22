@@ -128,4 +128,7 @@ public class RecipeManager implements Listener{
 		return items;
 		
 	}
+	public void clearRecipes(){
+		recipes = new HashSet<>();
+	}
 }

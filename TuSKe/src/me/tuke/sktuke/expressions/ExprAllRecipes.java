@@ -9,16 +9,19 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 
+import ch.njol.skript.classes.Changer;
+import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
+import ch.njol.util.coll.CollectionUtils;
+import me.tuke.sktuke.TuSKe;
 
 public class ExprAllRecipes extends SimpleExpression<Recipe>{
 
 	@Override
 	public Class<? extends Recipe> getReturnType() {
-		// TODO Auto-generated method stub
 		return Recipe.class;
 	}
 
@@ -42,6 +45,23 @@ public class ExprAllRecipes extends SimpleExpression<Recipe>{
 	protected Recipe[] get(Event arg0) {
 		List<Recipe> rec = Lists.newArrayList(Bukkit.recipeIterator());
 		return rec.toArray(new Recipe[rec.size()]);
+	}
+	@Override
+	public void change(Event e, Object[] delta, Changer.ChangeMode mode){
+		switch (mode){
+		case DELETE: Bukkit.clearRecipes(); break;
+		case RESET: Bukkit.resetRecipes(); break;
+		default: break;
+		}
+		TuSKe.getRecipeManager().clearRecipes();
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public Class<?>[] acceptChange(final Changer.ChangeMode mode) {
+		if (mode == ChangeMode.DELETE || mode == ChangeMode.RESET)
+			return CollectionUtils.array(Object.class);
+		return null;
+		
 	}
 
 }

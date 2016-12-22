@@ -130,15 +130,16 @@ public class Register{
 
 		newEvent(EvtAnvilCombine.class, AnvilCombineEvent.class, 1, "Anvil conbine", "anvil [item] (combine|merge)");
 		newEvent(EvtAnvilRename.class, AnvilRenameEvent.class, 1, "Anvil rename", "anvil [item] rename");
-		newEvent(EvtItemDamage.class, PlayerItemDamageEvent.class, 1, "Item damage", "[player] item damage");
 		newEvent(EvtInventoryMove.class, InventoryMoveEvent.class, 1, "Inventory move", "inventory move");
 		newEvent(EvtInventoryDrag.class, InventoryDragEvent.class, 1, "Inventory drag", "inventory drag");
 		newEvent(SimpleEvent.class, GUIActionEvent.class, 1, "GUI click", "gui (action|click)");
 		//Skript.registerEvent("Player starts move", EvtPlayerStartsMove.class, PlayerStartsMoveEvent.class, "player start[s] (mov(e|ing)|walk[ing])");
 		//Skript.registerEvent("Player stops move", EvtPlayerStopsMove.class, PlayerStopsMoveEvent.class, "player stop[s] (mov(e|ing)|walk[ing])");
-		if (Skript.classExists("org.bukkit.event.entity.SpawnerSpawnEvent")){
+		if (Skript.classExists("org.bukkit.event.entity.SpawnerSpawnEvent"))
 			newEvent(EvtSpawnerSpawn.class, SpawnerSpawnEvent.class, 1, "Spawner spawn", "spawner spawn");
-		}
+		if (Skript.classExists("org.bukkit.event.player.PlayerItemDamageEvent"))
+			newEvent(EvtItemDamage.class, PlayerItemDamageEvent.class, 1, "Item damage", "[player] item damage");
+		
 	}
 	public void registerEventValues(Boolean... boo){
 		if (boo[0]){
@@ -353,20 +354,22 @@ public class Register{
 						return event.getPlayer();
 					}
 				}, 0);
-		EventValues.registerEventValue(PlayerItemDamageEvent.class, Player.class,
-				new Getter<Player, PlayerItemDamageEvent>() {
-					@Override
-					public Player get(PlayerItemDamageEvent event) {
-						return event.getPlayer();
-					}
-				}, 0);
-		EventValues.registerEventValue(PlayerItemDamageEvent.class, ItemStack.class,
-				new Getter<ItemStack, PlayerItemDamageEvent>() {
-					@Override
-					public ItemStack get(PlayerItemDamageEvent event) {
-						return event.getItem();
-					}
-				}, 0);
+		if (Skript.classExists("org.bukkit.event.player.PlayerItemDamageEvent")){
+			EventValues.registerEventValue(PlayerItemDamageEvent.class, Player.class,
+					new Getter<Player, PlayerItemDamageEvent>() {
+						@Override
+						public Player get(PlayerItemDamageEvent event) {
+							return event.getPlayer();
+						}
+					}, 0);
+			EventValues.registerEventValue(PlayerItemDamageEvent.class, ItemStack.class,
+					new Getter<ItemStack, PlayerItemDamageEvent>() {
+						@Override
+						public ItemStack get(PlayerItemDamageEvent event) {
+							return event.getItem();
+						}
+					}, 0);
+		}
 		EventValues.registerEventValue(PlayerStartsMoveEvent.class, Player.class,
 				new Getter<Player, PlayerStartsMoveEvent>() {
 					@Override
@@ -577,7 +580,8 @@ public class Register{
 			newPropertyExpression(ExprLoreName.class, 1, "[lore] name", "customenchantment");
 			newPropertyExpression(ExprLeatherColor.class, 1, "[leather] (0¦red|1¦green|2¦blue) colo[u]r", "-itemstacks/colors");
 			newSimpleExpression(ExprEnabled.class, 1, "enabled for %customenchantment%");
-			newSimpleExpression(ExprItemDamage.class, 0, "item damage");
+			if (Skript.classExists("org.bukkit.event.player.PlayerItemDamageEvent"))
+				newSimpleExpression(ExprItemDamage.class, 0, "item damage");
 			newSimpleExpression(ExprAcceptedItems.class, 1, "accepted items for %customenchantment%");
 			newSimpleExpression(ExprCEConflicts.class, 1, "conflicts for %customenchantment%");
 			//1.5.4

@@ -1,5 +1,6 @@
 package me.tuke.sktuke;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
@@ -248,9 +249,11 @@ public class TuSKe extends JavaPlugin {
 	}
 	
 	private void loadConfig(){
+		
 		SimpleConfig sc = new SimpleConfig(this);
-		sc.loadDefault();;
-		sc.save();		
+		sc.loadDefault();
+		if (new File(this.getDataFolder(), "config.yml").exists())
+			sc.save();		
 	}
 	private void sendDownloadRaw(CommandSender s){
 		if (s instanceof Player)
