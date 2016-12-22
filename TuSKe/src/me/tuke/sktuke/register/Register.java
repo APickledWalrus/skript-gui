@@ -622,7 +622,7 @@ public class Register{
 			newSimpleExpression(ExprUUIDOfflinePlayer.class, 1, "offline player from [uuid] %string%");
 			newSimpleExpression(ExprParseRegexError.class, 1, "[last] regex [parser] error");
 			newPropertyExpression(ExprJukeboxRecord.class, 1, "[jukebox] record", "block");
-			newSimpleExpression(ExprDamageModifier.class, 1, "damage [modifier] %damagemodifier%");
+			newSimpleExpression(ExprDamageModifier.class, 1, "damage [modifier] %damagemodifier%");//new for 1.7
 			
 			
 			
