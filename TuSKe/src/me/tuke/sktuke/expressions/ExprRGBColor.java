@@ -29,16 +29,15 @@ public class ExprRGBColor extends SimpleExpression<Integer>{
 		return false;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
-		i = arg[0].getConvertedExpression(new Class[] {Object.class});
+		i = arg[0];
 		return true;
 	}
 
 	@Override
 	public String toString(@Nullable Event arg0, boolean arg1) {
-		return "the RGB color of the " + ((this.i instanceof ItemStack) ? "item stack" : "color");
+		return "the RGB color of the " + i.toString(arg0, arg1);
 	}
 
 	@Override
@@ -67,7 +66,7 @@ public class ExprRGBColor extends SimpleExpression<Integer>{
 		return null;
 	}
 	public void change(Event e, Object[] delta, Changer.ChangeMode mode){
-		if (this.i.getArray(e).length > 0 && delta != null && delta.length >= 3 && this.i.getAll(e)[0] instanceof ItemStack){
+		if (this.i.getArray(e).length > 0 && delta != null && delta.length == 3 && this.i.getAll(e)[0] instanceof ItemStack){
 			for (ItemStack it : ((ItemStack[])this.i.getArray(e))){
 				if (it != null){
 					ItemMeta im = it.getItemMeta();

@@ -1,12 +1,14 @@
 package me.tuke.sktuke.recipe;
 
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.FurnaceRecipe;
@@ -20,115 +22,127 @@ import me.tuke.sktuke.TuSKe;
 public class RecipeManager implements Listener{
 
 	private HashSet<Recipe> recipes = new HashSet<>();
+	public boolean equals = true; //Every time it checks the items, it will set it to true if the items are the same but have different item meta 
 	
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPrepare(PrepareItemCraftEvent e){
-		Recipe rec = getIfContainsCustomRecipe(e.getRecipe());
+		Recipe rec = getIfContainsCustomRecipe(e.getRecipe().getResult(), e.getInventory().getMatrix());
 		if (rec != null){
-			if (!areArrayItemsEqual(getItems(rec), e.getInventory().getMatrix(), true)){
-				e.getInventory().setResult(new ItemStack(Material.AIR));
+			if (!equals){
+				equals = true;
+				e.getInventory().setResult(new ItemStack(Material.AIR)); //workaround to cancel the event				
 			}
 		}
 	}
 	public void registerRecipe(Recipe rec){
 		if (rec instanceof CustomShapedRecipe || rec instanceof CustomShapelessRecipe || rec instanceof CustomFurnaceRecipe){
-			if (getIfContainsCustomRecipe(rec) != null)
+			if (getIfContainsCustomRecipe(rec.getResult(), getIngredients(rec)) != null || !Bukkit.addRecipe(rec))
 				return;
-			if (getItems(rec) != null){
-				recipes.add(rec);
-				if (recipes.size() == 1)
-					Bukkit.getPluginManager().registerEvents(this, TuSKe.getInstance());
-			}
+			recipes.add(rec);
+			if (recipes.size() == 1)
+				Bukkit.getPluginManager().registerEvents(this, TuSKe.getInstance());
 		}
-		Bukkit.addRecipe(rec);
 	}
 	
-	public Recipe getIfContainsCustomRecipe(Recipe rec){
+	public Recipe getIfContainsCustomRecipe(ItemStack result, ItemStack[] items){
 		for (Recipe recipe : recipes)
-			if (areEqual(recipe, rec))
+			if (result.equals(recipe.getResult()) && equalsRecipe(recipe, items))
 				return recipe;
 		return null;
 	}
-	public boolean areEqual(Recipe recipe1, Recipe recipe2){
-		return recipe1.getResult().isSimilar(recipe2.getResult()) &&  areArrayItemsEqual(getItems(recipe1), getItems(recipe2), false);
-	}
-	
-	public boolean areArrayItemsEqual(ItemStack[] item1, ItemStack[] item2, boolean sameItemMeta){
-		return compareArrayItems(item1, item2, sameItemMeta) != null;
-		
-		
-	}
-	public boolean arrayItemsContains(ItemStack[] item1, ItemStack[] item2){
-		return Arrays.asList(item2).containsAll(Arrays.asList(item1));
-	}
-	public boolean arrayItemsContains2(ItemStack[] item1, ItemStack[] item2){
-		int count = 0;
-		for (int x = 0; x < item1.length; x++)
-			for (int y = 0; y <item2.length; y++)
-				if (item1[x] != null && item2[y] != null && item1[x].isSimilar(item2[y]))
-					if (++count == item1.length)
-						return true;
+	public boolean equalsRecipe(Recipe rec, ItemStack[] items){
+		equals = true;
+		if (rec == null || items == null || items.length == 0)
+			return false;
+		if (rec instanceof ShapedRecipe){
+			ShapedRecipe sr = (ShapedRecipe) rec;
+			Map<Character, ItemStack> map = sr.getIngredientMap();
+			boolean found = false;
+			int first = 3-  sr.getShape()[0].length(); 
+			if (items.length < 9)
+				first-=1;//simple fix in case the crafting is player's crafting inventory
+			char ch = 'a';
+			for(int x = 0; x < items.length; x++){
+				Character c = Character.valueOf(ch);
+				if (map.containsKey(c)){
+					if (areEqual(map.get(c), items[x])){
+						ch++;
+						found = true;
+						if ((x + 1)/3 > x/3 ){ // it will check if the pointer reached at the end of line
+							x += first; //it moves the pointer to the next line and to the right columm
+						}
+					} else if (found){
+						return false;
+					}
+				} else {
+					break;//reached at end of check and found all items from recipe.
+				}
+			}
+			return true;
+		} else if (rec instanceof ShapelessRecipe){
+			int itemsFound = 0;
+			List<ItemStack> ingredients = ((ShapelessRecipe)rec).getIngredientList();
+			label1: for (ItemStack item1 : ingredients)
+				for (ItemStack item2 : items)
+					if (!isAir(item1) && !isAir(item2))
+						if (areEqual(item1, item2)){
+							itemsFound++;
+							break label1;
+						}
+			return itemsFound == ingredients.size();
+		}
 		return false;
 	}
-	public ItemStack[] compareArrayItems(ItemStack[] item1, ItemStack[] item2, boolean sameItemMeta){
-		//TuSKe.debug(item1, item2);
-		//if (item1.length != item2.length && item1.length + item2.length < 18)
-		//	return null;
-		if (!sameItemMeta)
-			for (int x = 0; x < item1.length; x++){
-				if (item1[x] == null)
-					item1[x] = new ItemStack(Material.AIR);
-				if (item2[x] == null)
-					item2[x] = new ItemStack(Material.AIR);
-				if (/*i1 != null && */item1[x].getDurability() == 32767)
-					item1[x].setDurability((short)0);				
-				if (/*i1 != null && i2 != null && */item1[x].getType() != item2[x].getType() && item1[x].getAmount() > item2[x].getAmount() && item1[x].getDurability() != item2[x].getDurability())
-					return null;
-				/*else if (i1 == null && i2 != null && i2.getType() == Material.AIR)
-					continue;
-				else if (i1 == null ^ i2 == null)
-					return null;*/
-			}
-		else 
-			for (int x = 0; x < item1.length; x++){
-				if (item1[x] == null)
-					item1[x] = new ItemStack(Material.AIR);
-				if (item2[x] == null)
-					item2[x] = new ItemStack(Material.AIR);
-				if (/*i1 != null && */item1[x].getDurability() == 32767)
-					item1[x].setDurability((short)0);
-				if (/*i1 != null && i2 != null &&*/ !item1[x].isSimilar(item2[x]))
-					return null;
-				/*else if (i1 == null && i2 != null && i2.getType() == Material.AIR)
-					continue;
-				else if (i1 == null ^ i2 == null)
-					return null;*/
-			}
-		return item1;
+	public boolean isAir(ItemStack item){
+		return item == null || item.getType().equals(Material.AIR);
+	}
+	public boolean areEqual(ItemStack item1, ItemStack item2){
+		//some recipes and items uses null as air item.
+		if (item1 == null)
+			item1 = new ItemStack(Material.AIR);
+		if (item2 == null)
+			item2 = new ItemStack(Material.AIR);//                                                      the item recipe can be equal or less the amount on crafting slot
+		if (item1.getType().equals(item2.getType()) && item1.getDurability() == item2.getDurability() && item1.getAmount() <= item2.getAmount()){
+			if (equals && !item1.isSimilar(item2))
+				equals = false;
+			return true;
+		
+		}
+		return false;
+		
 		
 	}
-	public ItemStack[] getItems(Recipe rec){
+	public ItemStack[] getIngredients(Recipe rec){
 		if (rec instanceof CustomShapedRecipe)
 			return ((CustomShapedRecipe) rec).getIngredients();
 		else if (rec instanceof CustomShapelessRecipe)
 			return ((CustomShapelessRecipe) rec).getIngredients();
 		else if (rec instanceof CustomFurnaceRecipe)
 			return new ItemStack[]{((CustomFurnaceRecipe) rec).getSource()};
-		else if (rec instanceof ShapedRecipe)
-			return ((ShapedRecipe) rec).getIngredientMap().values().toArray(new ItemStack[((ShapedRecipe) rec).getIngredientMap().size()]);
-		else if (rec instanceof ShapelessRecipe)
-			return ((ShapelessRecipe) rec).getIngredientList().toArray(new ItemStack[((ShapelessRecipe) rec).getIngredientList().size()]);
-		else
+		else if (rec instanceof ShapedRecipe){
+			Map<Character, ItemStack> map = ((ShapedRecipe) rec).getIngredientMap();
+			return map.values().toArray(new ItemStack[map.size()]);
+		}else if (rec instanceof ShapelessRecipe){
+			List<ItemStack> items = ((ShapelessRecipe) rec).getIngredientList();
+			return items.toArray(new ItemStack[items.size()]);
+		}else
 			return new ItemStack[]{((FurnaceRecipe)rec).getInput()};
 	}
-	public ItemStack[] replaceNullIfContains(ItemStack[] items){
-		for (int x = 0; x < items.length; x++)
+	public ItemStack[] fixIngredients(ItemStack[] items){
+		for (int x = 0; x < items.length; x++){
 			if (items[x] == null)
 				items[x] = new ItemStack(Material.AIR);
+			else if (items[x].getDurability() == (short) 32767){
+				items[x].setDurability((short)0);
+			}
+			if (items[x].getAmount() <= 0)
+				items[x].setAmount(1);
+		}
 		return items;
 		
 	}
 	public void clearRecipes(){
-		recipes = new HashSet<>();
+		HandlerList.unregisterAll(this);
+		recipes.clear();
 	}
 }

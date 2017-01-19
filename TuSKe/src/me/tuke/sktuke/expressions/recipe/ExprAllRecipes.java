@@ -1,4 +1,4 @@
-package me.tuke.sktuke.expressions;
+package me.tuke.sktuke.expressions.recipe;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class ExprAllRecipes extends SimpleExpression<Recipe>{
 
 	@Override
 	public boolean isSingle() {
-		return true;
+		return false;
 	}
 
 	@Override

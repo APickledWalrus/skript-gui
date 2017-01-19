@@ -68,6 +68,7 @@ public class TuSKe extends JavaPlugin {
 	public void onDisable() {
 		gui.clearAll();
 		HandlerList.unregisterAll(this);
+		Bukkit.getScheduler().cancelTasks(this);
 		if(getConfig().getBoolean("updater.check_for_new_update") && getConfig().getBoolean("updater.auto_update") && updater.hasDownloadReady(true)){
 			updater.updatePlugin();
 		}

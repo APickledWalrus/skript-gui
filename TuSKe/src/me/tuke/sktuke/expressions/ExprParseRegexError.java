@@ -3,6 +3,7 @@ package me.tuke.sktuke.expressions;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
 
+import ch.njol.skript.doc.Examples;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;

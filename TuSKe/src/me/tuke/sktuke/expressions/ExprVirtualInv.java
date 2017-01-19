@@ -56,7 +56,6 @@ public class ExprVirtualInv extends SimpleExpression<Inventory>{
 	
 	public Inventory getInventory(InventoryType type, int size, String name){
 		switch (type){
-		//case ANVIL:
 		case BEACON:
 		case MERCHANT:
 		case CRAFTING:
@@ -66,34 +65,5 @@ public class ExprVirtualInv extends SimpleExpression<Inventory>{
 		default: return Bukkit.getServer().createInventory(null, type, name);
 		}
 	}
-	/*public static void openAnvil(Player player){
-
-        //Get our EntityPlayer
-        EntityPlayer p = ((CraftPlayer) player).getHandle();
-
-        //Create the AnvilContainer
-        AnvilContainer container = new AnvilContainer(p);
-
-        //Set the items to the items from the inventory given
-        //container.getBukkitView().getTopInventory().setItem(0, inventory.getItem(0));
-        //container.getBukkitView().getTopInventory().setItem(1, inventory.getItem(1));
-        //container.getBukkitView().getTopInventory().setItem(2, inventory.getItem(2));
-
-        //Counter stuff that the game uses to keep track of inventories
-        int c = p.nextContainerCounter();
-
-        //Send the packet
-        p.playerConnection.sendPacket(new PacketPlayOutOpenWindow(c, 8, "Repairing", 9, true));
-
-        //Set their active container to the container
-        p.activeContainer = container;
-
-        //Set their active container window id to that counter stuff
-        p.activeContainer.windowId = c;
-
-        //Add the slot listener
-        p.activeContainer.addSlotListener(p);
-
-    }*/
 
 }

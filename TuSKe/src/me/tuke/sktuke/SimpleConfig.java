@@ -61,8 +61,19 @@ public class SimpleConfig{
 			"#This option will be for future things of TuSKe.",
 			"#It will just show some debug messages if needed.",
 			"#So far, it doesn't do nothing, only prevent some testing debug messages",
-			"#that can be inside the code.");
-		//replace the old config with the new one.
+			"#that can be accidentaly forgot inside the code.");
+		setDefault("use_only_enum_names", false, 
+			"#This is only needed in case of conflict with Skript or another addon",
+			"#It will make some types, that is registered by TuSKe and if the type is a Enum,",
+			"#to accept the form as '<Enum type>.<Enum name>'",
+			"#For example, TuSKe register the type 'InventoryType' for the expression to create inventories",
+			"#So, in case the value 'chest' is conflicting with something else, just enable it and",
+			"#it will only accept if used like 'InventoryType.CHEST'",
+			"#Example:",
+			"#\topen virtual InventoryType.CHEST inventory with size 1 named \"Hi\" to player",
+			"#Don't need to worry about it, is just in case.");
+		
+		//replace the config with the old values.
 		String str = "use-metrics";
 		if (pl.getConfig().isBoolean(str)){
 			pl.getConfig().set(str.replaceAll("\\-", "_"), pl.getConfig().getBoolean(str));
@@ -78,7 +89,6 @@ public class SimpleConfig{
 	}
 	private boolean setDefault(String path, Object value, String... comments){
 		if (!map.containsKey(path) ){
-			TuSKe.debug(path, comments != null, comments.length);
 			if (comments.length > 0)
 				addComentsAbove(path, comments);
 			if (!pl.getConfig().isSet(path)){
@@ -126,13 +136,7 @@ public class SimpleConfig{
 		}
 		return toFile;
 	}
-	private String keyToRegex(String key){
-		/*if (key.contains(".")){
-			String[] array = key.split("\\.");
-			return array[0] + ":(.+)" + array[array.length -1] + ":";
-		}
-		return key.replaceAll("\\.", ":(.+)") + ":";*/
-		
-		return key.replaceAll("^((\\w+(\\s+|\\-)?)+)(\\.(.+\\.)?)((\\w+(\\s+|\\-)?)+)$", "($1:)(.+)($6:)");
+	private String keyToRegex(String key){		
+		return key.replaceAll("^((\\w+(\\s+|\\-)?)+)(\\.(.+\\.)?)((\\w+(\\s+|\\-)?)+)$", "($1:)(.+)($6:)"); //TODO fix that regex pattern
 	}
 }

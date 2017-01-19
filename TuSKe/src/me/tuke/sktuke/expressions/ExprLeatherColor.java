@@ -32,7 +32,7 @@ public class ExprLeatherColor extends SimpleExpression<Integer>{
 
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
-		this.i = arg[0];
+		i = arg[0];
 		this.rgb = arg3.mark;
 		return true;
 	}

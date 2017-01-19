@@ -1,38 +1,39 @@
 package me.tuke.sktuke.recipe;
 
-import org.bukkit.Material;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 
 public class CustomShapedRecipe extends ShapedRecipe{
 	
-	private ItemStack[] items = null;
+	private Map<Character, ItemStack> map = new HashMap<>();
 	
 	public CustomShapedRecipe(ItemStack r, ItemStack[] items, String...shapes){
 		super(r);
-		shape(shapes); //TODO Check if not null when registering the items below \/
-		
-		char c = 'a';
-		for (int x = 0; x < items.length; x++){
-			if (items[x].getType() != Material.AIR)
-				this.
-				setIngredient(c, items[x].getData());
-			if (items[x] != null && items[x].isSimilar(new ItemStack(items[x].getType(), items[x].getAmount(), items[x].getDurability())))
-				items[x] = null;
-			c++;
+		for (int x = 0; x < shapes.length; x++){
+			shapes[x] = shapes[x].toLowerCase();
+			if (!shapes[x].matches("[a-i\\s]{1,3}"))
+				return;			
 		}
-		this.items = items;
+		shape(shapes);		
+		char c = 'a';
+		for (String shape : shapes)
+			for (int x = 0;x < shape.length(); x++){
+				int index = shape.charAt(x) - 97;
+				if (index < items.length){
+					map.put(Character.valueOf(c), items[index]);
+					setIngredient(c, items[x].getData());
+				}
+				c++;
+			}
 	}
-	public ItemStack[] getCustomIngredients(){
-		return items;
+	@Override
+	public Map<Character, ItemStack> getIngredientMap(){
+		return map;
 	}
-	
 	public ItemStack[] getIngredients(){
-		ItemStack[] item1 = items.clone();
-		ItemStack[] item2 = this.getIngredientMap().values().toArray(new ItemStack[this.getIngredientMap().size()]);
-		for (int x = 0; x < item1.length; x++)
-			if (item1[x] == null)
-				item1[x] = item2[x];
-		return item1;
+		return map.values().toArray(new ItemStack[map.size()]);
 	}
 }

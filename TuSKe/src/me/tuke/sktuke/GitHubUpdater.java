@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 	/** 
 	 * This is a Auto Updater that use GitHub to get the informations.<br>
@@ -112,6 +111,14 @@ public class GitHubUpdater {
 		}
 	}
 	/**
+	 * Get the url where to check for update. In this case, if the option 'updater.download_pre_releases' from config is false,
+	 * it will concat with "/latest" to only get stable versions
+	 * @return The URL
+	 */
+	public String getURL(){
+		return URL + (PLUGIN.getConfig().getBoolean("updater.download_pre_releases") ? "/latest" : "");
+	}
+	/**
 	 * It returns the title of the update, it is from GitHub and it can be something like
 	 * "New things and fixed other things", "Added this and that", for example
 	 * @return The title of update
@@ -121,7 +128,7 @@ public class GitHubUpdater {
 		return UPDATE_TITLE;
 	}
 	/**
-	 * Get the latest version from SkUnity.
+	 * Get the latest version.
 	 * @return The latest version
 	 */
 	public String getLatestVersion(){

@@ -40,6 +40,10 @@ import me.tuke.sktuke.events.*;
 import me.tuke.sktuke.events.customevent.*;
 import me.tuke.sktuke.expressions.*;
 import me.tuke.sktuke.expressions.customenchantments.*;
+import me.tuke.sktuke.expressions.recipe.ExprAllRecipes;
+import me.tuke.sktuke.expressions.recipe.ExprItemsOfRecipe;
+import me.tuke.sktuke.expressions.recipe.ExprRecipesOf;
+import me.tuke.sktuke.expressions.recipe.ExprResultOfRecipe;
 import me.tuke.sktuke.gui.*;
 import me.tuke.sktuke.hooks.landlord.*;
 import me.tuke.sktuke.hooks.legendchat.*;
@@ -333,6 +337,13 @@ public class Register{
 						return event.getPlayer();
 					}
 				}, 0);
+		EventValues.registerEventValue(AnvilRenameEvent.class, Inventory.class,
+				new Getter<Inventory, AnvilRenameEvent>() {
+					@Override
+					public Inventory get(AnvilRenameEvent event) {
+						return event.getInventory();
+					}
+				}, 0);
 		EventValues.registerEventValue(AnvilRenameEvent.class, ItemStack.class,
 				new Getter<ItemStack, AnvilRenameEvent>() {
 					@Override
@@ -344,7 +355,9 @@ public class Register{
 				new Getter<String, AnvilRenameEvent>() {
 					@Override
 					public String get(AnvilRenameEvent event) {
-						return event.getInventory().getItem(2).getItemMeta().getDisplayName();
+						if (event.getInventory().getItem(2) != null && event.getInventory().getItem(2).hasItemMeta())
+							return event.getInventory().getItem(2).getItemMeta().getDisplayName();
+						return null;
 					}
 				}, 0);
 		EventValues.registerEventValue(AnvilRenameEvent.class, Player.class,
@@ -369,7 +382,7 @@ public class Register{
 							return event.getItem();
 						}
 					}, 0);
-		}
+		}/*
 		EventValues.registerEventValue(PlayerStartsMoveEvent.class, Player.class,
 				new Getter<Player, PlayerStartsMoveEvent>() {
 					@Override
@@ -397,7 +410,7 @@ public class Register{
 					public Player get(PlayerStopsMoveEvent event) {
 						return event.getPlayer();
 					}
-				}, 0);
+				}, 0);*/
 
 		if (Skript.classExists("org.bukkit.event.entity.SpawnerSpawnEvent")){
 			EventValues.registerEventValue(SpawnerSpawnEvent.class, Block.class,
@@ -544,90 +557,87 @@ public class Register{
 			newSimpleExpression(ExprLandClaimAt.class, 1, "land[lord] claim at %location/chunk%");
 		}
 		//General stuffs
-		if (TuSKe.hasSupport()){
+		if (TuSKe.hasSupport())
 			newPropertyExpression(ExprOfflineData.class, 1, "player data", "offlineplayer");
-			newPropertyExpression(ExprExpOf.class, 1, "[total] [e]xp", "player");
-			newPropertyExpression(ExprLastLogin.class, 1, "last login", "player");
-			newPropertyExpression(ExprFirstLogin.class, 1, "first login", "player");
-			newPropertyExpression(ExprOnlineTime.class, 1,"online time", "player");
-			newPropertyExpression(ExprLastDamage.class, 1, "last damage", "livingentity");
-			newPropertyExpression(ExprLastDamageCause.class, 1, "last damage cause", "livingentity");
-			newPropertyExpression(ExprHorseStyle.class, 1, "horse style", "entity");
-			newPropertyExpression(ExprHorseColor.class, 1, "horse color", "entity");
-			if (Skript.getMinecraftVersion().isSmallerThan(new Version(1, 11)))
-				newPropertyExpression(ExprHorseVariant.class, 1, "horse variant", "entity");
-			newPropertyExpression(ExprRabbitType.class, 1, "rabbit type", "entity");
-			newPropertyExpression(ExprCatType.class, 1, "(cat|ocelot) type", "entity");
-			newPropertyExpression(ExprRecipesOf.class, 1, "[all] recipes", "itemstack");
-			newPropertyExpression(ExprItemsOfRecipe.class, 1, "[all] ingredients", "recipe");
-			newPropertyExpression(ExprResultOfRecipe.class, 1, "result item", "itemstacks/recipe");
-			newSimpleExpression(ExprAlphabetOrder.class, 1, "alphabetical order of %objects%");
-			newSimpleExpression(ExprHighiestBlock.class, 1, "highest block at %location%");
-			newSimpleExpression(ExprAnvilItem.class, 0, "[event-]item-(one|two|result|three)");
-			newSimpleExpression(ExprInventoryMoveInv.class, 0, "[event-]inventory-(one|two)");
-			newSimpleExpression(ExprInventoryMoveSlot.class, 0, "[event-]slot-(one|two)");
-			newSimpleExpression(ExprDropsOfBlock.class, 1, "drops of %block% [(with|using) %-itemstack%]", "%block%'[s] drops [(with|using) %-itemstack%]");
-			newSimpleExpression(ExprListPaged.class, 1, "page %number% of %objects% with %number% lines");
-			//1.1
-			newPropertyExpression(ExprMaxDurability.class, 1, "max durability", "itemstack");
-			//1.5
-			newPropertyExpression(ExprAllCustomEnchants.class, 1, "[all] custom enchantments", "itemstack");
-			newSimpleExpression(ExprLevelOfCustomEnchant.class, 1, "level of [custom enchantment] %customenchantment% of %itemstack%");
-			newSimpleExpression(ExprItemCustomEnchant.class, 1, "%itemstack% with custom enchantment[s] %customenchantments%");
-			//1.5.3
-			newPropertyExpression(ExprMaxLevel.class, 1, "max level", "customenchantment");
-			newPropertyExpression(ExprRarity.class, 1, "rarity", "customenchantment");
-			newPropertyExpression(ExprLoreName.class, 1, "[lore] name", "customenchantment");
-			newPropertyExpression(ExprLeatherColor.class, 1, "[leather] (0¦red|1¦green|2¦blue) colo[u]r", "-itemstacks/colors");
-			newSimpleExpression(ExprEnabled.class, 1, "enabled for %customenchantment%");
-			if (Skript.classExists("org.bukkit.event.player.PlayerItemDamageEvent"))
-				newSimpleExpression(ExprItemDamage.class, 0, "item damage");
-			newSimpleExpression(ExprAcceptedItems.class, 1, "accepted items for %customenchantment%");
-			newSimpleExpression(ExprCEConflicts.class, 1, "conflicts for %customenchantment%");
-			//1.5.4
-			newPropertyExpression(ExprRGBColor.class, 1, "R[ed, ]G[reen and ]B[blue] [colo[u]r[s]]", "-itemstacks/colors");
-			//1.5.7
-			newSimpleExpression(ExprServerOnlineTime.class, 1, "[the] online time of server", "server'[s] online time");
-			//1.5.9
-			newPropertyExpression(ExprLanguage.class, 1, "(locale|language)", "player");
-			newPropertyExpression(ExprLocalNameOf.class, 1, "[json] client id" , "object");
-			newSimpleExpression(ExprInventoryMoveInv.class, 0, "[event-]inventory-(one|two)");
-			newSimpleExpression(ExprInventoryMoveSlot.class, 0, "[event-]slot-(one|two)");
-			newSimpleExpression(ExprEvaluateFunction.class, 1, "result of function %string% [with %-objects%[, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%]]");
-			// 1.6.6
-			newSimpleExpression(ExprDraggedSlots.class, 0, "[event-]dragged(-| )slots");
-			newSimpleExpression(ExprDraggedItem.class, 0, "[event-][old(-| )]dragged(-| )item");
-			newSimpleExpression(ExprDroppedExp.class, 1, "[the] dropped [e]xp[erience] [orb[s]]");
-			//1.6.8
-			newSimpleExpression(ExprSplitCharacter.class, 1, "split %string% (with|by|using) %number% [char[aracter][s]]", "%string% [split] (with|by|using) %number% [char[aracter][s]]");
-			newPropertyExpression(ExprLastColor.class, 1, "last color", "string");
-			newSimpleExpression(ExprAllRecipes.class, 1, "[all] [registred] recipes");
-			//1.6.9
-			newSimpleExpression(ExprVirtualInv.class, 1, "virtual %inventorytype% inventory [with size %-number%] [(named|with (name|title)) %-string%]");
-			newSimpleExpression(ExprCommandInfo.class, 7, 
-				"[the] description of command %string%", "command %string%'[s] description",
-				"[the] main [command] of command %string%", "command %string%'[s] main [command]",
-				"[the] permission of command %string%", "command %string%'[s] permission",
-				"[the] permission message of command %string%", "command %string%'[s] permission message",
-				"[the] plugin [owner] of command %string%", "command %string%'[s] plugin [owner]",
-				"[the] usage of command %string%", "command %string%'[s] usage",
-				"[the] file [location] of command %string%", "command %string%'[s] file location");
-			newSimpleExpression(ExprAllCommand.class, 2, 
-				"[all] commands",
-				"[the] aliases of command %string%", "command %string%'[s] aliases");
-			//1.7
-			newSimpleExpression(ExprRegexSplit.class, 1, "regex split %string% (with|using) [pattern] %string%");
-			newSimpleExpression(ExprRegexReplace.class, 1, "regex replace [all] [pattern] %string% with [group[s]] %string% in %string%");
-			//1.7.1
-			newSimpleExpression(ExprUUIDOfflinePlayer.class, 1, "offline player from [uuid] %string%");
-			newSimpleExpression(ExprParseRegexError.class, 1, "[last] regex [parser] error");
-			newPropertyExpression(ExprJukeboxRecord.class, 1, "[jukebox] record", "block");
-			newSimpleExpression(ExprDamageModifier.class, 1, "damage [modifier] %damagemodifier%");//new for 1.7
-			
-			
-			
-		}
-		
+		newPropertyExpression(ExprExpOf.class, 1, "[total] [e]xp", "player");
+		newPropertyExpression(ExprLastLogin.class, 1, "last login", "player");
+		newPropertyExpression(ExprFirstLogin.class, 1, "first login", "player");
+		newPropertyExpression(ExprOnlineTime.class, 1,"online time", "player");
+		newPropertyExpression(ExprLastDamage.class, 1, "last damage", "livingentity");
+		newPropertyExpression(ExprLastDamageCause.class, 1, "last damage cause", "livingentity");
+		newPropertyExpression(ExprHorseStyle.class, 1, "horse style", "entity");
+		newPropertyExpression(ExprHorseColor.class, 1, "horse color", "entity");
+		if (Skript.getMinecraftVersion().isSmallerThan(new Version(1, 11)))
+			newPropertyExpression(ExprHorseVariant.class, 1, "horse variant", "entity");
+		newPropertyExpression(ExprRabbitType.class, 1, "rabbit type", "entity");
+		newPropertyExpression(ExprCatType.class, 1, "(cat|ocelot) type", "entity");
+		newPropertyExpression(ExprRecipesOf.class, 1, "[all] recipes", "itemstack");
+		newPropertyExpression(ExprItemsOfRecipe.class, 1, "[all] ingredients", "recipe");
+		newPropertyExpression(ExprResultOfRecipe.class, 1, "result item", "itemstacks/recipe");
+		newSimpleExpression(ExprAlphabetOrder.class, 1, "alphabetical order of %objects%");
+		newSimpleExpression(ExprHighiestBlock.class, 1, "highest block at %location%");
+		newSimpleExpression(ExprAnvilItem.class, 0, "[event-]item-(one|two|result|three)");
+		newSimpleExpression(ExprInventoryMoveInv.class, 0, "[event-]inventory-(one|two)");
+		newSimpleExpression(ExprInventoryMoveSlot.class, 0, "[event-]slot-(one|two)");
+		newSimpleExpression(ExprDropsOfBlock.class, 1, "drops of %block% [(with|using) %-itemstack%]", "%block%'[s] drops [(with|using) %-itemstack%]");
+		newSimpleExpression(ExprListPaged.class, 1, "page %number% of %objects% with %number% lines");
+		//1.1
+		newPropertyExpression(ExprMaxDurability.class, 1, "max durability", "itemstack");
+		//1.5
+		newPropertyExpression(ExprAllCustomEnchants.class, 1, "[all] custom enchantments", "itemstack");
+		newSimpleExpression(ExprLevelOfCustomEnchant.class, 1, "level of [custom enchantment] %customenchantment% of %itemstack%");
+		newSimpleExpression(ExprItemCustomEnchant.class, 1, "%itemstack% with custom enchantment[s] %customenchantments%");
+		//1.5.3
+		newPropertyExpression(ExprMaxLevel.class, 1, "max level", "customenchantment");
+		newPropertyExpression(ExprRarity.class, 1, "rarity", "customenchantment");
+		newPropertyExpression(ExprLoreName.class, 1, "[lore] name", "customenchantment");
+		newPropertyExpression(ExprLeatherColor.class, 1, "[leather] (0¦red|1¦green|2¦blue) colo[u]r", "-itemstacks/colors");
+		newSimpleExpression(ExprEnabled.class, 1, "enabled for %customenchantment%");
+		if (Skript.classExists("org.bukkit.event.player.PlayerItemDamageEvent"))
+			newSimpleExpression(ExprItemDamage.class, 0, "item damage");
+		newSimpleExpression(ExprAcceptedItems.class, 1, "accepted items for %customenchantment%");
+		newSimpleExpression(ExprCEConflicts.class, 1, "conflicts for %customenchantment%");
+		//1.5.4
+		newPropertyExpression(ExprRGBColor.class, 1, "R[ed, ]G[reen and ]B[blue] [colo[u]r[s]]", "-itemstacks/colors");
+		//1.5.7
+		newSimpleExpression(ExprServerOnlineTime.class, 1, "[the] online time of server", "server'[s] online time");
+		//1.5.9
+		newPropertyExpression(ExprLanguage.class, 1, "(locale|language)", "player");
+		newPropertyExpression(ExprLocalNameOf.class, 1, "[json] client id" , "object");
+		newSimpleExpression(ExprInventoryMoveInv.class, 0, "[event-]inventory-(one|two)");
+		newSimpleExpression(ExprInventoryMoveSlot.class, 0, "[event-]slot-(one|two)");
+		newSimpleExpression(ExprEvaluateFunction.class, 1, "result of function %string% [with %-objects%[, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%]]");
+		// 1.6.6
+		newSimpleExpression(ExprDraggedSlots.class, 0, "[event-]dragged(-| )slots");
+		newSimpleExpression(ExprDraggedItem.class, 0, "[event-][old(-| )]dragged(-| )item");
+		newSimpleExpression(ExprDroppedExp.class, 1, "[the] dropped [e]xp[erience] [orb[s]]");
+		//1.6.8
+		newSimpleExpression(ExprSplitCharacter.class, 1, "split %string% (with|by|using) %number% [char[aracter][s]]", "%string% [split] (with|by|using) %number% [char[aracter][s]]");
+		newPropertyExpression(ExprLastColor.class, 1, "last color", "string");
+		newSimpleExpression(ExprAllRecipes.class, 1, "[all] [registred] recipes");
+		//1.6.9
+		newSimpleExpression(ExprVirtualInv.class, 1, 
+			"virtual %inventorytype% [inventory] [with size %-number%] [(named|with (name|title)) %-string%]",
+			"virtual %inventorytype% [inventory] [with %number% row[s]] [(named|with (name|title)) %-string%]");
+		newSimpleExpression(ExprCommandInfo.class, 7, 
+			"[the] description of command %string%", "command %string%'[s] description",
+			"[the] main [command] of command %string%", "command %string%'[s] main [command]",
+			"[the] permission of command %string%", "command %string%'[s] permission",
+			"[the] permission message of command %string%", "command %string%'[s] permission message",
+			"[the] plugin [owner] of command %string%", "command %string%'[s] plugin [owner]",
+			"[the] usage of command %string%", "command %string%'[s] usage",
+			"[the] file [location] of command %string%", "command %string%'[s] file location");
+		newSimpleExpression(ExprAllCommand.class, 2, 
+			"[all] commands",
+			"[the] aliases of command %string%", "command %string%'[s] aliases");
+		//1.7
+		newSimpleExpression(ExprRegexSplit.class, 1, "regex split %string% (with|using) [pattern] %regex/string%");
+		newSimpleExpression(ExprRegexReplace.class, 1, "regex replace [all] [pattern] %regex/string% with [group[s]] %string% in %string%");
+		//1.7.1
+		newSimpleExpression(ExprUUIDOfflinePlayer.class, 1, "offline player from [uuid] %string%");
+		newSimpleExpression(ExprParseRegexError.class, 1, "[last] regex [parser] error");
+		newPropertyExpression(ExprJukeboxRecord.class, 1, "[jukebox] record", "block");
+		newSimpleExpression(ExprDamageModifier.class, 1, "damage [modifier] %damagemodifier%");//new for 1.7.1
 	}
 	public void registerClassInfos(Boolean... boo){
 		if (boo[0]){	
