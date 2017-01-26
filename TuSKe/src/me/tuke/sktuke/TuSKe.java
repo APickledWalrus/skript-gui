@@ -308,7 +308,6 @@ public class TuSKe extends JavaPlugin {
 		if (nms == null){
 			String rversion = Bukkit.getServer().getClass().getPackage().getName().split(".v")[1];
 			try {
-				"".substring(10);
 				Class<?> classs = Class.forName("me.tuke.sktuke.nms.M_" + rversion);
 	            nms = (NMS) classs.newInstance(); 
 			} catch (final Exception e){

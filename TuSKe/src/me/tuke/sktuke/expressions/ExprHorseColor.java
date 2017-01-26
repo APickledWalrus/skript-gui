@@ -23,7 +23,6 @@ public class ExprHorseColor extends SimplePropertyExpression<Entity, String>{
 	@Nullable
 	public String convert(Entity e) {
 		if (e instanceof Horse && ((Horse)e).getVariant().equals(Horse.Variant.HORSE)){
-			 ((Horse)e).setVariant(Variant.DONKEY);
 			return ((Horse)e).getColor().name().toLowerCase().replaceAll("_", " ");
 		}
 		return null;
