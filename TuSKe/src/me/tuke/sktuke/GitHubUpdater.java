@@ -64,10 +64,10 @@ public class GitHubUpdater {
 			@Override
 			public void run() {
 				try {
-					HttpURLConnection github = (HttpURLConnection) new URL(URL).openConnection();
+					HttpURLConnection github = (HttpURLConnection) new URL(getURL()).openConnection();
 					github.setRequestProperty("User-Agent", "Mozilla/5.0");
 					String page = IOUtils.toString(github.getInputStream(), "UTF-8");
-					Pattern p = Pattern.compile("<a href=\"/Tuke-Nuke/TuSKe/releases/tag/(.+)\">(.+)</a>");
+					Pattern p = Pattern.compile("<a href=\"/"+URL+"/releases/tag/(.+)\">(.+)</a>");
 					Matcher m = p.matcher(page);
 					if (m.find()){
 						LATEST_VERSION = m.group(1);
@@ -116,7 +116,7 @@ public class GitHubUpdater {
 	 * @return The URL
 	 */
 	public String getURL(){
-		return URL + (PLUGIN.getConfig().getBoolean("updater.download_pre_releases") ? "/latest" : "");
+		return "https://github.com/" + URL + "/releases" + (!PLUGIN.getConfig().getBoolean("updater.download_pre_releases") ? "/latest" : "");
 	}
 	/**
 	 * It returns the title of the update, it is from GitHub and it can be something like
@@ -139,7 +139,7 @@ public class GitHubUpdater {
 	 * @return The download URL
 	 */
 	public String getDownloadURL(){
-		return URL + "/tag/" + LATEST_VERSION;
+		return "https://github.com/" + URL + "/releases/tag/" + LATEST_VERSION;
 	}
 	/**
 	 * Check if the version of your plugin is equal to the latest version
@@ -162,18 +162,20 @@ public class GitHubUpdater {
 	 */
 	public boolean downloadLatest(){
 		try {
-			HttpURLConnection download = (HttpURLConnection) new URL(URL + "/download/" + LATEST_VERSION + "/" + PLUGIN.getName() + ".jar").openConnection();
+			HttpURLConnection download = (HttpURLConnection) new URL("https://github.com/" + URL + "/releases/download/" + LATEST_VERSION + "/" + PLUGIN.getName() + ".jar").openConnection();
 			download.setRequestProperty("User-Agent", "Mozilla/5.0");
 			File f = new File(PLUGIN.getDataFolder(), PLUGIN.getName() + ".jar");
 			if (f.exists())
 				f.delete();
-			FileUtils.copyInputStreamToFile(download.getInputStream(), f);
+			FileUtils.copyInputStreamToFile(download.getInputStream(), f); 
+		
 			return true;
 		} catch (Exception e) {
 			lastException = e;
 		}
 		return false;
 	}
+	@Deprecated
 	public Exception getLastException(){
 		return lastException;
 	}

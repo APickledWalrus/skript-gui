@@ -11,16 +11,24 @@ import javax.annotation.Nullable;
 
 import ch.njol.skript.command.Commands;
 import ch.njol.skript.command.ScriptCommand;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.TuSKe;
 
+@Name("Command Info")
+@Description("Get informations about a command.")
+@Examples("if co")
+@Since("1.6.9.6, 1.6.9.7")
 public class ExprCommandInfo extends SimpleExpression<String>{
 
 	private Expression<String> cmd;
-	private int id; // the regex index
+	private int id = -1; // the regex index
 	private String expr;
 	@Override
 	public Class<? extends String> getReturnType() {
@@ -29,7 +37,7 @@ public class ExprCommandInfo extends SimpleExpression<String>{
 
 	@Override
 	public boolean isSingle() {
-		return true;
+		return id != 6;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -57,13 +65,14 @@ public class ExprCommandInfo extends SimpleExpression<String>{
 			if (c != null){
 				switch(id){
 				
-				case 0: return new String[]{c.getDescription() != null && c.getDescription().equalsIgnoreCase("") ? null : c.getDescription()};
+				case 0: return new String[]{c.getDescription() != null && !c.getDescription().equalsIgnoreCase("") ? c.getDescription(): null};
 				case 1: return new String[]{c.getLabel()};
-				case 2: return new String[]{c.getPermission() != null && c.getPermission().equalsIgnoreCase("") ? null : c.getPermission()};
+				case 2: return new String[]{c.getPermission() != null && !c.getPermission().equalsIgnoreCase("") ? c.getPermission(): null};
 				case 3: return new String[]{c.getPermissionMessage()};
 				case 4: return new String[]{c.getPlugin().getName()};
 				case 5: return new String[]{c.getUsage() != null ? c.getUsage().replaceAll("^/?<command>", "/"+ c.getName()) : null};
-				case 6: 
+				case 6: return c.getAliases().toArray(new String[c.getAliases().size()]);
+				case 7: 
 					try {
 						Field commands = Commands.class.getDeclaredField("commands");
 						commands.setAccessible(true);

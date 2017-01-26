@@ -11,7 +11,7 @@ import me.tuke.sktuke.TuSKe;
 
 public class EnumType {
 
-	public <T extends Enum<T>> EnumType(final Class<T> c, String code, String regexUser){
+	public <T extends Enum<T>> EnumType(final Class<T> c, String code, String regexUser/*, String name, String description, String usage, String pattern, String examples*/){
 		if (!TuSKe.getInstance().getConfig().getBoolean("use_only_enum_names")){//It will parse the enum types as '<Enum name>' and ''<Enum type>.<Enum name>'
 			Classes.registerClass(new ClassInfo<T>(c, code).user(regexUser).name(c.getSimpleName()).defaultExpression(new EventValueExpression<T>(c)).parser(new Parser<T>(){
 	

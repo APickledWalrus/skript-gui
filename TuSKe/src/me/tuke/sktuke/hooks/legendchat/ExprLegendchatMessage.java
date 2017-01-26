@@ -16,7 +16,7 @@ import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 
 public class ExprLegendchatMessage extends SimpleExpression<String> {
-	private Kleenean delay;
+	private Kleenean delay = Kleenean.FALSE;
 	@Override
 	public Class<? extends String> getReturnType() {
 		return String.class;

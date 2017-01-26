@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -13,12 +14,13 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import ch.njol.util.StringUtils;
 import me.tuke.sktuke.customenchantment.CustomEnchantment;
 import me.tuke.sktuke.customenchantment.EnchantConfig;
 import me.tuke.sktuke.customenchantment.EnchantManager;
+import me.tuke.sktuke.documentation.Documentation;
 import me.tuke.sktuke.gui.GUIManager;
 import me.tuke.sktuke.nms.NMS;
+import me.tuke.sktuke.nms.ReflectionNMS;
 import me.tuke.sktuke.recipe.RecipeManager;
 import me.tuke.sktuke.register.Register;
 import me.tuke.sktuke.util.LegendConfig;
@@ -27,11 +29,11 @@ public class TuSKe extends JavaPlugin {
 	private static NMS nms;
 	private static TuSKe plugin;
 	private static long time = System.currentTimeMillis();
-	private static GUIManager gui;
-	private static RecipeManager recipes;
+	private static GUIManager gui = new GUIManager();
+	private static RecipeManager recipes = new RecipeManager();;
 	private GitHubUpdater updater;
-	private static boolean hasSupport = hasNMS();
 	private static Register reg;
+	private static Documentation docs;
 	
 	@Override
 	public void onEnable() {
@@ -39,24 +41,35 @@ public class TuSKe extends JavaPlugin {
 		reg = new Register(this);
 		if (reg.hasPlugin("Skript")){
 			loadConfig();
-			gui = new GUIManager();
-			Integer[] result = reg.load();//array of amount of registered things
+			getNMS();
+			docs = new Documentation(this, getConfig().getBoolean("documentation.enabled"));
+			Integer[] result = reg.load();//array of amount of registered syntaxes
 			if (result == null)
 				return;//in case it started while skript is already loaded.
-			updater = new GitHubUpdater(this, this.getFile(), "https://github.com/Tuke-Nuke/TuSKe/releases");
-			recipes = new RecipeManager();
+			updater = new GitHubUpdater(this, this.getFile(), "Tuke-Nuke/TuSKe");
 			if (getConfig().getBoolean("use_metrics"))
 				try {
 					Metrics metrics = new Metrics(this);
 					metrics.start();
 					log("Enabling Metrics... Done!");
 				} catch (IOException e) {
-					log("A error occured when trying to start the Metrics.");
+					log("A error occured while trying to start the Metrics.");
 				}
 			double d = result[4]/1000;
 			log("Loaded sucessfully a total of " + result[0] + " events, " + result[1] + " conditions, " + result[2] + " expressions and "+ result[3] + " effects in " +d+ " seconds. Enjoy ^-^");
 			if (getConfig().getBoolean("updater.check_for_new_update"))
 				checkUpdate();
+			Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable(){
+
+				@Override
+				public void run() {
+					docs.generateDocs();
+					if (docs.isEnabled())
+						log("Documentation was generated correctly.");
+					docs = null; //The object doesn't need to exists.
+					
+					
+				}}, 100);
 				
 		} else {
 			log("Error 404 - Skript not found.", Level.SEVERE);
@@ -77,7 +90,7 @@ public class TuSKe extends JavaPlugin {
 	}
 
 	@Override
-	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] arg){
+	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] arg){//TODO Remake this
 		if (cmd.getName().equalsIgnoreCase("tuske")){
 			if (arg.length > 0 && arg[0].equalsIgnoreCase("update")){
 				if (arg.length > 1 && arg[1].equalsIgnoreCase("download")){
@@ -93,8 +106,8 @@ public class TuSKe extends JavaPlugin {
 						sender.sendMessage("§e[§cTuSKe§e] §3The plugin is already running the latest version!");
 				} else if (arg.length > 1 && arg[1].equalsIgnoreCase("plugin")){
 					if (!getConfig().getBoolean("updater.check_for_new_update"))
-						sender.sendMessage("§e[§cTuSKe§e] §3The option'");
-					if (!updater.isLatestVersion() || updater.hasDownloadReady(true)){
+						sender.sendMessage("§e[§cTuSKe§e] §3The option 'check_for_new_update', in config file, needs to be true to check for updates.");
+					else if (!updater.isLatestVersion() || updater.hasDownloadReady(true)){
 						if (!updater.hasDownloadReady(false))
 							if (!updater.downloadLatest()){
 								sender.sendMessage("§e[§cTuSKe§e] §3A error occured when trying to download latest version. Maybe SkUnity is down?");
@@ -111,8 +124,6 @@ public class TuSKe extends JavaPlugin {
 
 						@Override
 						public void run() {
-							//if (false)
-							//	sender.sendMessage("§e[§cTuSKe§e] §3A error occured when trying to check for latest version. Maybe GitHub is down?");
 							if (!updater.isLatestVersion()){
 								sender.sendMessage("§e[§cTuSKe§e] §3New update available: §cv" + updater.getLatestVersion());
 								if (sender instanceof Player)
@@ -253,8 +264,10 @@ public class TuSKe extends JavaPlugin {
 		
 		SimpleConfig sc = new SimpleConfig(this);
 		sc.loadDefault();
-		if (new File(this.getDataFolder(), "config.yml").exists())
-			sc.save();		
+		File f = new File(this.getDataFolder(), "config.yml");
+		if (!f.exists())
+			f.mkdirs();
+		sc.save(f);		
 	}
 	private void sendDownloadRaw(CommandSender s){
 		if (s instanceof Player)
@@ -270,39 +283,39 @@ public class TuSKe extends JavaPlugin {
 	public static LegendConfig getLegendConfig(){
 		return reg.config;
 	}
+	public static Documentation getDocumentation(){
+		return docs;
+	}
 	public static void log(String msg){
 		log(msg, Level.INFO);
 	}
 	public static void log(String msg, Level lvl){
 		plugin.getLogger().log(lvl, msg);
 	}
+	public static void log(Level lvl, String... msgs){
+		for (String msg : msgs)
+			log(msg, lvl);
+	}
 	public static void debug(Object... objects){
 		if (!plugin.getConfig().getBoolean("debug_mode"))
 			return;
 		log("[Debug] " + StringUtils.join(objects, " || "));
 	}
-	public static boolean hasSupport(){
-		return hasSupport;
-	}
-	private static boolean hasNMS(){
-	
-		try {
-			String rversion = Bukkit.getServer().getClass().getPackage().getName().split(".v")[1];
-			Class<?> classs = Class.forName("me.tuke.sktuke.nms.M_" + rversion);
-            if (NMS.class.isAssignableFrom(classs)) { 
-            	nms = (NMS) classs.getConstructor().newInstance(); 
-            	return true;
-            }
-		} catch (final Exception e){
-		}
-		return false;
-		
-	}
 	public static TuSKe getInstance(){
 		return plugin;
 	}
-	public static NMS getNMS(){
-		
+	public static NMS getNMS(){		
+		if (nms == null){
+			String rversion = Bukkit.getServer().getClass().getPackage().getName().split(".v")[1];
+			try {
+				"".substring(10);
+				Class<?> classs = Class.forName("me.tuke.sktuke.nms.M_" + rversion);
+	            nms = (NMS) classs.newInstance(); 
+			} catch (final Exception e){
+				nms = new ReflectionNMS(rversion); //An default NMS class using reflection, in case it couldn't find it.
+				log("Couldn't find support for the Bukkit version '" +rversion+ "'. Some expressions, such as \"player data of %offline player%\", may or may not work fine, so it's better to ask the developer about it." , Level.WARNING);
+			}
+		}
 		return nms;
 	}
 	public static boolean isSpigot(){
@@ -312,17 +325,16 @@ public class TuSKe extends JavaPlugin {
 				return true;
 			}
 			
-		} catch (Exception e){}
+		} catch (Exception e){
+			
+		}
 		return false;
 	}
-	
-	/*public boolean isPixelmon(){
-		return Bukkit.getServerName().equalsIgnoreCase("LendaryCraft");
-	}*/
 	private void checkUpdate(){
 		log("Checking for latest update...");
 		Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable(){
 			
+			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
 				updater.checkForUpdate(true);

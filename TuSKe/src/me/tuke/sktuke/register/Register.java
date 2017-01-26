@@ -26,6 +26,7 @@ import br.com.devpaulo.legendchat.api.events.*;
 import br.com.devpaulo.legendchat.channels.ChannelManager;
 import br.com.devpaulo.legendchat.channels.types.Channel;
 import ch.njol.skript.*;
+import ch.njol.skript.bukkitutil.PlayerUtils;
 import ch.njol.skript.classes.Comparator;
 import ch.njol.skript.lang.*;
 import ch.njol.skript.lang.Effect;
@@ -35,15 +36,14 @@ import ch.njol.skript.util.*;
 import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.conditions.*;
 import me.tuke.sktuke.customenchantment.*;
+import me.tuke.sktuke.documentation.Syntax;
+import me.tuke.sktuke.documentation.SyntaxType;
 import me.tuke.sktuke.effects.*;
 import me.tuke.sktuke.events.*;
 import me.tuke.sktuke.events.customevent.*;
 import me.tuke.sktuke.expressions.*;
 import me.tuke.sktuke.expressions.customenchantments.*;
-import me.tuke.sktuke.expressions.recipe.ExprAllRecipes;
-import me.tuke.sktuke.expressions.recipe.ExprItemsOfRecipe;
-import me.tuke.sktuke.expressions.recipe.ExprRecipesOf;
-import me.tuke.sktuke.expressions.recipe.ExprResultOfRecipe;
+import me.tuke.sktuke.expressions.recipe.*;
 import me.tuke.sktuke.gui.*;
 import me.tuke.sktuke.hooks.landlord.*;
 import me.tuke.sktuke.hooks.legendchat.*;
@@ -51,6 +51,7 @@ import me.tuke.sktuke.hooks.marriage.*;
 import me.tuke.sktuke.hooks.simpleclans.*;
 import me.tuke.sktuke.listeners.*;
 import me.tuke.sktuke.util.LegendConfig;
+import me.tuke.sktuke.util.ReflectionUtils;
 import me.tuke.sktuke.util.Regex;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.events.*;
@@ -70,7 +71,7 @@ public class Register{
 		this.instance = instance;
 	}
 	public Integer[] load(){
-		if (!Skript.isAcceptRegistrations()){//To prevent to load the when the server is already loaded.
+		if (!Skript.isAcceptRegistrations()){//To prevent to load when the server is already loaded.
 			TuSKe.log("TuSKe can't be loaded when the server is already loaded.", Level.SEVERE);
 		    Bukkit.getServer().getPluginManager().disablePlugin(instance);
 			return null;
@@ -90,7 +91,7 @@ public class Register{
 		}
 		Boolean[] booleans = boo.toArray(new Boolean[boo.size()]);
 		if (booleans[4])
-			booleans[4] = Skript.classExists("com.jcdesimp.landlord.persistantData.LowOwnedLand");
+			booleans[4] = ReflectionUtils.hasClass("com.jcdesimp.landlord.persistantData.LowOwnedLand");
 		registerEvents(booleans);
 		registerClassInfos(booleans); //It needs to be before the expressions (I added before effect and conditions too just to future updates)
 		//cause some expressions get some class info.
@@ -104,10 +105,9 @@ public class Register{
 		Bukkit.getServer().getPluginManager().registerEvents(new OnlineStatusCheck(instance), instance);
 		Bukkit.getServer().getPluginManager().registerEvents(new EnchantCheck(instance), instance);
 		//Bukkit.getServer().getPluginManager().registerEvents(new PlayerMovesCheck(instance),instance);
-		if (instance.getConfig().isSet("CompatibilityMode") && instance.getConfig().isBoolean("CompatibilityMode"))
-			for (Player p: Bukkit.getOnlinePlayers()){
-				OnlineStatusCheck.setTime(p, System.currentTimeMillis());
-			}
+		for (Player p: PlayerUtils.getOnlinePlayers()){
+			OnlineStatusCheck.setTime(p, System.currentTimeMillis());
+		}
 		return new Integer[]{evt, cond, expr, eff, (int) (System.currentTimeMillis() - start)}; //Enchantments will be loaded after the server started.
 	}
 	public boolean hasPlugin(String plugin){
@@ -124,11 +124,11 @@ public class Register{
 			newEvent(EvtPromotePlayerClan.class, PlayerPromoteEvent.class, 1, "Clan promote player", "[clan] promote player");
 			newEvent(EvtDemotePlayerClan.class, PlayerDemoteEvent.class, 1, "Clan demote player", "[clan] demote player");
 		} 
-		if (boo[1]){
+		if (boo[1]){//Legendchat
 			config = new LegendConfig(instance);
 			Bukkit.getServer().getPluginManager().registerEvents(new TagChat(config), instance);
 			newEvent(EvtLCChat.class, ChatMessageEvent.class, 1, "Legendchat chat", "l[egend]c[hat] chat" );
-			newEvent(EvtTellChat.class, PrivateMessageEvent.class, 1, "Legendchat tell", "l[egend]c[hat] tell");
+			newEvent(EvtTellChat.class, PrivateMessageEvent.class, 1, "Legendchat tell", "[l[egend]c[hat]] (tell|p[rivate ]m[essage])");
 		}
 		//General
 
@@ -139,10 +139,9 @@ public class Register{
 		newEvent(SimpleEvent.class, GUIActionEvent.class, 1, "GUI click", "gui (action|click)");
 		//Skript.registerEvent("Player starts move", EvtPlayerStartsMove.class, PlayerStartsMoveEvent.class, "player start[s] (mov(e|ing)|walk[ing])");
 		//Skript.registerEvent("Player stops move", EvtPlayerStopsMove.class, PlayerStopsMoveEvent.class, "player stop[s] (mov(e|ing)|walk[ing])");
-		if (Skript.classExists("org.bukkit.event.entity.SpawnerSpawnEvent"))
-			newEvent(EvtSpawnerSpawn.class, SpawnerSpawnEvent.class, 1, "Spawner spawn", "spawner spawn");
-		if (Skript.classExists("org.bukkit.event.player.PlayerItemDamageEvent"))
-			newEvent(EvtItemDamage.class, PlayerItemDamageEvent.class, 1, "Item damage", "[player] item damage");
+		newEvent(EvtSpawnerSpawn.class, "org.bukkit.event.entity.SpawnerSpawnEvent", 1, "Spawner spawn", "spawner spawn");
+		newEvent(EvtItemDamage.class, "org.bukkit.event.player.PlayerItemDamageEvent", 1, "Item damage", "[player] item damage");
+		newEvent(EvtPrepareItem.class, PrepareItemCraftEvent.class, 1, "Item craft", "[tuske] prepare item craft");
 		
 	}
 	public void registerEventValues(Boolean... boo){
@@ -367,7 +366,7 @@ public class Register{
 						return event.getPlayer();
 					}
 				}, 0);
-		if (Skript.classExists("org.bukkit.event.player.PlayerItemDamageEvent")){
+		if (ReflectionUtils.hasClass("org.bukkit.event.player.PlayerItemDamageEvent")){
 			EventValues.registerEventValue(PlayerItemDamageEvent.class, Player.class,
 					new Getter<Player, PlayerItemDamageEvent>() {
 						@Override
@@ -412,7 +411,7 @@ public class Register{
 					}
 				}, 0);*/
 
-		if (Skript.classExists("org.bukkit.event.entity.SpawnerSpawnEvent")){
+		if (ReflectionUtils.hasClass("org.bukkit.event.entity.SpawnerSpawnEvent")){
 			EventValues.registerEventValue(SpawnerSpawnEvent.class, Block.class,
 					new Getter<Block, SpawnerSpawnEvent>() {
 						@Override
@@ -427,7 +426,43 @@ public class Register{
 							return event.getEntity();
 						}
 					}, 0);
-		}	
+		}
+		EventValues.registerEventValue(PrepareItemCraftEvent.class, Player.class,
+				new Getter<Player, PrepareItemCraftEvent>() {
+					@Override
+					public Player get(PrepareItemCraftEvent event) {
+						return  event.getViewers().get(0) instanceof Player ? (Player) event.getViewers().get(0) : null;
+					}
+				}, 0);
+		EventValues.registerEventValue(PrepareItemCraftEvent.class, ItemStack.class,
+				new Getter<ItemStack, PrepareItemCraftEvent>() {
+					@Override
+					public ItemStack get(PrepareItemCraftEvent event) {
+						return event.getRecipe().getResult();
+					}
+				}, 0);
+		EventValues.registerEventValue(PrepareItemCraftEvent.class, Inventory.class,
+				new Getter<Inventory, PrepareItemCraftEvent>() {
+					@Override
+					public Inventory get(PrepareItemCraftEvent event) {
+						return event.getInventory();
+					}
+				}, 0);
+		EventValues.registerEventValue(PrepareItemCraftEvent.class, Recipe.class,
+				new Getter<Recipe, PrepareItemCraftEvent>() {
+					@Override
+					public Recipe get(PrepareItemCraftEvent event) {
+						return  event.getRecipe();
+					}
+				}, 0);
+		EventValues.registerEventValue(CraftItemEvent.class, Recipe.class,
+				new Getter<Recipe, CraftItemEvent>() {
+					@Override
+					public Recipe get(CraftItemEvent event) {
+						return  event.getRecipe();
+					}
+				}, 0);
+		
 		
 	}
 	public void registerConditions(Boolean... boo){
@@ -485,11 +520,8 @@ public class Register{
 			newEffect(EffUnclaimLand.class, 1, "unclaim land[lord] at %location/chunk%");
 		}
 		//General
-		if (TuSKe.hasSupport()){
-			newEffect(EffSaveData.class, 1, "save [player] data of %player%");
-			newEffect(EffMakeDrop.class, 1, "(make|force) %player% drop[s] %itemstack% [from his inventory]");
-		} else
-			TuSKe.log("The version of your server it isn't supported for some expressions: " + Bukkit.getServer().getClass().getPackage().getName().split(".v")[1], Level.WARNING);
+		newEffect(EffSaveData.class, 1, "save [player] data of %player%");
+		newEffect(EffMakeDrop.class, 1, "(make|force) %player% drop[s] %itemstack% [from his inventory]");
 		newEffect(EffCancelDrop.class, 1, "cancel [the] drops [of (inventory|[e]xp[periences])]");
 		newEffect(EffPushBlock.class, 1, "move %block% to %direction%");
 		// 1.5.3
@@ -557,8 +589,7 @@ public class Register{
 			newSimpleExpression(ExprLandClaimAt.class, 1, "land[lord] claim at %location/chunk%");
 		}
 		//General stuffs
-		if (TuSKe.hasSupport())
-			newPropertyExpression(ExprOfflineData.class, 1, "player data", "offlineplayer");
+		newPropertyExpression(ExprOfflineData.class, 1, "player data", "offlineplayer");
 		newPropertyExpression(ExprExpOf.class, 1, "[total] [e]xp", "player");
 		newPropertyExpression(ExprLastLogin.class, 1, "last login", "player");
 		newPropertyExpression(ExprFirstLogin.class, 1, "first login", "player");
@@ -626,10 +657,9 @@ public class Register{
 			"[the] permission message of command %string%", "command %string%'[s] permission message",
 			"[the] plugin [owner] of command %string%", "command %string%'[s] plugin [owner]",
 			"[the] usage of command %string%", "command %string%'[s] usage",
+			"[the] aliases of command %string%", "command %string%'[s] aliases",
 			"[the] file [location] of command %string%", "command %string%'[s] file location");
-		newSimpleExpression(ExprAllCommand.class, 2, 
-			"[all] commands",
-			"[the] aliases of command %string%", "command %string%'[s] aliases");
+		newSimpleExpression(ExprAllCommand.class, 1, "[all] [registered] [script] commands");
 		//1.7
 		newSimpleExpression(ExprRegexSplit.class, 1, "regex split %string% (with|using) [pattern] %regex/string%");
 		newSimpleExpression(ExprRegexReplace.class, 1, "regex replace [all] [pattern] %regex/string% with [group[s]] %string% in %string%");
@@ -826,29 +856,27 @@ public class Register{
 	public <E extends Expression<T>, T> void newPropertyExpression(Class<E> c, int amount, String property, String from){
 		if (instance.getConfig().isSet("disable." + c.getSimpleName()) && instance.getConfig().getBoolean("disable." + c.getSimpleName()))
 			return;
-		Class<T> ret;
-		try {
-			ret = (Class<T>) c.newInstance().getReturnType();
-		} catch (Exception e) {
-			TuSKe.log("Couldn't register the expression '" + property + " of " + from + "'. Error message: " + e.getMessage(), Level.WARNING);
+		Expression<T> ret = ReflectionUtils.newInstance(c);
+		if (ret == null || ret.getReturnType() == null){
+			TuSKe.log("Couldn't register the expression '" +property +  "of " +from+ "'.", Level.WARNING);
 			return;
 		}
 		expr += amount;
-		Skript.registerExpression(c, ret, ExpressionType.PROPERTY, "[the] " + property + " of %" + from + "%", "%" + from + "%'[s] " + property);
+		TuSKe.getDocumentation().addSyntax(new Syntax(ret, SyntaxType.EXPRESSION, "[the] " + property + " of %" + from + "%", "%" + from + "%'[s] " + property));
+		Skript.registerExpression(c, (Class<T>)ret.getReturnType(), ExpressionType.PROPERTY, "[the] " + property + " of %" + from + "%", "%" + from + "%'[s] " + property);
 		
 	}
 	public <E extends Expression<T>, T> void newSimpleExpression(Class<E> c, int amount, String... syntax){
 		if (instance.getConfig().isSet("disable." + c.getSimpleName()) && instance.getConfig().getBoolean("disable." + c.getSimpleName()))
 			return;
-		Class<T> ret;
-		try {
-			ret = (Class<T>) c.newInstance().getReturnType();
-		} catch (Exception e) {
-			TuSKe.log("Couldn't register the expression '" + syntax[0] + "'. Error message: " + e.getMessage(), Level.WARNING);
+		Expression<T> ret = ReflectionUtils.newInstance(c);
+		if (ret == null || ret.getReturnType() == null){
+			TuSKe.log("Couldn't register the expression '" + syntax[0] + "'.", Level.WARNING);
 			return;
 		}
 		expr += amount;
-		Skript.registerExpression(c, ret, ExpressionType.SIMPLE, syntax);
+		TuSKe.getDocumentation().addSyntax(new Syntax(ret, SyntaxType.EXPRESSION, syntax));
+		Skript.registerExpression(c, (Class<T>)ret.getReturnType(), ExpressionType.SIMPLE, syntax);
 		
 	}
 	public <E extends Condition> void newCondition(Class<E> c, int amount, String... syntax){
@@ -863,9 +891,27 @@ public class Register{
 		eff+= amount;
 		Skript.registerEffect(c, syntax);
 	}
-	public <E extends SkriptEvent> void newEvent(Class<E> c, Class<? extends Event> event, int amount, String name, String... syntax){
-		if (instance.getConfig().isSet("disable." + event.getSimpleName()) && instance.getConfig().getBoolean("disable." + event.getSimpleName()))
+	public void newSimpleEvent(String eventClass, String name, String...syntax){
+		newEvent(SimpleEvent.class, eventClass, 1, name, syntax);
+	}
+	public void newEvent(Class<? extends SkriptEvent> c, String eventClass, int amount, String name, String... syntax){
+		Class<? extends Event> clz = (Class<? extends Event>) ReflectionUtils.getClass(eventClass);
+		if (clz == null){
+			TuSKe.debug("The event '"+name+"' couldn't be registered cause it doesn't exists: '" + eventClass + "'.");
 			return;
+		}
+		if (!Event.class.isAssignableFrom(clz)){
+			TuSKe.debug("The event '" + name + "' doesn't have a proper event class.");
+			return;
+		}
+		newEvent(c, clz, amount, name, syntax);
+		
+	}
+	public void newEvent(Class<? extends SkriptEvent> c, Class<? extends Event> event, int amount, String name, String... syntax){
+		if (instance.getConfig().isSet("disable." + event.getSimpleName()) && instance.getConfig().getBoolean("disable." + event.getSimpleName())){
+			TuSKe.debug("The event '"+name+"' couldn't be registered cause it was disabled.");
+			return;
+		}
 		evt+= amount;
 		Skript.registerEvent(name, c, event, syntax);
 	}

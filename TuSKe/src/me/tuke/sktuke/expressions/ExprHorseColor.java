@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
+import org.bukkit.entity.Horse.Variant;
 import org.bukkit.event.Event;
 
 import ch.njol.skript.classes.Changer;
@@ -22,6 +23,7 @@ public class ExprHorseColor extends SimplePropertyExpression<Entity, String>{
 	@Nullable
 	public String convert(Entity e) {
 		if (e instanceof Horse && ((Horse)e).getVariant().equals(Horse.Variant.HORSE)){
+			 ((Horse)e).setVariant(Variant.DONKEY);
 			return ((Horse)e).getColor().name().toLowerCase().replaceAll("_", " ");
 		}
 		return null;

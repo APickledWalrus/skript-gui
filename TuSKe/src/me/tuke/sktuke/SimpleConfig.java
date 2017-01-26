@@ -72,6 +72,10 @@ public class SimpleConfig{
 			"#Example:",
 			"#\topen virtual InventoryType.CHEST inventory with size 1 named \"Hi\" to player",
 			"#Don't need to worry about it, is just in case.");
+		addComentsAbove("documentation",
+			"#A documentation that will be generated at 'plugins/TuSKe/documentation.yml.");
+		setDefault("documentation.enabled", true,
+			"#Should documentation be generated?");
 		
 		//replace the config with the old values.
 		String str = "use-metrics";
@@ -107,9 +111,9 @@ public class SimpleConfig{
 		}
 		return false;
 	}
-	public void save(){
+	public void save(File file){
 		try {			
-			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(pl.getDataFolder(), "config.yml")));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(file));
 			String str = saveToString();
 			bw.write(str);
 			bw.flush();
