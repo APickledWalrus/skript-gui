@@ -266,7 +266,13 @@ public class TuSKe extends JavaPlugin {
 		sc.loadDefault();
 		File f = new File(this.getDataFolder(), "config.yml");
 		if (!f.exists())
-			f.mkdirs();
+			try {
+				if (!getDataFolder().exists())
+					getDataFolder().mkdirs();
+				f.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		sc.save(f);		
 	}
 	private void sendDownloadRaw(CommandSender s){

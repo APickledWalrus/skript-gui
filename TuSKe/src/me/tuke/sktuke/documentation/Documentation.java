@@ -25,13 +25,13 @@ public class Documentation {
 			syntaxes.add(syntax);
 	}
 	public void generateDocs(){
-		if (enabled)
+		if (!enabled)
 			return;
 		File file = new File(plugin.getDataFolder(), "documentation.yml");
-		if (!file.exists())
-			file.mkdirs();
 		YamlConfiguration yml = new YamlConfiguration();
 		try {
+			if (!file.exists())
+				file.createNewFile();
 			yml.load(file);
 			for (Syntax syntax : syntaxes){
 				String mainPath = syntax.getType().name().toLowerCase() + "." + syntax.getName();

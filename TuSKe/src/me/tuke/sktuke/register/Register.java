@@ -883,12 +883,14 @@ public class Register{
 		if (instance.getConfig().isSet("disable." + c.getSimpleName()) && instance.getConfig().getBoolean("disable." + c.getSimpleName()))
 			return;
 		cond+= amount;
+		TuSKe.getDocumentation().addSyntax(new Syntax(c.getSimpleName(), null, syntax, null, null, SyntaxType.CONDITION));
 		Skript.registerCondition(c, syntax);
 	}
 	public <E extends Effect> void newEffect(Class<E> c, int amount, String... syntax){
 		if (instance.getConfig().isSet("disable." + c.getSimpleName()) && instance.getConfig().getBoolean("disable." + c.getSimpleName()))
 			return;
 		eff+= amount;
+		TuSKe.getDocumentation().addSyntax(new Syntax(c.getSimpleName(), null, syntax, null, null, SyntaxType.EFFECT));
 		Skript.registerEffect(c, syntax);
 	}
 	public void newSimpleEvent(String eventClass, String name, String...syntax){
@@ -913,6 +915,7 @@ public class Register{
 			return;
 		}
 		evt+= amount;
+		TuSKe.getDocumentation().addSyntax(new Syntax(name, null, syntax, null, null, SyntaxType.EVENT));
 		Skript.registerEvent(name, c, event, syntax);
 	}
 }

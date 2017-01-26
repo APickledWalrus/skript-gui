@@ -35,7 +35,12 @@ public class Syntax {
 		
 	}
 	public Syntax(String name, String[] description, String[] syntaxes,String[] examples, String since, SyntaxType type){
-		
+		this.name = name;
+		desc = description;
+		this.syntaxes = syntaxes;
+		this.examples = examples;
+		this.since = since;
+		this.type = type;
 	}
 	public String getName(){
 		return name;
