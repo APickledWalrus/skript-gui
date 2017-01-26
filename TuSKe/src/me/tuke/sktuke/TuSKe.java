@@ -319,8 +319,7 @@ public class TuSKe extends JavaPlugin {
 	}
 	public static boolean isSpigot(){
 		try {
-			final Class<Player> clazz = Player.class;
-			if (clazz.getMethod("spigot") != null){
+			if (Player.class.getDeclaredMethod("spigot") != null){
 				return true;
 			}
 			
@@ -330,12 +329,12 @@ public class TuSKe extends JavaPlugin {
 		return false;
 	}
 	private void checkUpdate(){
-		log("Checking for latest update...");
 		Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable(){
 			
 			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
+				log("Checking for latest update...");
 				updater.checkForUpdate(true);
 				if (updater.getLatestVersion() != null)
 					if (!updater.isLatestVersion()){
