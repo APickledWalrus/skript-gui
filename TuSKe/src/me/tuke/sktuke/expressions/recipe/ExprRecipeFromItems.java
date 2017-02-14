@@ -1,8 +1,11 @@
 package me.tuke.sktuke.expressions.recipe;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+
+import com.google.common.collect.Lists;
 
 import javax.annotation.Nullable;
 
@@ -13,42 +16,39 @@ import ch.njol.util.Kleenean;
 import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.recipe.RecipeManager;
 
-public class ExprItemsOfRecipe extends SimpleExpression<ItemStack>{
-	private Expression<Recipe> recipe;
+public class ExprRecipeFromItems extends SimpleExpression<Recipe>{
 
+	private Expression<ItemStack> items;
 	@Override
-	public Class<? extends ItemStack> getReturnType() {
-		return ItemStack.class;
+	public Class<? extends Recipe> getReturnType() {
+		return Recipe.class;
 	}
 
 	@Override
 	public boolean isSingle() {
-		return false;
+		return true;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
-		recipe = (Expression<Recipe>) arg[0];
+		items = (Expression<ItemStack>) arg[0]; 
 		return true;
 	}
 
 	@Override
-	public String toString(@Nullable Event e, boolean arg1) {
-		return "ingredients of " + recipe.toString(e, arg1);
+	public String toString(@Nullable Event arg0, boolean arg1) {
+		return "recipe from ingredients " + items.toString(arg0, arg1);
 	}
 
 	@Override
 	@Nullable
-	protected ItemStack[] get(Event e) {
-		Recipe r = recipe.getSingle(e);
-		if (r != null){
-			RecipeManager rm = TuSKe.getRecipeManager();
-			Recipe r2 = rm.getIfContainsCustomRecipe(r.getResult(), rm.getIngredients(r));
-			if (r2 != null)
-				r = r2;
-			return rm.fixIngredients(rm.getIngredients(r));
-		}
+	protected Recipe[] get(Event e) {
+		RecipeManager rm = TuSKe.getRecipeManager();
+		ItemStack[] items = this.items.getAll(e);
+		for (Recipe r : Lists.newArrayList(Bukkit.recipeIterator()))
+			if (rm.equalsRecipe(r, items))
+				return new Recipe[]{r};
 		return null;
 	}
 

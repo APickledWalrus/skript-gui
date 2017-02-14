@@ -36,7 +36,7 @@ public class SimpleConfig{
 			"#server.",
 			"#You can still download/update your plugin by command, see more in",
 			"#/tuske update");
-		setDefault("updater.download_pre_releases", false,
+		setDefault("updater.download_pre_releases", (pl.getDescription().getVersion().contains("beta")),
 			"#Download pre-releases.",
 			"#Note: pre-releases versions shoudln't be used in your main server.",
 			"#It's just to test new incomming features only!!");
@@ -129,6 +129,7 @@ public class SimpleConfig{
 			else
 				toFile = toFile.replaceFirst(key, comment + key);
 		}
+		map.clear();
 		return toFile;
 	}
 	private String keyToRegex(String key){		

@@ -1,6 +1,6 @@
 name: TuSKe
 main: me.tuke.sktuke.TuSKe
-version: 1.7-beta.3
+version: 1.7.1
 author: Tuke_Nuke
 softdepend: [Skript, SimpleClans, SimpleClansLegacy, Legendchat, Marriage, ProtocolSupport, ViaVersion, Landlord, Umbaska, SkQuery] #Last two dependencies are just to not register ClickType and InventoryType before them
 commands:

@@ -3,6 +3,7 @@ package me.tuke.sktuke.recipe;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -21,8 +22,8 @@ import me.tuke.sktuke.TuSKe;
 
 public class RecipeManager implements Listener{
 
-	private HashSet<Recipe> recipes = new HashSet<>();
-	public boolean equals = true; //Every time it checks the items, it will set it to true if the items are the same but have different item meta 
+	private Set<Recipe> recipes = new HashSet<>();
+	public boolean equals = true; //Every time it checks the items, it will set it to false if the items are the same but have different item meta 
 	
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPrepare(PrepareItemCraftEvent e){
@@ -31,24 +32,40 @@ public class RecipeManager implements Listener{
 			if (!equals){
 				equals = true;
 				e.getInventory().setResult(new ItemStack(Material.AIR)); //workaround to cancel the event				
-			}
+			} 
 		}
 	}
-	public void registerRecipe(Recipe rec){
-		if (rec instanceof CustomShapedRecipe || rec instanceof CustomShapelessRecipe || rec instanceof CustomFurnaceRecipe){
+	public void registerRecipe(Recipe rec, boolean uniqueIngredients){
+		if (uniqueIngredients && (rec instanceof CustomShapedRecipe || rec instanceof CustomShapelessRecipe || rec instanceof CustomFurnaceRecipe)){
 			if (getIfContainsCustomRecipe(rec.getResult(), getIngredients(rec)) != null || !Bukkit.addRecipe(rec))
 				return;
 			recipes.add(rec);
 			if (recipes.size() == 1)
 				Bukkit.getPluginManager().registerEvents(this, TuSKe.getInstance());
+		} else {
+			Bukkit.addRecipe(rec);
 		}
+	}
+	public Recipe getCustomRecipe(Recipe rec){
+		for (Recipe recipe : recipes)
+			if (rec.getResult().equals(recipe.getResult()) && equalsRecipe(rec, getIngredients(recipe))){	
+				equals = true;
+				return recipe;
+			}
+		return null;		
 	}
 	
 	public Recipe getIfContainsCustomRecipe(ItemStack result, ItemStack[] items){
+		Recipe rec = null; //to set the last matched recipe
 		for (Recipe recipe : recipes)
-			if (result.equals(recipe.getResult()) && equalsRecipe(recipe, items))
-				return recipe;
-		return null;
+			if (result.equals(recipe.getResult()) && equalsRecipe(recipe, items)){		
+				rec = recipe;
+				if (equals) //in case the ingredient matches and have same item metas,
+					break;
+				else //else it will check if there is another recipe similiar,
+					continue;
+			}
+		return rec;
 	}
 	public boolean equalsRecipe(Recipe rec, ItemStack[] items){
 		equals = true;
@@ -57,7 +74,6 @@ public class RecipeManager implements Listener{
 		if (rec instanceof ShapedRecipe){
 			ShapedRecipe sr = (ShapedRecipe) rec;
 			Map<Character, ItemStack> map = sr.getIngredientMap();
-			boolean found = false;
 			int first = 3-  sr.getShape()[0].length(); 
 			if (items.length < 9)
 				first-=1;//simple fix in case the crafting is player's crafting inventory
@@ -67,19 +83,20 @@ public class RecipeManager implements Listener{
 				if (map.containsKey(c)){
 					if (areEqual(map.get(c), items[x])){
 						ch++;
-						found = true;
 						if ((x + 1)/3 > x/3 ){ // it will check if the pointer reached at the end of line
 							x += first; //it moves the pointer to the next line and to the right columm
 						}
-					} else if (found){
+					} else if (ch > 'a'){
 						return false;
 					}
+				} else if (ch > 'a' && !isAir(items[x])){
+					return false;
 				} else {
 					break;//reached at end of check and found all items from recipe.
 				}
 			}
-			return true;
-		} else if (rec instanceof ShapelessRecipe){
+			return map.size() == (int)ch - 97 ;
+		} else if (rec instanceof ShapelessRecipe){ //need to improve this
 			int itemsFound = 0;
 			List<ItemStack> ingredients = ((ShapelessRecipe)rec).getIngredientList();
 			label1: for (ItemStack item1 : ingredients)
@@ -101,7 +118,10 @@ public class RecipeManager implements Listener{
 		if (item1 == null)
 			item1 = new ItemStack(Material.AIR);
 		if (item2 == null)
-			item2 = new ItemStack(Material.AIR);//                                                      the item recipe can be equal or less the amount on crafting slot
+			item2 = new ItemStack(Material.AIR);
+		if (item1.getDurability() == 32767)
+			item1.setDurability(item2.getDurability());
+		//                                                                                the item recipe can be equal or less the amount on crafting slot
 		if (item1.getType().equals(item2.getType()) && item1.getDurability() == item2.getDurability() && item1.getAmount() <= item2.getAmount()){
 			if (equals && !item1.isSimilar(item2))
 				equals = false;

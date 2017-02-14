@@ -14,9 +14,10 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.TuSKe;
+import me.tuke.sktuke.recipe.RecipeManager;
 
 public class ExprResultOfRecipe extends SimpleExpression<ItemStack>{
-
+	
 	private Expression<Object> is;
 	@Override
 	public Class<? extends ItemStack> getReturnType() {
@@ -45,16 +46,14 @@ public class ExprResultOfRecipe extends SimpleExpression<ItemStack>{
 	protected ItemStack[] get(Event e) {
 		Object[] objs = is.getAll(e);
 		if (objs.length > 0 && objs[0] != null) {
+			RecipeManager rm = TuSKe.getRecipeManager();
 			if (objs[0] instanceof Recipe)
-				return TuSKe.getRecipeManager().fixIngredients(new ItemStack[]{((Recipe)objs[0]).getResult()});
+				return rm.fixIngredients(new ItemStack[]{((Recipe)objs[0]).getResult()});
 			else if (objs.length <= 9){
-				ItemStack[] items = (ItemStack[]) this.is.getAll(e);
-				for (Recipe r : Lists.newArrayList(Bukkit.recipeIterator())){
-					if (TuSKe.getRecipeManager().equalsRecipe(r, items)){
-						TuSKe.getRecipeManager().equals = true;
-						return TuSKe.getRecipeManager().fixIngredients(new ItemStack[]{r.getResult()});
-					}
-				}
+				ItemStack[] items = (ItemStack[]) objs;
+				for (Recipe r : Lists.newArrayList(Bukkit.recipeIterator()))
+					if (rm.equalsRecipe(r, items))
+						return rm.fixIngredients(new ItemStack[]{r.getResult()});
 			}
 		}
 		return null;		

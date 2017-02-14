@@ -591,8 +591,8 @@ public class Register{
 		//General stuffs
 		newPropertyExpression(ExprOfflineData.class, 1, "player data", "offlineplayer");
 		newPropertyExpression(ExprExpOf.class, 1, "[total] [e]xp", "player");
-		newPropertyExpression(ExprLastLogin.class, 1, "last login", "player");
-		newPropertyExpression(ExprFirstLogin.class, 1, "first login", "player");
+		newPropertyExpression(ExprLastLogin.class, 1, "last login", "offlineplayer");
+		newPropertyExpression(ExprFirstLogin.class, 1, "first login", "offlineplayer");
 		newPropertyExpression(ExprOnlineTime.class, 1,"online time", "player");
 		newPropertyExpression(ExprLastDamage.class, 1, "last damage", "livingentity");
 		newPropertyExpression(ExprLastDamageCause.class, 1, "last damage cause", "livingentity");
@@ -621,7 +621,7 @@ public class Register{
 		//1.5.3
 		newPropertyExpression(ExprMaxLevel.class, 1, "max level", "customenchantment");
 		newPropertyExpression(ExprRarity.class, 1, "rarity", "customenchantment");
-		newPropertyExpression(ExprLoreName.class, 1, "[lore] name", "customenchantment");
+		newPropertyExpression(ExprLoreName.class, 1, "lore name", "customenchantment");
 		newPropertyExpression(ExprLeatherColor.class, 1, "[leather] (0¦red|1¦green|2¦blue) colo[u]r", "-itemstacks/colors");
 		newSimpleExpression(ExprEnabled.class, 1, "enabled for %customenchantment%");
 		if (Skript.classExists("org.bukkit.event.player.PlayerItemDamageEvent"))
@@ -667,7 +667,10 @@ public class Register{
 		newSimpleExpression(ExprUUIDOfflinePlayer.class, 1, "offline player from [uuid] %string%");
 		newSimpleExpression(ExprParseRegexError.class, 1, "[last] regex [parser] error");
 		newPropertyExpression(ExprJukeboxRecord.class, 1, "[jukebox] record", "block");
-		newSimpleExpression(ExprDamageModifier.class, 1, "damage [modifier] %damagemodifier%");//new for 1.7.1
+		newSimpleExpression(ExprDamageModifier.class, 1, "damage [modifier] %damagemodifier%");
+		newPropertyExpression(ExprShapeOfRecipe.class, 1, "shape", "recipe");
+		newSimpleExpression(ExprRecipeFromItems.class, 1, "recipe from ingredients %itemstacks%");
+		newPropertyExpression(ExprFurnaceRecipeLevel.class, 1, "furnace level", "recipe");
 	}
 	public void registerClassInfos(Boolean... boo){
 		if (boo[0]){	

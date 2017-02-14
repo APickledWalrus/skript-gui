@@ -21,6 +21,7 @@ public class EffRegisterRecipe extends Effect{
 	private Expression<ItemStack> ingredients;
 	private Expression<Number> exp = null;
 	private Expression<String> shape = null;
+	private boolean isCustom = true;
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -33,6 +34,7 @@ public class EffRegisterRecipe extends Effect{
 		else if (arg1 == 0){
 			shape = (Expression<String>) arg[2];
 		}
+		isCustom = arg3.expr.matches("^(create|register)\\s+(new)?\\s+custom.*$");
 		return true;
 	}
 
@@ -44,23 +46,24 @@ public class EffRegisterRecipe extends Effect{
 	@Override
 	protected void execute(Event e) {
 		if (result.getSingle(e) != null){
+			ItemStack[] ingredients = this.ingredients.getArray(e);
+
+			if (ingredients == null || ingredients.length == 0 || ingredients.length > 9)
+				return;
+			for (ItemStack item : ingredients)
+				if (item == null)
+					return;
 			switch (type){
 			case 0:
-				if (ingredients.getArray(e).length <= 0)
-					return;
 				String[] shapes = shape != null && shape.getArray(e).length <= 3 ? shape.getArray(e) : new String[]{"abc", "def", "ghi"};
-				TuSKe.getRecipeManager().registerRecipe(new CustomShapedRecipe(result.getSingle(e), ingredients.getArray(e), shapes));
+				TuSKe.getRecipeManager().registerRecipe(new CustomShapedRecipe(result.getSingle(e), ingredients, shapes), isCustom);
 				break;
 			case 1:
-				if (ingredients.getArray(e).length <= 0)
-					return;
-				TuSKe.getRecipeManager().registerRecipe(new CustomShapelessRecipe(result.getSingle(e), ingredients.getArray(e)));
+				TuSKe.getRecipeManager().registerRecipe(new CustomShapelessRecipe(result.getSingle(e), ingredients), isCustom);
 				break;
 			case 2:
-				if (ingredients.getSingle(e) == null)
-					return;
 				float n = exp != null && exp.getSingle(e).floatValue() > 0 ? exp.getSingle(e).floatValue() : 0F;
-				TuSKe.getRecipeManager().registerRecipe(new CustomFurnaceRecipe(result.getSingle(e), ingredients.getSingle(e), n));
+				TuSKe.getRecipeManager().registerRecipe(new CustomFurnaceRecipe(result.getSingle(e), ingredients[0], n), isCustom);
 				break;
 			}
 		}
