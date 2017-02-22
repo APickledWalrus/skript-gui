@@ -8,12 +8,8 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.Nullable;
 
-import ch.njol.skript.Skript;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
@@ -21,12 +17,12 @@ import ch.njol.skript.lang.function.Function;
 import ch.njol.skript.lang.function.Functions;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.TuSKe;
+import me.tuke.sktuke.util.EvalFunction;
 
 public class EffFormatGUI extends Effect{
 	private int Type;
 	private boolean toClose;
-	private Function<?> f;
-	private List<Expression<?>> ob = new ArrayList<Expression<?>>();
+	private EvalFunction func;
 	private Expression<String> perm;
 	private Expression<String> cmd;
 	private Expression<CommandSender> sender;
@@ -63,14 +59,13 @@ public class EffFormatGUI extends Effect{
 			perm =  arg[6] != null ? (Expression<String>) arg[6] : null;
 			break;
 		case 3:
-			f = Functions.getFunction(arg3.regexes.get(0).group(0).replaceAll(" ", ""));
-			if (f == null){
-				Skript.error("There isn't any function called '" + arg3.regexes.get(0).group(0).replaceAll(" ", "") + "'.");
-				return false;
-			}
-			for (int x = 4; x < max - 2; x++)
-				if (arg[x] != null)
-					ob.add(arg[x].getConvertedExpression(Object.class));
+			String name = arg3.regexes.get(0).group(0).replaceAll(" ","");
+			String exprs = arg3.regexes.size() > 1 ? arg3.regexes.get(1).group(0) : "";
+			Function<?> f = Functions.getFunction(name);
+			if (f != null)
+				func = new EvalFunction(f, exprs);
+			else
+				func = new EvalFunction(name, exprs);
 		}
 		if (arg1 > 1 && arg1 != 4){
 			ct = arg[max - 2] != null ? arg[max - 2].getConvertedExpression(Object.class): null;
@@ -108,12 +103,12 @@ public class EffFormatGUI extends Effect{
 								}};
 							break;
 						case 3:
-							final Object[][] obj = TuSKe.getGUIManager().getParam(f, ob, e);
+							func.getParemetersValues(e);
 							rn = new Runnable(){
 								
 								@Override
 								public void run() {
-									f.execute(obj);
+									func.run();
 								}};
 							break;
 						}

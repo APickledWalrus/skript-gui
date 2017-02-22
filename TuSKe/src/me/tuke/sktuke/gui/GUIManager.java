@@ -1,21 +1,15 @@
 package me.tuke.sktuke.gui;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.function.Function;
-import ch.njol.skript.lang.function.Parameter;
 import me.tuke.sktuke.TuSKe;
 
 public class GUIManager {
@@ -74,20 +68,6 @@ public class GUIManager {
 				
 		invs.clear();
 	}
-	public Object[][] getParam(Function<?> f, List<Expression<?>> param, Event e){
-		int max = f.getParameters().length < param.size() ? f.getParameters().length : param.size() < 1 ? 1: param.size();
-		Object[][] params = new Object[max][];
-		if (param.size() > 0)
-			for (int x = 0; x < max; x++)
-				if (x < param.size() && param.get(x) != null)
-					params[x] = param.get(x).getArray(e);
-		if (params[0] == null){
-			Expression<?> def = getDefault(f.getParameter(0));
-			if (def != null)
-				params[0] = def.getArray(e);
-		}
-		return params;
-	}
 	public boolean isAllowedType(ClickType ct){
 		if (ct != null)
 			switch(ct){
@@ -100,18 +80,6 @@ public class GUIManager {
 				break;
 		}
 		return true;
-	}
-	private Expression<?> getDefault(Parameter<?> param){
-		Field field = null;
-		
-		try {
-			field = Parameter.class.getDeclaredField("def");
-			field.setAccessible(true);
-			return (Expression<?>) field.get(param);
-		}catch(Exception e){
-			return null;
-		}
-		
 	}
 	public void runCommand(final CommandSender sender, String cmd, String perm){
 		if (sender != null && cmd != null){

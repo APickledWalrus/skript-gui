@@ -531,12 +531,13 @@ public class Register{
 		String cr = "string/" + Classes.getExactClassInfo(ClickType.class).getCodeName();
 		newEffect(EffFormatGUI.class, 1,
 			"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% [to [do] nothing]",
-			"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to (1圭lose|2她pen %-inventoy%) [(using|with) %-" + cr + "% [(button|click|action)]]",
-			"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to [(1圭lose|2她pen %-inventoy%) then] (run|exe[cute]) %commandsender% command %string% [(using|with) perm[ission] %-string%][[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
-			"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to [(1圭lose|2她pen %-inventoy%) then] (run|exe[cute]) function <(.+)>\\([%-objects%[, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%]]\\)[[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
+			"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to (1圭lose|2她pen %-inventory%) [(using|with) %-" + cr + "% [(button|click|action)]]",
+			"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to [(1圭lose|2她pen %-inventory%) then] (run|exe[cute]) %commandsender% command %string% [(using|with) perm[ission] %-string%][[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
+			"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to [(1圭lose|2她pen %-inventory%) then] (run|exe[cute]) function <(.+)>\\([<.*?>]\\)[[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
+			//"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to [(1圭lose|2她pen %-inventoy%) then] (run|exe[cute]) function <(.+)>\\([%-objects%[, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%]]\\)[[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
 			"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to (run|exe[cute]) [gui [click]] event");
 		newEffect(EffUnformatGUI.class, 1, "(unformat|remove|clear|reset) [the] gui slot %numbers% of %players%", "(unformat|remove|clear|reset) [all] [the] gui slots of %players%");
-		newEffect(EffEvaluateFunction.class, 1, "evaluate function %strings% [with %-objects%[, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%]]");
+		newEffect(EffEvaluateFunction.class, 1, "evaluate function %strings% [with <.+?>]", "evaluate function %strings%\\(<.+?>\\)");
 		//1.6.9
 		newEffect(EffRegisterPermission.class, 1,"(register|create) master permission %string%");
 		newEffect(EffExecutePermission.class, 1, "[execute] [the] command %strings% by %players% with perm[ission] %string%", "[execute] [the] %players% command %strings% with perm[ission] %string%", "(let|make) %players% execute [[the] command] %strings% with perm[ission] %string%");
@@ -637,7 +638,7 @@ public class Register{
 		newPropertyExpression(ExprLocalNameOf.class, 1, "[json] client id" , "object");
 		newSimpleExpression(ExprInventoryMoveInv.class, 0, "[event-]inventory-(one|two)");
 		newSimpleExpression(ExprInventoryMoveSlot.class, 0, "[event-]slot-(one|two)");
-		newSimpleExpression(ExprEvaluateFunction.class, 1, "result of function %string% [with %-objects%[, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%]]");
+		newSimpleExpression(ExprEvaluateFunction.class, 1, "result of function %string% [with <.+?>]", "result of function %string\\(<.+?>\\)");
 		// 1.6.6
 		newSimpleExpression(ExprDraggedSlots.class, 0, "[event-]dragged(-| )slots");
 		newSimpleExpression(ExprDraggedItem.class, 0, "[event-][old(-| )]dragged(-| )item");
@@ -671,6 +672,7 @@ public class Register{
 		newPropertyExpression(ExprShapeOfRecipe.class, 1, "shape", "recipe");
 		newSimpleExpression(ExprRecipeFromItems.class, 1, "recipe from ingredients %itemstacks%");
 		newPropertyExpression(ExprFurnaceRecipeLevel.class, 1, "furnace level", "recipe");
+		newPropertyExpression(ExprLastAttacker.class, 1, "last attacker", "entity");
 	}
 	public void registerClassInfos(Boolean... boo){
 		if (boo[0]){	

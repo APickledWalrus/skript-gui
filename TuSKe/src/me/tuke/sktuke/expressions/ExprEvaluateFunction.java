@@ -2,23 +2,18 @@ package me.tuke.sktuke.expressions;
 
 import org.bukkit.event.Event;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.Nullable;
 
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
-import ch.njol.skript.lang.function.Function;
-import ch.njol.skript.lang.function.Functions;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
-import me.tuke.sktuke.TuSKe;
+import me.tuke.sktuke.util.EvalFunction;
 
 public class ExprEvaluateFunction extends SimpleExpression<Object>{
 
 	private Expression<String> func;
-	private List<Expression<?>> ob = new ArrayList<Expression<?>>();
+	private String exprs;
 
 	
 	@Override
@@ -35,9 +30,8 @@ public class ExprEvaluateFunction extends SimpleExpression<Object>{
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
 		func = (Expression<String>) arg[0];
-		for (int x = 1; x < arg.length; x++)
-			if (arg[x] != null)
-				ob.add(arg[x]);
+		if (arg3.regexes.size() > 0)
+			exprs = arg3.regexes.get(0).group(0);
 		return true;
 	}
 
@@ -49,11 +43,10 @@ public class ExprEvaluateFunction extends SimpleExpression<Object>{
 	@Override
 	@Nullable
 	protected Object[] get(Event e){
-		if (this.func.getSingle(e) != null){
-			Function<?> f = Functions.getFunction(this.func.getSingle(e));
-			if (f != null){
-				return f.execute(TuSKe.getGUIManager().getParam(f, ob, e));
-			}
+		String funcName = func.getSingle(e);
+		if (funcName != null){
+			EvalFunction ef = new EvalFunction(funcName, exprs == null? "": exprs).getParemetersValues(e);
+			return ef.run();
 		}
 		return null;
 	}

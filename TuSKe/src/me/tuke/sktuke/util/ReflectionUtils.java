@@ -1,5 +1,6 @@
 package me.tuke.sktuke.util;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 /**
@@ -25,6 +26,27 @@ public class ReflectionUtils {
 		
 	}
 	/**
+	 * Get a class from a string.
+	 * @param clz - The string path of a class
+	 * @return The class
+	 */
+	public static Class<?> getClass(String clz){
+		try {
+			return Class.forName(clz);
+		} catch (Exception e){
+			
+		}
+		return null;
+	}
+	public static <T> Constructor<T> getConstructor(Class<T> clz, Class<?>...parameters){
+		try {
+			return clz.getConstructor(parameters);
+		} catch (Exception e){
+			
+		}
+		return null;
+	}
+	/**
 	 * Checks if a method exists or not
 	 * @param clz - The class to check.
 	 * @param method - The method's name
@@ -41,15 +63,14 @@ public class ReflectionUtils {
 		return false;
 	}
 	/**
-	 * Get a class from a string.
-	 * @param clz - The string path of a class
-	 * @return The class
+	 * Return a new instance of a class.
+	 * @param clz - The class
+	 * @return A instance object of clz.
 	 */
-	public static Class<?> getClass(String clz){
+	public static <T> T newInstance(Class<T> clz){
 		try {
-			return Class.forName(clz);
-		} catch (Exception e){
-			
+			return clz.newInstance();
+		} catch (Exception e) {
 		}
 		return null;
 	}
@@ -58,9 +79,9 @@ public class ReflectionUtils {
 	 * @param clz - The class
 	 * @return A instance object of clz.
 	 */
-	public static <T> T newInstance(Class<T> clz){
+	public static <T> T newInstance(Constructor<T> constructor, Object...objects){
 		try {
-			return clz.newInstance();
+			return constructor.newInstance(objects);
 		} catch (Exception e) {
 		}
 		return null;
@@ -92,7 +113,7 @@ public class ReflectionUtils {
 	 * @return The object value.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T getField(Class<T> from, Object obj, String field){
+	public static <T> T getField(Class<?> from, Object obj, String field){
 		try{
 			Field f = from.getDeclaredField(field);
 			f.setAccessible(true);

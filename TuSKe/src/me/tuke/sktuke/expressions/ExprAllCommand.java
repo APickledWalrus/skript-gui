@@ -65,7 +65,7 @@ public class ExprAllCommand extends SimpleExpression<String>{
 		} else {
 			ArrayList<String> cmds = new ArrayList<>();
 			for (HelpTopic ht : Bukkit.getHelpMap().getHelpTopics())
-				cmds.add(ht.getName().substring(1));
+				cmds.add((ht.getName().startsWith("/") ? ht.getName().substring(1) : ht.getName()));
 			return cmds.toArray(new String[cmds.size()]);
 		}
 		return null;
