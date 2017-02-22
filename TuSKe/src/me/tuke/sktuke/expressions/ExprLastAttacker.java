@@ -8,7 +8,7 @@ public class ExprLastAttacker extends SimplePropertyExpression<Entity, Entity> {
 
 	@Override
 	public Class<? extends Entity> getReturnType() {
-		return null;
+		return Entity.class;
 	}
 
 	@Override
