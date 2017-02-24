@@ -36,6 +36,7 @@ public class EffEvaluateFunction extends Effect{
 			for (int x = 0; x < funcs.length; x++)
 				if (funcs[x] != null){
 					Expression<?>[] params = null;
+					EvalFunction.setParserInstance(this);
 					EvalFunction func;
 					if (params == null){
 						func = new EvalFunction(funcs[x], exprs);

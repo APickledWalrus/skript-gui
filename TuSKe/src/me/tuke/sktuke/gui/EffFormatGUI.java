@@ -62,10 +62,12 @@ public class EffFormatGUI extends Effect{
 			String name = arg3.regexes.get(0).group(0).replaceAll(" ","");
 			String exprs = arg3.regexes.size() > 1 ? arg3.regexes.get(1).group(0) : "";
 			Function<?> f = Functions.getFunction(name);
+			EvalFunction.setParserInstance(this);
 			if (f != null)
 				func = new EvalFunction(f, exprs);
 			else
 				func = new EvalFunction(name, exprs);
+			
 		}
 		if (arg1 > 1 && arg1 != 4){
 			ct = arg[max - 2] != null ? arg[max - 2].getConvertedExpression(Object.class): null;

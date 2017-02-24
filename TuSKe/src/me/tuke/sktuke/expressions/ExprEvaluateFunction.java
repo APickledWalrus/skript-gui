@@ -32,6 +32,7 @@ public class ExprEvaluateFunction extends SimpleExpression<Object>{
 		func = (Expression<String>) arg[0];
 		if (arg3.regexes.size() > 0)
 			exprs = arg3.regexes.get(0).group(0);
+		EvalFunction.setParserInstance(this);
 		return true;
 	}
 

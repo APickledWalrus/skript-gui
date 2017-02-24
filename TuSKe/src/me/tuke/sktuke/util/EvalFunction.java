@@ -9,13 +9,16 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionList;
 import ch.njol.skript.lang.ParseContext;
 import ch.njol.skript.lang.SkriptParser;
+import ch.njol.skript.lang.Statement;
 import ch.njol.skript.lang.function.Function;
 import ch.njol.skript.lang.function.Functions;
 import ch.njol.skript.lang.function.Parameter;
+import ch.njol.skript.lang.util.SimpleExpression;
 
 /**
  * A util class to evaluate functions. It's useful when you want to get a function ready,
  * and run the function in another event but using values of the caller event.
+ * It requires {@link ReflectionUtils}
  * 
  * @author Tuke_Nuke
  *
@@ -33,7 +36,7 @@ public class EvalFunction {
 		Class<?> parserInstanceClass = ReflectionUtils.getClass("ch.njol.skript.lang.parser.ParserInstance");
 		if (parserInstanceClass != null){
 			newParser = (Constructor<SkriptParser>) ReflectionUtils.getConstructor(SkriptParser.class, parserInstanceClass, String.class, int.class, ParseContext.class);
-			newParserInstance = ReflectionUtils.getField(parserInstanceClass, null, "DUMMY");
+			//newParserInstance = ReflectionUtils.getField(parserInstanceClass, null, "DUMMY");
 		}
 	}
 
@@ -89,6 +92,7 @@ public class EvalFunction {
 		
 		return this;
 	}
+	
 	/**
 	 * Run the function. You need to {@link #getParemetersValues(Event)} before running this.
 	 * @return The return value of function, null if a void function.
@@ -99,10 +103,38 @@ public class EvalFunction {
 		return null;
 	}
 	
+	/** 
+	 * Returns the parameters of a function.
+	 * @return Array of Expression<?>
+	 */
 	public Expression<?>[] getParameters(){
 		return parameters;
 	}
+	/**
+	 * It gets a ParserInstance from a effect/condition/expression.
+	 * It is necessary in case it is running the new parser and it can't
+	 * parse some objects with dummy ParserInstance (e.g loop-value).
+	 * 
+	 * It won't throw any exeception in case it isn't running the new parser.
+	 * @param from - An instance of calling effect/condition/expression.
+	 */
+	public static void setParserInstance(Statement from){
+		if (newParserInstance == null)
+			newParserInstance = ReflectionUtils.getField(Statement.class, from, "pi");
+	}
 	
+	/**
+	 * It gets a ParserInstance from a effect/condition/expression.
+	 * It is necessary in case it is running the new parser and it can't
+	 * parse some objects with dummy ParserInstance (e.g loop-value).
+	 * 
+	 * It won't throw any exeception in case it isn't running the new parser.
+	 * @param from - An instance of calling effect/condition/expression.{@}
+	 */
+	public static void setParserInstance(SimpleExpression<?> from){
+		if (newParserInstance == null)
+			newParserInstance = ReflectionUtils.getField(SimpleExpression.class, from, "pi");
+	}
 	private void parseParemeters(String expr){
 		SkriptParser parser = getSkriptParser(expr);
 		ReflectionUtils.setField(SkriptParser.class, parser, "suppressMissingAndOrWarnings", true);
@@ -118,8 +150,11 @@ public class EvalFunction {
 	}
 	
 	private SkriptParser getSkriptParser(String expr){
-		if (newParser != null)
+		if (newParser != null){
+			if (newParserInstance == null)
+				newParserInstance = ReflectionUtils.newInstance(ReflectionUtils.getClass("ch.njol.skript.lang.parser.ParserInstance"));
 			return ReflectionUtils.newInstance(newParser, newParserInstance, expr, SkriptParser.ALL_FLAGS, ParseContext.DEFAULT);
+		}
 		return new SkriptParser(expr, SkriptParser.ALL_FLAGS, ParseContext.DEFAULT);
 		
 	}
