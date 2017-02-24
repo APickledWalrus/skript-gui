@@ -67,8 +67,9 @@ public class EvalFunction {
 		if (func != null){
 			Function<?> f = (Function<?>)func;
 			int max = f.getParameters().length < parameters.length ? f.getParameters().length : parameters.length < 1 ? 1: parameters.length;
-			if (values != null) //In case it run in a loop, it will return a new function to each one have it own parameters.
+			if (values != null) {//In case it run in a loop, it will return a new function to each one have it own parameters.
 				return new EvalFunction(f, parameters).getParemetersValues(e);
+			}
 			values = new Object[max][];
 			if (parameters.length > 0)
 				for (int x = 0; x < max; x++)
@@ -93,9 +94,8 @@ public class EvalFunction {
 	 * @return The return value of function, null if a void function.
 	 */
 	public Object[] run(){
-		if (func != null){
+		if (func != null && func instanceof Function<?>) //In case a function doesn't exists, it will prevent.
 			return ((Function<?>)func).execute(values);
-		}
 		return null;
 	}
 	

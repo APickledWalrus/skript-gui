@@ -103,12 +103,12 @@ public class EffFormatGUI extends Effect{
 								}};
 							break;
 						case 3:
-							func.getParemetersValues(e);
+							final EvalFunction f = func.getParemetersValues(e);
 							rn = new Runnable(){
 								
 								@Override
 								public void run() {
-									func.run();
+									f.run();
 								}};
 							break;
 						}
