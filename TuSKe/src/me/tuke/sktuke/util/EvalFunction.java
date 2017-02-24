@@ -32,7 +32,7 @@ public class EvalFunction {
 	static {
 		Class<?> parserInstanceClass = ReflectionUtils.getClass("ch.njol.skript.lang.parser.ParserInstance");
 		if (parserInstanceClass != null){
-			newParser = (Constructor<SkriptParser>) ReflectionUtils.getConstructor(parserInstanceClass, String.class, int.class, ParseContext.class);
+			newParser = (Constructor<SkriptParser>) ReflectionUtils.getConstructor(SkriptParser.class, parserInstanceClass, String.class, int.class, ParseContext.class);
 			newParserInstance = ReflectionUtils.getField(parserInstanceClass, null, "DUMMY");
 		}
 	}
@@ -67,6 +67,8 @@ public class EvalFunction {
 		if (func != null){
 			Function<?> f = (Function<?>)func;
 			int max = f.getParameters().length < parameters.length ? f.getParameters().length : parameters.length < 1 ? 1: parameters.length;
+			if (values != null) //In case it run in a loop, it will return a new function to each one have it own parameters.
+				return new EvalFunction(f, parameters).getParemetersValues(e);
 			values = new Object[max][];
 			if (parameters.length > 0)
 				for (int x = 0; x < max; x++)
@@ -105,7 +107,6 @@ public class EvalFunction {
 		SkriptParser parser = getSkriptParser(expr);
 		ReflectionUtils.setField(SkriptParser.class, parser, "suppressMissingAndOrWarnings", true);
 		Expression<?> expression = parser.parseExpression(Object.class);
-		//TuSKe.debug(expression);
 		if (expression != null) {
 			if (!expression.isSingle())
 				parameters = ((ExpressionList<?>)expression).getExpressions();
