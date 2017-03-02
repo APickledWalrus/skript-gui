@@ -1,10 +1,12 @@
 package me.tuke.sktuke.util;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
 
@@ -18,16 +20,18 @@ public class CommandUtils {
 	public static String[] getCommandList(){
 		Collection<Command> commandList = cmds.getCommands();
 		if (commands.length != commandList.size()){
-			commands = new String[commandList.size()];
+			final Set<String> cmdsList = new HashSet<>();
 			commandList.forEach(new Consumer<Command>(){
-
-				int x = 0;
+				
 				@Override
 				public void accept(Command cmd) {
-					commands[x++] = cmd.getName();
+					cmdsList.add(cmd.getLabel());
 				}});
-		}
 			
+			commands = cmdsList.toArray(new String[cmdsList.size()]);
+			Arrays.sort(commands);
+			
+		}
 		return commands;
 	}
 }
