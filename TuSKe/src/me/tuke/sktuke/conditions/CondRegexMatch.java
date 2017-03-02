@@ -18,7 +18,7 @@ public class CondRegexMatch extends Condition{
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
 		str = (Expression<String>) arg[0];
-		regex = arg[1];
+		regex = arg[1].getConvertedExpression(Object.class);
 		setNegated(arg1 == 1);
 		return true;
 	}

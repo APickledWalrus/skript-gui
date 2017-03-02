@@ -30,9 +30,10 @@ public class ExprRegexRandom extends SimpleExpression<String>{
 		return mode != 3;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
-		regex = arg[0];
+		regex = arg[0].getConvertedExpression(Object.class);
 		if (arg1 > 0) {
 			mode = 3;
 			if (TuSKe.getInstance().getConfig().getBoolean("warn_unsafe_expressions") && !warn){

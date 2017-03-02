@@ -29,7 +29,7 @@ public class ExprRegexReplace extends SimpleExpression<String>{
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
-		regex = arg[0];
+		regex = arg[0].getConvertedExpression(Object.class);
 		with = (Expression<String>) arg[1];
 		from = (Expression<String>) arg[2];
 		return true;
