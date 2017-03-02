@@ -2,6 +2,7 @@ package me.tuke.sktuke.util;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * Just a simple reflection class, just to not depend on Skript 2.2+ (I think it is the only thing I use from it)
@@ -54,13 +55,36 @@ public class ReflectionUtils {
 	 * @param parameters - The parameters of method, can be null if none
 	 * @return - true if it exists
 	 */
-	public static boolean hasMethod(Class<?> clz, String method, Class<?> ret, Class<?>...parameters){
+	public static boolean hasMethod(Class<?> clz, String method, Class<?>...parameters){
 		try{
-			clz.getClass().getDeclaredMethod(method, parameters);
+			return getMethod(clz, method, parameters) != null;
 		} catch(Exception e){
 			
 		}
 		return false;
+	}
+	
+	public static Method getMethod(Class<?> clz, String method, Class<?>... parameters){
+		try {
+			return clz.getDeclaredMethod(method, parameters); 
+		} catch (Exception e){
+			
+		}
+		return null;
+	}
+	@SuppressWarnings("unchecked")
+	public static <T> T invokeMethod(Class<?> clz, String method, Object instance, Class<T> ret, Object... parameters){
+		try {
+			Class<?>[] parameterTypes = new Class<?>[parameters.length];
+			int x = 0;
+			for (Object obj : parameters)
+				parameterTypes[x++] = obj.getClass();
+			Method m = clz.getDeclaredMethod(method, parameterTypes);
+			return (T) m.invoke(instance, parameters);
+		} catch (Exception e){
+			
+		}
+		return null;
 	}
 	/**
 	 * Return a new instance of a class.

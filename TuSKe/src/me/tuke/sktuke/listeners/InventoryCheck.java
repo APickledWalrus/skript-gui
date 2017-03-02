@@ -15,7 +15,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 
-import ch.njol.skript.Skript;
 import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.events.customevent.AnvilCombineEvent;
 import me.tuke.sktuke.events.customevent.AnvilRenameEvent;
@@ -23,6 +22,9 @@ import me.tuke.sktuke.events.customevent.InventoryMoveEvent;
 import me.tuke.sktuke.gui.GUI;
 import me.tuke.sktuke.gui.GUIActionEvent;
 import me.tuke.sktuke.gui.GUIManager;
+import me.tuke.sktuke.util.ReflectionUtils;
+
+//TODO Separate all this events into parts and only active them when is used in scripts.
 public class InventoryCheck implements Listener{
 	private TuSKe instance;
 	private GUIManager gm = TuSKe.getGUIManager();
@@ -179,7 +181,7 @@ public class InventoryCheck implements Listener{
 		return true;
 	}
 	private Inventory getClickedInventory(InventoryClickEvent e){
-		if (Skript.methodExists(e.getClass(), "getClickedInventory"))
+		if (ReflectionUtils.hasMethod(InventoryClickEvent.class, "getClickedInventory"))
 			return e.getClickedInventory();
 		else if (e.getRawSlot() < 0)
 			return null;

@@ -50,7 +50,6 @@ import me.tuke.sktuke.hooks.legendchat.*;
 import me.tuke.sktuke.hooks.marriage.*;
 import me.tuke.sktuke.hooks.simpleclans.*;
 import me.tuke.sktuke.listeners.*;
-import me.tuke.sktuke.util.LegendConfig;
 import me.tuke.sktuke.util.ReflectionUtils;
 import me.tuke.sktuke.util.Regex;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
@@ -625,7 +624,7 @@ public class Register{
 		newPropertyExpression(ExprLoreName.class, 1, "lore name", "customenchantment");
 		newPropertyExpression(ExprLeatherColor.class, 1, "[leather] (0¦red|1¦green|2¦blue) colo[u]r", "-itemstacks/colors");
 		newSimpleExpression(ExprEnabled.class, 1, "enabled for %customenchantment%");
-		if (Skript.classExists("org.bukkit.event.player.PlayerItemDamageEvent"))
+		if (ReflectionUtils.hasClass("org.bukkit.event.player.PlayerItemDamageEvent"))
 			newSimpleExpression(ExprItemDamage.class, 0, "item damage");
 		newSimpleExpression(ExprAcceptedItems.class, 1, "accepted items for %customenchantment%");
 		newSimpleExpression(ExprCEConflicts.class, 1, "conflicts for %customenchantment%");
@@ -640,7 +639,7 @@ public class Register{
 		newSimpleExpression(ExprInventoryMoveSlot.class, 0, "[event-]slot-(one|two)");
 		newSimpleExpression(ExprEvaluateFunction.class, 1, "result of function %string% [with <.+?>]", "result of function %string\\(<.+?>\\)");
 		// 1.6.6
-		newSimpleExpression(ExprDraggedSlots.class, 0, "[event-]dragged(-| )slots");
+		newSimpleExpression(ExprDraggedSlots.class, 0, "[event-]dragged(-| )(top|bottom)(-| )slots");
 		newSimpleExpression(ExprDraggedItem.class, 0, "[event-][old(-| )]dragged(-| )item");
 		newSimpleExpression(ExprDroppedExp.class, 1, "[the] dropped [e]xp[erience] [orb[s]]");
 		//1.6.8
@@ -650,7 +649,7 @@ public class Register{
 		//1.6.9
 		newSimpleExpression(ExprVirtualInv.class, 1, 
 			"virtual %inventorytype% [inventory] [with size %-number%] [(named|with (name|title)) %-string%]",
-			"virtual %inventorytype% [inventory] [with %number% row[s]] [(named|with (name|title)) %-string%]");
+			"virtual %inventorytype% [inventory] [with %-number% row[s]] [(named|with (name|title)) %-string%]");
 		newSimpleExpression(ExprCommandInfo.class, 7, 
 			"[the] description of command %string%", "command %string%'[s] description",
 			"[the] main [command] of command %string%", "command %string%'[s] main [command]",
@@ -673,6 +672,7 @@ public class Register{
 		newSimpleExpression(ExprRecipeFromItems.class, 1, "recipe from ingredients %itemstacks%");
 		newPropertyExpression(ExprFurnaceRecipeLevel.class, 1, "furnace level", "recipe");
 		newPropertyExpression(ExprLastAttacker.class, 1, "last attacker", "entity");
+		newSimpleExpression(ExprRegexRandom.class, 1, "(first|random) string matching [pattern] %regex/string%", "random strings matching [pattern] %regex/string%");
 	}
 	public void registerClassInfos(Boolean... boo){
 		if (boo[0]){	

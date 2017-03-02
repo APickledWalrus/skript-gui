@@ -19,11 +19,11 @@ import me.tuke.sktuke.customenchantment.EnchantConfig;
 import me.tuke.sktuke.customenchantment.EnchantManager;
 import me.tuke.sktuke.documentation.Documentation;
 import me.tuke.sktuke.gui.GUIManager;
+import me.tuke.sktuke.hooks.legendchat.LegendConfig;
 import me.tuke.sktuke.nms.NMS;
 import me.tuke.sktuke.nms.ReflectionNMS;
 import me.tuke.sktuke.recipe.RecipeManager;
 import me.tuke.sktuke.register.Register;
-import me.tuke.sktuke.util.LegendConfig;
 
 public class TuSKe extends JavaPlugin {
 	private static NMS nms;

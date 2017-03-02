@@ -35,7 +35,7 @@ public class ExprDraggedItem extends SimpleExpression<ItemStack>{
 			Skript.error("The expression '" + arg3.expr + "' can only be used in Inventory Drag event.");
 			return false;
 		}
-		isOld = arg3.expr.contains("old");
+		isOld = arg3.expr.toLowerCase().contains("old");
 		return true;
 	}
 

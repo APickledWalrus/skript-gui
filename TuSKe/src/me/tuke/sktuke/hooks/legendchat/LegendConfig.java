@@ -1,4 +1,4 @@
-package me.tuke.sktuke.util;
+package me.tuke.sktuke.hooks.legendchat;
 
 import java.io.File;
 import java.util.HashMap;

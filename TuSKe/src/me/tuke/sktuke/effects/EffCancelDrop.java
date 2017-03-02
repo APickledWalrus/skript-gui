@@ -37,12 +37,14 @@ public class EffCancelDrop extends Effect{
 
 	@Override
 	protected void execute(Event e) {
-		PlayerDeathEvent pde = (PlayerDeathEvent)e;
-		if (!pde.getKeepLevel() && Cancel <= 1){
-			pde.setKeepLevel(true);
-			pde.setDroppedExp(0);
+		if (e instanceof PlayerDeathEvent){
+			PlayerDeathEvent pde = (PlayerDeathEvent)e;
+			if (!pde.getKeepLevel() && Cancel <= 1){
+				pde.setKeepLevel(true);
+				pde.setDroppedExp(0);
+			}
+			if (!pde.getKeepInventory() && Cancel >= 1)
+				pde.setKeepInventory(true);		
 		}
-		if (!pde.getKeepInventory() && Cancel >= 1)
-			pde.setKeepInventory(true);		
 	}
 }

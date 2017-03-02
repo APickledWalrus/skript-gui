@@ -53,6 +53,10 @@ public class SimpleConfig{
 			"#It will just show some debug messages if needed.",
 			"#So far, it doesn't do nothing, only prevent some testing debug messages",
 			"#that can be accidentaly forgot inside the code.");
+		setDefault("warn_unsafe_expressions", true,
+			"#It will be used to warn about expressions that may have risk to your server,",
+			"#The warn is sent when reloading a script and it won't prevent the expression to work.",
+			"#An example is the expression 'random strings matching %regex%'.");
 		setDefault("use_only_enum_names", false, 
 			"#This is only needed in case of conflict with Skript or another addon",
 			"#It will make some types, that is registered by TuSKe and if the type is a Enum,",

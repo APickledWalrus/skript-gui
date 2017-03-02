@@ -5,7 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import br.com.devpaulo.legendchat.api.events.ChatMessageEvent;
-import me.tuke.sktuke.util.LegendConfig;
+import me.tuke.sktuke.hooks.legendchat.LegendConfig;
 
 public class TagChat implements Listener{
 	
