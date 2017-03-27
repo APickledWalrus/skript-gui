@@ -56,10 +56,11 @@ public class InventoryCheck implements Listener{
 	
 							@Override
 							public void run() {
-								gm.removeAll(click);
-								e.getWhoClicked().closeInventory();
+								//gm.removeAll(click);
 								if (gui.getInventory() != null)
 									e.getWhoClicked().openInventory(gui.getInventory());
+								else
+									e.getWhoClicked().closeInventory();
 								if (gui.toRun())
 									gui.getRunnable().run();
 							}}, 0L);

@@ -1,10 +1,16 @@
 package me.tuke.sktuke.expressions.recipe;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
+import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.ShapelessRecipe;
+
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
@@ -20,6 +26,7 @@ import me.tuke.sktuke.TuSKe;
 
 public class ExprAllRecipes extends SimpleExpression<Recipe>{
 
+	int type = 0;
 	@Override
 	public Class<? extends Recipe> getReturnType() {
 		return Recipe.class;
@@ -32,6 +39,12 @@ public class ExprAllRecipes extends SimpleExpression<Recipe>{
 
 	@Override
 	public boolean init(Expression<?>[] arg0, int arg1, Kleenean arg2, ParseResult arg3) {
+		if (arg3.expr.toLowerCase().contains("shaped"))
+			type = 1;
+		else if (arg3.expr.toLowerCase().contains("shapeless"))
+			type = 2;
+		else if (arg3.expr.toLowerCase().contains("furnace"))
+			type = 3;
 		return true;
 	}
 
@@ -42,24 +55,66 @@ public class ExprAllRecipes extends SimpleExpression<Recipe>{
 
 	@Override
 	@Nullable
-	protected Recipe[] get(Event arg0) {
-		List<Recipe> rec = Lists.newArrayList(Bukkit.recipeIterator());
+	protected Recipe[] get(Event arg0) {		
+		List<Recipe> rec;
+		if (type == 0){
+			 rec = Lists.newArrayList(Bukkit.recipeIterator());
+		} else {
+			final Iterator<Recipe> it = Bukkit.recipeIterator();
+			rec = new ArrayList<Recipe>();
+			while (it.hasNext()){
+				Recipe r = it.next();
+				if ((type == 1 && r instanceof ShapedRecipe) || (type == 2 && r instanceof ShapelessRecipe) || (type == 3 && r instanceof FurnaceRecipe)){
+					rec.add(r);
+				}				
+			}
+		}
 		return rec.toArray(new Recipe[rec.size()]);
 	}
 	@Override
 	public void change(Event e, Object[] delta, Changer.ChangeMode mode){
 		switch (mode){
-		case DELETE: Bukkit.clearRecipes(); break;
-		case RESET: Bukkit.resetRecipes(); break;
-		default: break;
+			case DELETE: Bukkit.clearRecipes(); break;
+			case RESET: Bukkit.resetRecipes(); break;
+			case REMOVE: TuSKe.getRecipeManager().removeRecipe((Recipe[])delta); return;
+			default: break;
 		}
 		TuSKe.getRecipeManager().clearRecipes();
 	}
+	
+	@Override
+	public Iterator<Recipe> iterator(Event e){
+		if (type == 0)
+			return Bukkit.recipeIterator();
+		return new Iterator<Recipe>(){
+			Iterator<Recipe> recipes = Bukkit.recipeIterator();
+			Recipe next;
+			@Override
+			public boolean hasNext() {
+				next = null;
+				while (recipes.hasNext()){
+					Recipe r = recipes.next();
+					if ((type == 1 && r instanceof ShapedRecipe) || (type == 2 && r instanceof ShapelessRecipe) || (type == 3 && r instanceof FurnaceRecipe)){
+						next = r;
+						break;
+					}
+				}
+				return next != null;
+			}
+
+			@Override
+			public Recipe next() {
+				return next;
+			}};
+		
+	}
+	
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public Class<?>[] acceptChange(final Changer.ChangeMode mode) {
-		if (mode == ChangeMode.DELETE || mode == ChangeMode.RESET)
-			return CollectionUtils.array(Object.class);
+		if (mode == ChangeMode.DELETE || mode == ChangeMode.RESET /*|| mode == ChangeMode.REMOVE*/) //The REMOVE changer is not yet finished
+			return CollectionUtils.array(Recipe[].class);
 		return null;
 		
 	}

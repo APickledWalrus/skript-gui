@@ -24,6 +24,7 @@ import me.tuke.sktuke.nms.NMS;
 import me.tuke.sktuke.nms.ReflectionNMS;
 import me.tuke.sktuke.recipe.RecipeManager;
 import me.tuke.sktuke.register.Register;
+import me.tuke.sktuke.util.ReflectionUtils;
 
 public class TuSKe extends JavaPlugin {
 	private static NMS nms;
@@ -33,7 +34,6 @@ public class TuSKe extends JavaPlugin {
 	private static RecipeManager recipes = new RecipeManager();;
 	private GitHubUpdater updater;
 	private static Register reg;
-	private static Documentation docs;
 	
 	@Override
 	public void onEnable() {
@@ -42,7 +42,6 @@ public class TuSKe extends JavaPlugin {
 		if (reg.hasPlugin("Skript")){
 			loadConfig();
 			getNMS();
-			docs = new Documentation(this, getConfig().getBoolean("documentation.enabled"));
 			Integer[] result = reg.load();//array of amount of registered syntaxes
 			if (result == null)
 				return;//in case it started while skript is already loaded.
@@ -59,17 +58,7 @@ public class TuSKe extends JavaPlugin {
 			log("Loaded sucessfully a total of " + result[0] + " events, " + result[1] + " conditions, " + result[2] + " expressions and "+ result[3] + " effects in " +d+ " seconds. Enjoy ^-^");
 			if (getConfig().getBoolean("updater.check_for_new_update"))
 				checkUpdate();
-			Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable(){
-
-				@Override
-				public void run() {
-					docs.generateDocs();
-					if (docs.isEnabled())
-						log("Documentation was generated correctly.");
-					docs = null; //The object doesn't need to exists.
-					
-					
-				}}, 100);
+			new Documentation(this).load();
 				
 		} else {
 			log("Error 404 - Skript not found.", Level.SEVERE);
@@ -289,9 +278,6 @@ public class TuSKe extends JavaPlugin {
 	public static LegendConfig getLegendConfig(){
 		return reg.config;
 	}
-	public static Documentation getDocumentation(){
-		return docs;
-	}
 	public static void log(String msg){
 		log(msg, Level.INFO);
 	}
@@ -312,7 +298,7 @@ public class TuSKe extends JavaPlugin {
 	}
 	public static NMS getNMS(){		
 		if (nms == null){
-			String rversion = Bukkit.getServer().getClass().getPackage().getName().split(".v")[1];
+			String rversion = ReflectionUtils.packageVersion;
 			try {
 				Class<?> classs = Class.forName("me.tuke.sktuke.nms.M_" + rversion);
 				nms = (NMS) classs.newInstance(); 

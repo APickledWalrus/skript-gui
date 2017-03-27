@@ -4,12 +4,16 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import org.bukkit.Bukkit;
+
 /**
  * Just a simple reflection class, just to not depend on Skript 2.2+ (I think it is the only thing I use from it)
  * @author Leandro Pereira
  *
  */
 public class ReflectionUtils {
+
+	public static final String packageVersion = Bukkit.getServer().getClass().getPackage().getName().split(".v")[1];
 	
 	/**
 	 * Check if a class exists.
@@ -81,6 +85,15 @@ public class ReflectionUtils {
 				parameterTypes[x++] = obj.getClass();
 			Method m = clz.getDeclaredMethod(method, parameterTypes);
 			return (T) m.invoke(instance, parameters);
+		} catch (Exception e){
+			
+		}
+		return null;
+	}
+	@SuppressWarnings("unchecked")
+	public static <T> T invokeMethod(Method method, Object instance, Object... parameters){
+		try {
+			return (T) method.invoke(instance, parameters);
 		} catch (Exception e){
 			
 		}

@@ -20,7 +20,7 @@ public class ExprHorseStyle extends SimplePropertyExpression<Entity, String>{
 
 	@Override
 	@Nullable
-	public String convert(Entity e) {
+	public String convert(Entity e) { 
 		if (e instanceof Horse && ((Horse)e).getVariant().equals(Horse.Variant.HORSE) && !((Horse)e).getStyle().equals(Horse.Style.NONE)){
 			return ((Horse)e).getStyle().name().toLowerCase().replaceAll("_", " ");
 		}

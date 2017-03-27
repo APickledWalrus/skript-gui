@@ -36,8 +36,6 @@ import ch.njol.skript.util.*;
 import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.conditions.*;
 import me.tuke.sktuke.customenchantment.*;
-import me.tuke.sktuke.documentation.Syntax;
-import me.tuke.sktuke.documentation.SyntaxType;
 import me.tuke.sktuke.effects.*;
 import me.tuke.sktuke.events.*;
 import me.tuke.sktuke.events.customevent.*;
@@ -104,9 +102,9 @@ public class Register{
 		Bukkit.getServer().getPluginManager().registerEvents(new OnlineStatusCheck(instance), instance);
 		Bukkit.getServer().getPluginManager().registerEvents(new EnchantCheck(instance), instance);
 		//Bukkit.getServer().getPluginManager().registerEvents(new PlayerMovesCheck(instance),instance);
-		for (Player p: PlayerUtils.getOnlinePlayers()){
-			OnlineStatusCheck.setTime(p, System.currentTimeMillis());
-		}
+		if (!instance.getConfig().isSet("disabled.online time check") || !instance.getConfig().getBoolean("disabled.online time check"))
+			for (Player p: PlayerUtils.getOnlinePlayers())
+				OnlineStatusCheck.setTime(p, System.currentTimeMillis());
 		return new Integer[]{evt, cond, expr, eff, (int) (System.currentTimeMillis() - start)}; //Enchantments will be loaded after the server started.
 	}
 	public boolean hasPlugin(String plugin){
@@ -131,7 +129,7 @@ public class Register{
 		}
 		//General
 
-		newEvent(EvtAnvilCombine.class, AnvilCombineEvent.class, 1, "Anvil conbine", "anvil [item] (combine|merge)");
+		newEvent(EvtAnvilCombine.class, AnvilCombineEvent.class, 1, "Anvil combine", "anvil [item] (combine|merge)");
 		newEvent(EvtAnvilRename.class, AnvilRenameEvent.class, 1, "Anvil rename", "anvil [item] rename");
 		newEvent(EvtInventoryMove.class, InventoryMoveEvent.class, 1, "Inventory move", "inventory move");
 		newEvent(EvtInventoryDrag.class, InventoryDragEvent.class, 1, "Inventory drag", "inventory drag");
@@ -643,9 +641,9 @@ public class Register{
 		newSimpleExpression(ExprDraggedItem.class, 0, "[event-][old(-| )]dragged(-| )item");
 		newSimpleExpression(ExprDroppedExp.class, 1, "[the] dropped [e]xp[erience] [orb[s]]");
 		//1.6.8
-		newSimpleExpression(ExprSplitCharacter.class, 1, "split %string% (with|by|using) %number% [char[aracter][s]]", "%string% [split] (with|by|using) %number% [char[aracter][s]]");
+		newSimpleExpression(ExprSplitCharacter.class, 1, "split %string% (with|by|using) %number% [char[acter][s]]", "%string% [split] (with|by|using) %number% [char[acter][s]]");
 		newPropertyExpression(ExprLastColor.class, 1, "last color", "string");
-		newSimpleExpression(ExprAllRecipes.class, 1, "[all] [registred] recipes");
+		newSimpleExpression(ExprAllRecipes.class, 1, "[all] [registred] (shaped|shapeless|furnace|) recipes");
 		//1.6.9
 		newSimpleExpression(ExprVirtualInv.class, 1, 
 			"virtual %inventorytype% [inventory] [with size %-number%] [(named|with (name|title)) %-string%]",
@@ -770,7 +768,7 @@ public class Register{
 					
 				}}.register();
 		}
-		//Genral types
+		//General types
 		if (Classes.getExactClassInfo(Recipe.class) == null){
 			new SimpleType<Recipe>(Recipe.class, "recipe"){
 				@Override
@@ -867,7 +865,6 @@ public class Register{
 			return;
 		}
 		expr += amount;
-		TuSKe.getDocumentation().addSyntax(new Syntax(ret, SyntaxType.EXPRESSION, "[the] " + property + " of %" + from + "%", "%" + from + "%'[s] " + property));
 		Skript.registerExpression(c, (Class<T>)ret.getReturnType(), ExpressionType.PROPERTY, "[the] " + property + " of %" + from + "%", "%" + from + "%'[s] " + property);
 		
 	}
@@ -880,7 +877,6 @@ public class Register{
 			return;
 		}
 		expr += amount;
-		TuSKe.getDocumentation().addSyntax(new Syntax(ret, SyntaxType.EXPRESSION, syntax));
 		Skript.registerExpression(c, (Class<T>)ret.getReturnType(), ExpressionType.SIMPLE, syntax);
 		
 	}
@@ -888,14 +884,12 @@ public class Register{
 		if (instance.getConfig().isSet("disable." + c.getSimpleName()) && instance.getConfig().getBoolean("disable." + c.getSimpleName()))
 			return;
 		cond+= amount;
-		TuSKe.getDocumentation().addSyntax(new Syntax(c.getSimpleName(), null, syntax, null, null, SyntaxType.CONDITION));
 		Skript.registerCondition(c, syntax);
 	}
 	public <E extends Effect> void newEffect(Class<E> c, int amount, String... syntax){
 		if (instance.getConfig().isSet("disable." + c.getSimpleName()) && instance.getConfig().getBoolean("disable." + c.getSimpleName()))
 			return;
 		eff+= amount;
-		TuSKe.getDocumentation().addSyntax(new Syntax(c.getSimpleName(), null, syntax, null, null, SyntaxType.EFFECT));
 		Skript.registerEffect(c, syntax);
 	}
 	public void newSimpleEvent(String eventClass, String name, String...syntax){
@@ -920,7 +914,6 @@ public class Register{
 			return;
 		}
 		evt+= amount;
-		TuSKe.getDocumentation().addSyntax(new Syntax(name, null, syntax, null, null, SyntaxType.EVENT));
 		Skript.registerEvent(name, c, event, syntax);
 	}
 }

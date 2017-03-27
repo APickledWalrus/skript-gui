@@ -1,8 +1,13 @@
 package me.tuke.sktuke.recipe;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -19,6 +24,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
 import me.tuke.sktuke.TuSKe;
+import me.tuke.sktuke.util.ReflectionUtils;
 
 public class RecipeManager implements Listener{
 
@@ -31,6 +37,7 @@ public class RecipeManager implements Listener{
 		if (rec != null){
 			if (!equals){
 				equals = true;
+				TuSKe.debug("Clear");
 				e.getInventory().setResult(new ItemStack(Material.AIR)); //workaround to cancel the event				
 			} 
 		}
@@ -48,11 +55,82 @@ public class RecipeManager implements Listener{
 	}
 	public Recipe getCustomRecipe(Recipe rec){
 		for (Recipe recipe : recipes)
-			if (rec.getResult().equals(recipe.getResult()) && equalsRecipe(rec, getIngredients(recipe))){	
+			if (rec.getClass() == recipe.getClass() && rec.getResult().equals(recipe.getResult()) && equalsRecipe(rec, getIngredients(recipe))){	
 				equals = true;
 				return recipe;
 			}
 		return null;		
+	}
+	@SuppressWarnings("unchecked")
+	public void removeRecipe(Recipe... recipes){
+		if (recipes == null || recipes.length == 0)
+			return;
+		String v = ReflectionUtils.packageVersion;
+		Class<?> nmsItemClass = ReflectionUtils.getClass("net.minecraft.server.v" + v +".ItemStack");
+		Method method = ReflectionUtils.getMethod(ReflectionUtils.getClass("org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack"), "asNMSCopy", ItemStack.class);
+		Object craftingManager = ReflectionUtils.invokeMethod(ReflectionUtils.getClass("net.minecraft.server.v" + v + ".CraftingManager"), "getInstance", null, null);
+		for (Recipe rec : recipes){
+			if (rec == null)
+				continue;
+			Recipe custom = getCustomRecipe(rec);
+			if (custom != null)
+				this.recipes.remove(custom);
+			Object nmsRecipe = null;
+			if (rec instanceof ShapedRecipe){
+				Class<?> shapedClass = ReflectionUtils.getClass("net.minecraft.server.v" + v +".ShapedRecipes");
+				int height = ((ShapedRecipe) rec).getShape().length;
+				int width = ((ShapedRecipe) rec).getShape()[0].length();
+				ItemStack[] ingredients = getIngredients(rec);
+				Object[] nmsItems = (Object[]) Array.newInstance(nmsItemClass, ingredients.length);
+				int x = 0;
+				for (ItemStack item : ingredients)
+					nmsItems[x++] = ReflectionUtils.invokeMethod(method, null, item);
+				Constructor<?> c = shapedClass.getDeclaredConstructors()[0];
+				TuSKe.debug(c, shapedClass);
+				//nmsRecipe = ReflectionUtils.newInstance(c, width, height, nmsItems ,ReflectionUtils.invokeMethod(method, null, rec.getResult()));
+			} else if (rec instanceof ShapelessRecipe){
+				Class<?> shapelessClass = ReflectionUtils.getClass("net.minecraft.server.v" + v +".ShapelessRecipes");
+				ItemStack[] ingredients = getIngredients(rec);
+				List<Object> list2 = new ArrayList<Object>();
+				for (ItemStack item : ingredients)
+					list2.add(ReflectionUtils.invokeMethod(method, null, item));
+				List<Object> nmsRecipes = ((List<Object>)ReflectionUtils.getField(craftingManager.getClass(), craftingManager, "recipes"));
+				label1: for (Object nmsRecipe2 : nmsRecipes){
+					Object result1 = ReflectionUtils.invokeMethod(shapelessClass, "b", nmsRecipe2, null);
+					Object result2 = ReflectionUtils.invokeMethod(method, null, rec.getResult());					
+					if (!(result1 + "").equalsIgnoreCase(result2 + ""))
+						continue label1;
+					List<Object> list1 = ReflectionUtils.invokeMethod(shapelessClass, "getIngredients", nmsRecipe2, null);
+					for (int x = 0; x < list1.size() && x < list2.size(); x++){
+						if (!(list1.get(x) + "").equalsIgnoreCase(list2.get(x) + ""))
+							continue label1;
+					}
+					nmsRecipe = nmsRecipe2;
+					break;
+				}
+			} else if (rec instanceof FurnaceRecipe){
+				Object furnaceRecipes = ReflectionUtils.invokeMethod(ReflectionUtils.getClass("net.minecraft.server.v"+v+".RecipesFurnace"), "getInstance", null, null);
+				Object input = ReflectionUtils.invokeMethod(method, null, ((FurnaceRecipe) rec).getInput());
+				Object output = ReflectionUtils.invokeMethod(method, null, rec.getResult());
+				Map<?, ?> recs = ReflectionUtils.getField(furnaceRecipes.getClass(), furnaceRecipes, "recipes");
+				for (Entry<?, ?> entry : recs.entrySet()){
+					if (entry.getKey().toString().equals(input.toString()) &&  entry.getValue().toString().equalsIgnoreCase(output.toString())){
+						input = entry.getKey();
+						output = entry.getValue();
+						break;
+					}
+				}			
+				((Map<?, ?>) ReflectionUtils.getField(furnaceRecipes.getClass(), furnaceRecipes, "customRecipes")).remove(input);
+				((Map<?, ?>) ReflectionUtils.getField(furnaceRecipes.getClass(), furnaceRecipes, "recipes")).remove(input);
+				((Map<?, ?>) ReflectionUtils.getField(furnaceRecipes.getClass(), furnaceRecipes, "c")).remove(output);			
+				return;
+			}
+			if (nmsRecipe != null){
+				((List<?>)ReflectionUtils.getField(craftingManager.getClass(), craftingManager, "recipes")).remove(nmsRecipe);
+			}
+			
+		}
+		
 	}
 	
 	public Recipe getIfContainsCustomRecipe(ItemStack result, ItemStack[] items){
