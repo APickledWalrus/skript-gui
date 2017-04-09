@@ -1,0 +1,17 @@
+name: TuSKe
+description: A Skript Addon to make your scripts bettter!
+main: me.tuke.sktuke.TuSKe
+version: 1.7.4-beta
+author: Tuke_Nuke
+site: github.com/Tuke-Nuke/TuSKe
+softdepend: [Skript, SimpleClans, SimpleClansLegacy, Legendchat, Marriage, ProtocolSupport, ViaVersion, Landlord, Umbaska, SkQuery] #Last two dependencies are just to not register ClickType and InventoryType before them
+commands:
+  tuske:
+    description: Main command for TuSKe
+    usage: /tuske
+    permission: tuske.admin
+    permission-message: §cYou don't have permission for this command!
+permissions:
+  tuske.admin:
+    description: Access to /tuske.
+    default: op

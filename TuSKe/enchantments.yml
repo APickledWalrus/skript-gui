@@ -1,0 +1,23 @@
+#See the detailed tutorial of how to create a custom enchantment at:
+#skUnity Forum: https://forums.skunity.com/t/7397
+#Spigot Page: https://www.spigotmc.org/resources/tuske.25136/
+
+Enchantments:
+#  Example:
+#    Name: Lore name here
+#    MaxLevel: 1
+#    Rarity: 5
+#    AcceptedItems: Swords and Pickaxes
+#    Enabled: false
+
+Config:
+  #Max enchantments that that a item can have.
+  MaxEnchantmentsPerItem: 4
+  
+  #If you have another plugin to make custom enchantments, set it to true.
+  CompatibilityMode: false
+  
+  #Changes the global rarity of custom enchantments on enchantment table.
+  #Change it to let the custom enchantments more difficult to gain.
+  #It goes from 1 (very rare) to 5. Where's 5 doesn't affect nothing.
+  GlobalRarity: 5
