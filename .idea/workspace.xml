@@ -7,331 +7,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b683a6c7-5d93-4cce-b122-90f5b66b94a6" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/META-INF/MANIFEST.MF" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/Unicode.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/GitHubUpdater$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/GitHubUpdater.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/Metrics$1$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/Metrics$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/Metrics$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/Metrics$AdvancedBarChart.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/Metrics$AdvancedMapChart.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/Metrics$AdvancedPie.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/Metrics$Country.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/Metrics$CustomChart.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/Metrics$MultiLineChart.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/Metrics$SimpleBarChart.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/Metrics$SimpleMapChart.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/Metrics$SimplePie.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/Metrics$SingleLineChart.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/Metrics.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/SimpleConfig.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/TuSKe$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/TuSKe$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/TuSKe.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/blockeffect/BlockPosition.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/blockeffect/Parser$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/blockeffect/Parser.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/conditions/CondCanEat.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/conditions/CondCanSpawn.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/conditions/CondHasCustom.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/conditions/CondHasGravity.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/conditions/CondIsAgeable$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/conditions/CondIsAgeable.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/conditions/CondIsBlockType.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/conditions/CondIsMobType$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/conditions/CondIsMobType$MobType.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/conditions/CondIsMobType.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/conditions/CondIsMoving.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/conditions/CondIsTameable$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/conditions/CondIsTameable.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/conditions/CondRegexMatch$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/conditions/CondRegexMatch.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/conditions/gui/CondHasGUI.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/documentation/Documentation.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/documentation/SyntaxInfo.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/effects/EffCancelDrop.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/effects/EffEjectRecord.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/effects/EffEvaluateFunction.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/effects/EffExecutePermission.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/effects/EffMakeDrop.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/effects/EffPushBlock.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/effects/EffRegisterPermission.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/effects/EffRegisterRecipe.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/effects/EffSaveData.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/effects/EffSetFastBlock$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/effects/EffSetFastBlock.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/effects/customenchantments/EffRegisterEnchantment.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/effects/customenchantments/EffUnregisterEnchantment.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/effects/gui/EffFormatGUI$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/effects/gui/EffFormatGUI$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/effects/gui/EffFormatGUI.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/effects/gui/EffGuiProperties.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/effects/gui/EffUnformatGUI.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/events/EvtAnvil$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/events/EvtAnvil.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/events/EvtInventoryMove$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/events/EvtInventoryMove.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/events/EvtPlayerStartsMove.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/events/EvtPlayerStopsMove.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/events/EvtTuSKe.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/events/customevent/AnvilCombineEvent.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/events/customevent/AnvilRenameEvent.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/events/customevent/InventoryMoveEvent.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/events/customevent/PlayerStartsMoveEvent.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/events/customevent/PlayerStopsMoveEvent.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprAllCommand.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprAlphabetOrder.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprAnvilItem.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprCatType.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprCommandInfo.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprDamageModifier$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprDamageModifier.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprDraggedItem$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprDraggedItem.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprDraggedSlots.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprDroppedExp$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprDroppedExp.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprDropsOfBlock.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprEvaluateFunction.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprExpOf$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprExpOf.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprFirstLogin.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprHighiestBlock.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprHorseColor.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprHorseStyle.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprHorseVariant.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprInventoryMoveInv.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprInventoryMoveSlot.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprItemDamage$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprItemDamage.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprJukeboxRecord.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprLanguage.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprLastAttacker.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprLastColor.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprLastDamage.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprLastDamageCause.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprLastLogin.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprLeatherColor$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprLeatherColor.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprListPaged.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprLocalNameOf.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprMaxDurability.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprOfflineData.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprOnlineTime$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprOnlineTime.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprParseRegexError.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprPlayerVersion.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprRGBColor.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprRabbitType.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprRegexRandom.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprRegexReplace.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprRegexSplit.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprServerOnlineTime.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprSplitCharacter.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/ExprUUIDOfflinePlayer.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/customenchantments/ExprAcceptedItems.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/customenchantments/ExprAllCustomEnchants$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/customenchantments/ExprAllCustomEnchants.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/customenchantments/ExprCEConflicts$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/customenchantments/ExprCEConflicts.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/customenchantments/ExprEnabled.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/customenchantments/ExprItemCustomEnchant.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/customenchantments/ExprLevelOfCustomEnchant.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/customenchantments/ExprLoreName.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/customenchantments/ExprMaxLevel$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/customenchantments/ExprMaxLevel.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/customenchantments/ExprRarity$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/customenchantments/ExprRarity.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/gui/ExprGUI.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/gui/ExprGUIShape.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/gui/ExprGUIValue.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/gui/ExprVirtualInv$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/gui/ExprVirtualInv.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/recipe/ExprAllRecipes$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/recipe/ExprAllRecipes$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/recipe/ExprAllRecipes.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/recipe/ExprFurnaceRecipeLevel.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/recipe/ExprItemsOfRecipe.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/recipe/ExprRecipeFromItems.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/recipe/ExprRecipesOf.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/recipe/ExprResultOfRecipe.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/expressions/recipe/ExprShapeOfRecipe.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/landlord/LandlordRegister$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/landlord/LandlordRegister$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/landlord/LandlordRegister.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/landlord/effects/EffClaimLand.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/landlord/effects/EffUnclaimLand.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/landlord/expressions/ExprLandClaimAt.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/landlord/expressions/ExprLandClaimsOf.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/landlord/expressions/ExprLandFriends$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/landlord/expressions/ExprLandFriends.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/landlord/expressions/ExprLandLocation.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/landlord/expressions/ExprLandOwner.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/landlord/expressions/ExprLandflag.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/LegendchatConfig.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/LegendchatRegister$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/LegendchatRegister$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/LegendchatRegister$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/LegendchatRegister$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/LegendchatRegister.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/conditions/CondCanSayChannel.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/conditions/CondMuted.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/effects/EffMakeSay.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/effects/EffMakeTell.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/effects/EffMute.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/effects/EffUnMute.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/events/EvtLegendchat.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/expressions/ExprDefaultChannel.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/expressions/ExprHideState.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/expressions/ExprLegendchatChannel.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/expressions/ExprLegendchatMessage.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/expressions/ExprMuteLeftTime.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/expressions/ExprPlayerTags.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/expressions/ExprSpyState.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/expressions/ExprTagChat.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/expressions/ExprTellMessage.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/legendchat/expressions/ExprTellReceiver.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/marriage/MarriageRegister.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/marriage/conditions/CondMarried.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/marriage/effects/EffDivorce.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/marriage/effects/EffMarry.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/marriage/effects/EffSendMarry.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/marriage/expressions/ExprGenderOf.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/marriage/expressions/ExprMarryHome.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/marriage/expressions/ExprPartnerOf.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/SimpleClansRegister$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/SimpleClansRegister$10.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/SimpleClansRegister$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/SimpleClansRegister$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/SimpleClansRegister$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/SimpleClansRegister$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/SimpleClansRegister$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/SimpleClansRegister$7.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/SimpleClansRegister$8.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/SimpleClansRegister$9.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/SimpleClansRegister.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/conditions/CondClan.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/conditions/CondLeader.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/effects/EffCreateClan.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/effects/EffDisbandClan.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/effects/EffInvitePlayerToClan.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/effects/EffPlacePlayerInClan.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/effects/EffRemoveFromClan.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/effects/EffVerifyClan.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/events/EvtAllyClanAdd.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/events/EvtAllyClanRemove.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/events/EvtClanDisband.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/events/EvtDemotePlayerClan.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/events/EvtPromotePlayerClan.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/events/EvtRivalClanAdd.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/events/EvtRivalClanRemove.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/events/EvtSimpleClans.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/expressions/ExprClanFromTag.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/expressions/ExprClanMembers.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/expressions/ExprClanTag.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/expressions/ExprClanTwo.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/expressions/ExprDeathsOfPlayer$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/expressions/ExprDeathsOfPlayer.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/expressions/ExprFriendFire.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/expressions/ExprKDRofPlayer.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/expressions/ExprKillsOfClan.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/expressions/ExprKillsOfPlayer$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/expressions/ExprKillsOfPlayer.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/hooks/simpleclans/expressions/ExprPlayerClan.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/listeners/EnchantCheck$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/listeners/EnchantCheck.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/listeners/InventoryCheck$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/listeners/InventoryCheck$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/listeners/InventoryCheck$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/listeners/InventoryCheck.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/listeners/OnlineStatusCheck.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/listeners/PlayerMovesCheck$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/listeners/PlayerMovesCheck.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/listeners/TagChat.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/manager/customenchantment/AcceptedItems.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/manager/customenchantment/CEnchant.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/manager/customenchantment/CustomEnchantment.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/manager/customenchantment/EnchantConfig.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/manager/customenchantment/EnchantManager$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/manager/customenchantment/EnchantManager.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/manager/gui/GUI.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/manager/gui/GUIActionEvent.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/manager/gui/GUIManager$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/manager/gui/GUIManager.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/manager/gui/v2/GUIHandler.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/manager/gui/v2/GUIInventory.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/manager/gui/v2/SkriptGUIEvent$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/manager/gui/v2/SkriptGUIEvent.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/manager/recipe/CustomFurnaceRecipe.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/manager/recipe/CustomShapedRecipe.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/manager/recipe/CustomShapelessRecipe.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/manager/recipe/RecipeManager.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/nms/M_1_10_R1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/nms/M_1_11_R1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/nms/M_1_7_R4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/nms/M_1_8_R3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/nms/M_1_9_R1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/nms/M_1_9_R2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/nms/NMS.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/nms/ReflectionNMS.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeConverters.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$10.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$11.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$12.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$13.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$14.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$15.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$16.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$17.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$18.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$19.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$20.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$21.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$22.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$23.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$24.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$25.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$26.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$27.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$28.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$7.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$8.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues$9.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeEventValues.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeTypes$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeTypes$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeTypes$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeTypes$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/register/TuSKeTypes.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/sections/EffDebug.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/sections/gui/EffCreateGUI.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/sections/gui/EffMakeGUI.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/util/CommandUtils$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/util/CommandUtils.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/util/EffectSection.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/util/EnumType$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/util/EnumType$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/util/EnumType.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/util/EvalFunction.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/util/InventoryUtils.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/util/NewRegister.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/util/ParserUtils.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/util/PlayerMoves.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/util/ReflectionUtils.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/util/Regex.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/util/RunnableSection.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/util/SimpleType$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/util/SimpleType.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/util/Translate$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/me/tuke/sktuke/util/Translate.class" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="$PROJECT_DIR$/bin/" />
@@ -957,6 +632,24 @@
               <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sktuke" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="TuSKe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="TuSKe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
@@ -1232,7 +925,14 @@
       <option name="project" value="LOCAL" />
       <updated>1491718025369</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Removed bin folder">
+      <created>1491718540237</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1491718540237</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TodoView">
