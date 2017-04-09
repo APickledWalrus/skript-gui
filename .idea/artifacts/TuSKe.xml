@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="TuSKe">
+    <output-path>E:/desktop 4/Server/plugins</output-path>
+    <root id="archive" name="TuSKe.jar">
+      <element id="module-output" name="TuSKe" />
+      <element id="file-copy" path="$PROJECT_DIR$/enchantments.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/plugin.yml" />
+    </root>
+  </artifact>
+</component>
