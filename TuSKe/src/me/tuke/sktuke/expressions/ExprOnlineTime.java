@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -16,6 +17,9 @@ import ch.njol.util.coll.CollectionUtils;
 import me.tuke.sktuke.listeners.OnlineStatusCheck;
 
 public class ExprOnlineTime extends SimplePropertyExpression<Player, Timespan>{
+	static {
+		NewRegister.newProperty(ExprOnlineTime.class, "online time", "player");
+	}
 
 
 	public HashMap<Player, Long> players = new HashMap<Player, Long>();

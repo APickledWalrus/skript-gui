@@ -8,8 +8,7 @@ import org.bukkit.Bukkit;
 
 /**
  * Just a simple reflection class, just to not depend on Skript 2.2+ (I think it is the only thing I use from it)
- * @author Leandro Pereira
- *
+ * @author
  */
 public class ReflectionUtils {
 
@@ -55,7 +54,6 @@ public class ReflectionUtils {
 	 * Checks if a method exists or not
 	 * @param clz - The class to check.
 	 * @param method - The method's name
-	 * @param ret -  The return of method, can be null if void
 	 * @param parameters - The parameters of method, can be null if none
 	 * @return - true if it exists
 	 */
@@ -77,13 +75,14 @@ public class ReflectionUtils {
 		return null;
 	}
 	@SuppressWarnings("unchecked")
-	public static <T> T invokeMethod(Class<?> clz, String method, Object instance, Class<T> ret, Object... parameters){
+	public static <T> T invokeMethod(Class<?> clz, String method, Object instance, Object... parameters){
 		try {
 			Class<?>[] parameterTypes = new Class<?>[parameters.length];
 			int x = 0;
 			for (Object obj : parameters)
 				parameterTypes[x++] = obj.getClass();
 			Method m = clz.getDeclaredMethod(method, parameterTypes);
+			m.setAccessible(true);
 			return (T) m.invoke(instance, parameters);
 		} catch (Exception e){
 			
@@ -93,6 +92,7 @@ public class ReflectionUtils {
 	@SuppressWarnings("unchecked")
 	public static <T> T invokeMethod(Method method, Object instance, Object... parameters){
 		try {
+			method.setAccessible(true);
 			return (T) method.invoke(instance, parameters);
 		} catch (Exception e){
 			
@@ -106,14 +106,15 @@ public class ReflectionUtils {
 	 */
 	public static <T> T newInstance(Class<T> clz){
 		try {
-			return clz.newInstance();
+			Constructor<T> c = clz.getDeclaredConstructor();
+			c.setAccessible(true);
+			return c.newInstance();
 		} catch (Exception e) {
 		}
 		return null;
 	}
 	/**
 	 * Return a new instance of a class.
-	 * @param clz - The class
 	 * @return A instance object of clz.
 	 */
 	public static <T> T newInstance(Constructor<T> constructor, Object...objects){

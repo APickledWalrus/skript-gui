@@ -1,5 +1,6 @@
 package me.tuke.sktuke.effects;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -11,6 +12,9 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 
 public class EffSaveData extends Effect{
+	static {
+		NewRegister.newEffect(EffSaveData.class, "save [player] data of %player%");
+	}
 
 	private Expression<Player> p;
 	

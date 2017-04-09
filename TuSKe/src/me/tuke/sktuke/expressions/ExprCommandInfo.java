@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.event.Event;
@@ -27,6 +28,17 @@ import me.tuke.sktuke.util.ReflectionUtils;
 @Examples("if co")
 @Since("1.6.9.6, 1.6.9.7")
 public class ExprCommandInfo extends SimpleExpression<String>{
+	static {
+		NewRegister.newSimple(ExprCommandInfo.class,
+				"[the] description of command %string%", "command %string%'[s] description",
+				"[the] main [command] of command %string%", "command %string%'[s] main [command]",
+				"[the] permission of command %string%", "command %string%'[s] permission",
+				"[the] permission message of command %string%", "command %string%'[s] permission message",
+				"[the] plugin [owner] of command %string%", "command %string%'[s] plugin [owner]",
+				"[the] usage of command %string%", "command %string%'[s] usage",
+				"[the] aliases of command %string%", "command %string%'[s] aliases",
+				"[the] file [location] of command %string%", "command %string%'[s] file location");
+	}
 
 	private Expression<String> cmd;
 	private int id = -1; // the matched pattern

@@ -21,7 +21,6 @@ import ch.njol.skript.lang.util.SimpleExpression;
  * It requires {@link ReflectionUtils}
  * 
  * @author Tuke_Nuke
- *
  */
 @SuppressWarnings("unchecked")
 public class EvalFunction {

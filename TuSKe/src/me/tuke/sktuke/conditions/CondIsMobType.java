@@ -1,5 +1,6 @@
 package me.tuke.sktuke.conditions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Tameable;
@@ -12,6 +13,9 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 
 public class CondIsMobType extends Condition{
+	static {
+		NewRegister.newCondition(CondIsMobType.class,"%livingentities% (is|are) [a] (0¦hostile|1¦neutral|2¦passive) [mob]", "%livingentities% (is|are)(n't| not) [a] (0¦hostile|1¦neutral|2¦passive) [mob]");
+	}
 
 	private Expression<LivingEntity> et;
 	private MobType mt;

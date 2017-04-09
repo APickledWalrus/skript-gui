@@ -2,17 +2,21 @@ package me.tuke.sktuke.expressions.customenchantments;
 
 import javax.annotation.Nullable;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.util.coll.CollectionUtils;
-import me.tuke.sktuke.customenchantment.CEnchant;
-import me.tuke.sktuke.customenchantment.CustomEnchantment;
-import me.tuke.sktuke.customenchantment.EnchantConfig;
+import me.tuke.sktuke.manager.customenchantment.CEnchant;
+import me.tuke.sktuke.manager.customenchantment.CustomEnchantment;
+import me.tuke.sktuke.manager.customenchantment.EnchantConfig;
 
 public class ExprLoreName extends SimplePropertyExpression<CEnchant, String>{
+	static {
+		NewRegister.newProperty(ExprLoreName.class, "lore name", "customenchantment");
+	}
 
 	@Override
 	public Class<? extends String> getReturnType() {

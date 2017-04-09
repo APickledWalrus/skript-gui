@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 
 import java.util.ArrayList;
@@ -12,10 +13,13 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 
 public class ExprListPaged extends SimpleExpression<Object>{
+	static {
+		NewRegister.newSimple(ExprListPaged.class, "page %number% of %objects% with %number% lines");
+	}
 	
-	private Expression<Number> p;
-	private Expression<Object> o;
-	private Expression<Number> l;
+	private Expression<Number> p; //Page
+	private Expression<Object> o; //Objects
+	private Expression<Number> l; //Amount of items per page
 	@Override
 	public Class<? extends Object> getReturnType() {
 		return Object.class;
@@ -29,7 +33,6 @@ public class ExprListPaged extends SimpleExpression<Object>{
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
-		//this.o = Expression<?>[].toArray(new Object[Expression<?>[].size()])
 		this.p = (Expression<Number>) arg[0]; 
 		this.o = (Expression<Object>) arg[1]; 
 		this.l = (Expression<Number>) arg[2]; 

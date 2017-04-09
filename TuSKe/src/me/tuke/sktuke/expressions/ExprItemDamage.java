@@ -1,5 +1,7 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.ReflectionUtils;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 
@@ -17,6 +19,10 @@ import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 
 public class ExprItemDamage extends SimpleExpression<Integer>{
+	static {
+		if (ReflectionUtils.hasClass("org.bukkit.event.player.PlayerItemDamageEvent"))
+			NewRegister.newSimple(ExprItemDamage.class, 0,"item damage");
+	}
 
 	private Kleenean d;
 	@Override

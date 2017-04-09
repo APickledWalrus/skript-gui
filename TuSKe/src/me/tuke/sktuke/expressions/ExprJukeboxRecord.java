@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.block.Block;
 import org.bukkit.block.Jukebox;
 import org.bukkit.event.Event;
@@ -12,6 +13,9 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.util.coll.CollectionUtils;
 
 public class ExprJukeboxRecord extends SimplePropertyExpression<Block, ItemStack>{
+	static {
+		NewRegister.newProperty(ExprJukeboxRecord.class, "[jukebox] record", "block");
+	}
 
 	@Override
 	public Class<? extends ItemStack> getReturnType() {

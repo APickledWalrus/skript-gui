@@ -1,5 +1,10 @@
 package me.tuke.sktuke.expressions;
 
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 
 import javax.annotation.Nullable;
@@ -8,8 +13,16 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
-
+@Name("Alphabetical Order")
+@Description("Will return a list of {{types|Objects|objects}} organized in alphabetic order.")
+@Examples({
+		"loop alphabetical order of all players:",
+		"\tsend \"%loop-object%\""})
+@Since("1.0")
 public class ExprAlphabetOrder extends SimpleExpression<Object>{
+	static {
+		NewRegister.newCombined(ExprAlphabetOrder.class, "alphabetical order of %objects%");
+	}
 	
 	private Expression<Object> o;
 	@Override

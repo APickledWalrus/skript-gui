@@ -1,5 +1,6 @@
 package me.tuke.sktuke.effects;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 
 import javax.annotation.Nullable;
@@ -11,6 +12,9 @@ import ch.njol.util.Kleenean;
 import me.tuke.sktuke.util.EvalFunction;
 
 public class EffEvaluateFunction extends Effect{
+	static {
+		NewRegister.newEffect(EffEvaluateFunction.class, "evaluate function %strings% [with <.+?>]", "evaluate function %strings%\\(<.+?>\\)");
+	}
 
 	private Expression<String> func;
 	private String exprs = "";

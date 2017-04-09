@@ -3,6 +3,7 @@ package me.tuke.sktuke.nms;
 import java.lang.reflect.Constructor;
 import java.util.logging.Level;
 
+import me.tuke.sktuke.util.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.OfflinePlayer;
@@ -16,9 +17,8 @@ import me.tuke.sktuke.TuSKe;
 
 public class ReflectionNMS implements NMS {
 
-	private String version;
-	public ReflectionNMS(String version){
-		this.version = version;
+	private String version = ReflectionUtils.packageVersion;
+	public ReflectionNMS(){
 	}
 
 	@Override

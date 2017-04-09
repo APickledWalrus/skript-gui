@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
@@ -16,6 +17,9 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 
 public class ExprLastAttacker extends SimpleExpression<Object> {
+	static {
+		NewRegister.newProperty(ExprLastAttacker.class, "last attacker", "entity");
+	}
 
 	private Expression<Entity> ent;
 	@Override
@@ -37,7 +41,7 @@ public class ExprLastAttacker extends SimpleExpression<Object> {
 
 	@Override
 	public String toString(Event arg0, boolean arg1) {
-		return "last attacker of " + ent.toString(arg0, arg1);
+		return "lastInstance attacker of " + ent.toString(arg0, arg1);
 	}
 
 	@Override

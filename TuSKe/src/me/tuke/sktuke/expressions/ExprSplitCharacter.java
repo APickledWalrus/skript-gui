@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 import org.bukkit.util.ChatPaginator;
 
@@ -11,6 +12,9 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 
 public class ExprSplitCharacter extends SimpleExpression<String>{
+	static {
+		NewRegister.newSimple(ExprSplitCharacter.class, "split %string% (with|by|using) %number% [char[acter][s]]", "%string% [split] (with|by|using) %number% [char[acter][s]]");
+	}
 
 	private Expression<String> str;
 	private Expression<Number> id;

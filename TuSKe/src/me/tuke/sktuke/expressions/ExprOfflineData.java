@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -9,6 +10,9 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import me.tuke.sktuke.TuSKe;
 
 public class ExprOfflineData extends SimplePropertyExpression<OfflinePlayer, Player>{
+	static {
+		NewRegister.newProperty(ExprOfflineData.class, "player data", "offlineplayer");
+	}
 
 	@Override
 	public Class<? extends Player> getReturnType() {

@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 
 import javax.annotation.Nullable;
@@ -11,6 +12,9 @@ import ch.njol.util.Kleenean;
 import me.tuke.sktuke.util.Regex;
 
 public class ExprRegexReplace extends SimpleExpression<String>{
+	static {
+		NewRegister.newSimple(ExprRegexReplace.class, "regex replace [all] [pattern] %regex/string% with [group[s]] %string% in %string%");
+	}
 
 	private Expression<?> regex;
 	private Expression<String> with;

@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions.recipe;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -11,9 +12,12 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.TuSKe;
-import me.tuke.sktuke.recipe.RecipeManager;
+import me.tuke.sktuke.manager.recipe.RecipeManager;
 
 public class ExprItemsOfRecipe extends SimpleExpression<ItemStack>{
+	static {
+		NewRegister.newProperty(ExprItemsOfRecipe.class, "[all] ingredients", "recipe");
+	}
 	private Expression<Recipe> recipe;
 
 	@Override

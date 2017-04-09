@@ -1,5 +1,6 @@
 package me.tuke.sktuke.conditions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Tameable;
 import org.bukkit.event.Event;
@@ -12,6 +13,9 @@ import ch.njol.util.Checker;
 import ch.njol.util.Kleenean;
 
 public class CondIsTameable extends Condition{
+	static {
+		NewRegister.newCondition(CondIsTameable.class, "%entities% (is|are) tameable", "%entities% (is|are)(n't| not) tameable");
+	}
 
 	private Expression<Entity> ent;
 	@SuppressWarnings("unchecked")

@@ -1,5 +1,6 @@
 package me.tuke.sktuke.effects;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -13,6 +14,9 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 
 public class EffPushBlock extends Effect{
+	static {
+		NewRegister.newEffect(EffPushBlock.class, "move %block% to %direction%");
+	}
 
 	private Expression<Block> b;
 	private BlockFace bf;

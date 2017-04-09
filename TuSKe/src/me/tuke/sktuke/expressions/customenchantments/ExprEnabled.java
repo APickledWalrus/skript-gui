@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions.customenchantments;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
 
@@ -7,10 +8,13 @@ import ch.njol.skript.classes.Changer;
 import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.util.coll.CollectionUtils;
-import me.tuke.sktuke.customenchantment.CEnchant;
-import me.tuke.sktuke.customenchantment.EnchantConfig;
+import me.tuke.sktuke.manager.customenchantment.CEnchant;
+import me.tuke.sktuke.manager.customenchantment.EnchantConfig;
 
 public class ExprEnabled extends SimplePropertyExpression<CEnchant, Boolean>{
+	static {
+		NewRegister.newSimple(ExprEnabled.class, "enabled for %customenchantment%");
+	}
 
 	@Override
 	public Class<? extends Boolean> getReturnType() {

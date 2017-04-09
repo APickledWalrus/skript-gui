@@ -1,9 +1,16 @@
 package me.tuke.sktuke.expressions.recipe;
 
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import ch.njol.skript.doc.Since;
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.FurnaceRecipe;
@@ -24,7 +31,20 @@ import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 import me.tuke.sktuke.TuSKe;
 
+@Name("All Recipes")
+@Description("Returns all server recipes. You can get the {{expressions|RecipeIngredients|ingredients}} and the {{expressions|RecipeResult|result item}}.")
+@Examples({
+		"command /recipes <integer=1>:",
+		"\tusage: /recipes <page>",
+		"\ttrigger:",
+		"\t\tset {_list::*} to page arg of all recipes with 10 lines",
+		"\t\tloop {_list::*}:",
+		"\t\t\tsend \"Ingredients to create %result item of loop-value%: %ingredients of loop-value%\""})
+@Since("1.6.8, 1.7.5 (recipe type list)")
 public class ExprAllRecipes extends SimpleExpression<Recipe>{
+	static {
+		NewRegister.newSimple(ExprAllRecipes.class, "[all] [registred] (shaped|shapeless|furnace|) recipes");
+	}
 
 	int type = 0;
 	@Override

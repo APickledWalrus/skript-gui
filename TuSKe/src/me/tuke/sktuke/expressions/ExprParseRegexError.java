@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
 
@@ -9,6 +10,9 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 
 public class ExprParseRegexError extends SimpleExpression<String>{
+	static {
+		NewRegister.newSimple(ExprParseRegexError.class, "[last] regex [parser] error");
+	}
 
 	public static String parserError = null;
 	@Override
@@ -28,7 +32,7 @@ public class ExprParseRegexError extends SimpleExpression<String>{
 
 	@Override
 	public String toString(@Nullable Event arg0, boolean arg1) {
-		return "last regex parser error";
+		return "lastInstance regex parser error";
 	}
 
 	@Override

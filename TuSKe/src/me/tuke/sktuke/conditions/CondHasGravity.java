@@ -2,6 +2,7 @@ package me.tuke.sktuke.conditions;
 
 import javax.annotation.Nullable;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
@@ -11,6 +12,9 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 
 public class CondHasGravity extends Condition{
+	static {
+		NewRegister.newCondition(CondHasGravity.class, "%itemstack% has gravity", "%itemstack% has(n't| not) gravity");
+	}
 
 	private Expression<ItemStack> o;
 	private int neg;

@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
@@ -16,6 +17,9 @@ import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 
 public class ExprDamageModifier extends SimpleExpression<Double>{
+	static {
+		NewRegister.newSimple(ExprDamageModifier.class, "damage [modifier] %damagemodifier%");
+	}
 
 	private Expression<DamageModifier> dm;
 	@Override
@@ -62,13 +66,12 @@ public class ExprDamageModifier extends SimpleExpression<Double>{
 			if (delta[0] == null && mode != ChangeMode.RESET && mode != ChangeMode.DELETE)
 				return;
 			switch (mode){
-			case ADD: value += ((Number)delta[0]).doubleValue(); break;
-			case REMOVE: value -= ((Number)delta[0]).doubleValue(); break;
-			case SET: value = ((Number)delta[0]).doubleValue(); break;
-			case DELETE: value = 0D;
-			case RESET: value = ed.getOriginalDamage(dm); break;
-			default:
-				break;
+				case ADD: value += ((Number)delta[0]).doubleValue(); break;
+				case REMOVE: value -= ((Number)delta[0]).doubleValue(); break;
+				case SET: value = ((Number)delta[0]).doubleValue(); break;
+				case DELETE: value = 0D; break;
+				case RESET: value = ed.getOriginalDamage(dm); break;
+				default: return;
 			}
 			ed.setDamage(dm, value);
 			
@@ -77,7 +80,7 @@ public class ExprDamageModifier extends SimpleExpression<Double>{
 	@SuppressWarnings("unchecked")
 	@Override
 	public Class<?>[] acceptChange(final Changer.ChangeMode mode){
-		if (mode != ChangeMode.REMOVE_ALL && mode != ChangeMode.DELETE)
+		if (mode != ChangeMode.REMOVE_ALL)
 			return CollectionUtils.array(Number.class);
 		return null;
 		

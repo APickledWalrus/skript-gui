@@ -1,5 +1,6 @@
 package me.tuke.sktuke.effects;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 import org.bukkit.permissions.Permission;
 
@@ -13,6 +14,9 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 
 public class EffRegisterPermission extends Effect{
+	static {
+		NewRegister.newEffect(EffRegisterPermission.class, "(register|create) master permission %string%");
+	}
 
 	private Expression<String> perm;
 	

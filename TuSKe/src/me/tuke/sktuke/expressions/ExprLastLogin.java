@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.OfflinePlayer;
 import javax.annotation.Nullable;
 
@@ -7,6 +8,9 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.skript.util.Date;
 
 public class ExprLastLogin extends SimplePropertyExpression<OfflinePlayer, Date>{
+	static {
+		NewRegister.newProperty(ExprLastLogin.class, "last login", "offlineplayer");
+	}
 
 	@Override
 	public Class<? extends Date> getReturnType() {
@@ -23,7 +27,7 @@ public class ExprLastLogin extends SimplePropertyExpression<OfflinePlayer, Date>
 
 	@Override
 	protected String getPropertyName() {
-		return "last login";
+		return "lastInstance login";
 	}
 
 }

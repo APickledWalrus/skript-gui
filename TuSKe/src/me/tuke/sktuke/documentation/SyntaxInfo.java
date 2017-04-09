@@ -19,7 +19,7 @@ public class SyntaxInfo {
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		for (String str : values) //It will fix some syntax issues to make more friendly to see and some basic html stuffs from type's usage.
-			sb.append(str.replaceAll("\\\\(\\(|\\))", "$1").replaceAll("\\d+¦", "").replaceAll("<.+?>(.+?)</.+?>", "$1").replaceAll("&gt;", ">").replaceAll("&lt;", "<") + "\n");
+			sb.append(str.replaceAll("\\\\(\\(|\\))", "$1").replaceAll("\\d+Â¦", "").replaceAll("<.+?>(.+?)</.+?>", "$1").replaceAll("&gt;", ">").replaceAll("&lt;", "<") + "\n");
 		return sb.toString();
 	}
 }

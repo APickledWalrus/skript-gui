@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
@@ -18,6 +19,9 @@ import ch.njol.util.Kleenean;
 import me.tuke.sktuke.util.Translate;;
 
 public class ExprLocalNameOf extends SimpleExpression<String>{
+	static {
+		NewRegister.newProperty(ExprLocalNameOf.class, "[json] client id" , "object");
+	}
 	private Expression<Object> o;
 
 	@Override

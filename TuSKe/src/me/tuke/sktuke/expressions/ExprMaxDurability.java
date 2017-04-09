@@ -1,11 +1,15 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.inventory.ItemStack;
 import javax.annotation.Nullable;
 
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 
 public class ExprMaxDurability extends SimplePropertyExpression<ItemStack, Integer>{
+	static {
+		NewRegister.newProperty(ExprMaxDurability.class, "max durability", "itemstack");
+	}
 
 	@Override
 	public Class<? extends Integer> getReturnType() {
@@ -15,7 +19,7 @@ public class ExprMaxDurability extends SimplePropertyExpression<ItemStack, Integ
 	@Override
 	@Nullable
 	public Integer convert(ItemStack i) {
-		return (i != null) ? new Integer(i.getType().getMaxDurability()) : null;
+		return (i != null) ? (int) i.getType().getMaxDurability() : null;
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package me.tuke.sktuke.expressions;
 
 import javax.annotation.Nullable;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 
 import ch.njol.skript.ScriptLoader;
@@ -13,6 +14,9 @@ import ch.njol.util.Kleenean;
 import me.tuke.sktuke.events.customevent.InventoryMoveEvent;
 
 public class ExprInventoryMoveSlot extends SimpleExpression<Integer>{
+	static {
+		NewRegister.newSimple(ExprInventoryMoveSlot.class, 0,"[event-]slot-(one|two)");
+	}
 
 	private boolean isFrom;
 	@Override

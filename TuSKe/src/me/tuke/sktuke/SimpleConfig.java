@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class SimpleConfig{
 
+	private Object str = "Whatever";
 	private JavaPlugin pl;
 	private HashMap<String, String> map = new HashMap<>();
 	public SimpleConfig(JavaPlugin plugin){
@@ -68,7 +69,8 @@ public class SimpleConfig{
 			"#\topen virtual InventoryType.CHEST inventory with size 1 named \"Hi\" to player",
 			"#Don't need to worry about it, is just in case.");
 		addComentsAbove("documentation",
-			"#A documentation that will be generated at 'plugins/TuSKe/documentation.yml.");
+				"#A documentation that will be generated at 'plugins/TuSKe/documentation/'",
+				"#for all addons");
 		setDefault("documentation.enabled", true,
 			"#Should documentation be generated?");
 		

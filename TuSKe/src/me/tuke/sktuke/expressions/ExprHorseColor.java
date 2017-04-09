@@ -2,9 +2,9 @@ package me.tuke.sktuke.expressions;
 
 import javax.annotation.Nullable;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
-import org.bukkit.entity.Horse.Variant;
 import org.bukkit.event.Event;
 
 import ch.njol.skript.classes.Changer;
@@ -13,6 +13,9 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.util.coll.CollectionUtils;
 
 public class ExprHorseColor extends SimplePropertyExpression<Entity, String>{
+	static {
+		NewRegister.newProperty(ExprHorseColor.class, "horse color", "entity");
+	}
 
 	@Override
 	public Class<? extends String> getReturnType() {

@@ -1,5 +1,6 @@
 package me.tuke.sktuke.conditions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.Material;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -12,6 +13,9 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 
 public class CondIsBlockType extends Condition{
+	static {
+		NewRegister.newCondition(CondIsBlockType.class, 4, "%itemstack% is [a] (solid|transparent|flammable|occluding) block", "%itemstack% is(n't| not) [a] (solid|transparent|flammable|occluding) block");
+	}
 
 	private Expression<ItemStack> b;
 	private boolean neg = false;

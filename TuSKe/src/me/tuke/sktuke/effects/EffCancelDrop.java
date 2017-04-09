@@ -1,5 +1,6 @@
 package me.tuke.sktuke.effects;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
@@ -14,6 +15,9 @@ import ch.njol.skript.log.ErrorQuality;
 import ch.njol.util.Kleenean;
 
 public class EffCancelDrop extends Effect{
+	static {
+		NewRegister.newEffect(EffCancelDrop.class, "cancel [the] drops [of (inventory|[e]xp[periences])]");
+	}
 	
 	private int Cancel = 1;
 

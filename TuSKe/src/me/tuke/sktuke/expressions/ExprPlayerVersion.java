@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import javax.annotation.Nullable;
@@ -7,9 +8,13 @@ import javax.annotation.Nullable;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 
 public class ExprPlayerVersion extends SimplePropertyExpression<Player, String>{
-	
-	final boolean isViaversion = Bukkit.getServer().getPluginManager().isPluginEnabled("ViaVersion");
-	final boolean isProtocolSupport = Bukkit.getServer().getPluginManager().isPluginEnabled("ProtocolSupport");
+	private static final boolean isViaversion = Bukkit.getServer().getPluginManager().isPluginEnabled("ViaVersion");
+	private static final boolean isProtocolSupport = Bukkit.getServer().getPluginManager().isPluginEnabled("ProtocolSupport");
+
+	static {
+		if (isViaversion || isProtocolSupport)
+			NewRegister.newProperty(ExprPlayerVersion.class, "(mc|minecraft) version", "player");
+	}
 
 	@Override
 	public Class<? extends String> getReturnType() {
@@ -19,15 +24,11 @@ public class ExprPlayerVersion extends SimplePropertyExpression<Player, String>{
 	@Override
 	@Nullable
 	public String convert(Player p) {
-		if (p == null)
-			return null;
 		if (isViaversion){
 			int i = us.myles.ViaVersion.api.ViaVersion.getInstance().getPlayerVersion(p);
 			return us.myles.ViaVersion.api.protocol.ProtocolVersion.getProtocol(i).getName().replace(".x", "");
 		} else if (isProtocolSupport)
 			return protocolsupport.api.ProtocolSupportAPI.getProtocolVersion(p).getName();
-
-		
 		return null;
 	}
 

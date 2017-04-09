@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.Inventory;
 import javax.annotation.Nullable;
@@ -13,6 +14,9 @@ import ch.njol.util.Kleenean;
 import me.tuke.sktuke.events.customevent.InventoryMoveEvent;
 
 public class ExprInventoryMoveInv extends SimpleExpression<Inventory>{
+	static {
+		NewRegister.newSimple(ExprInventoryMoveInv.class, 0,"[event-]inventory-(one|two)");
+	}
 
 	private boolean isFrom;
 	@Override

@@ -2,6 +2,7 @@ package me.tuke.sktuke.expressions;
 
 import java.util.List;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 
 import com.mifmif.common.regex.Generex;
@@ -15,6 +16,11 @@ import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.util.Regex;
 
 public class ExprRegexRandom extends SimpleExpression<String>{
+	static {
+		NewRegister.newSimple(ExprRegexRandom.class,
+				"(first|random) string matching [pattern] %regex/string%",
+				"random strings matching [pattern] %regex/string%");
+	}
 	
 	private static boolean warn = false;
 
@@ -38,8 +44,8 @@ public class ExprRegexRandom extends SimpleExpression<String>{
 			mode = 3;
 			if (TuSKe.getInstance().getConfig().getBoolean("warn_unsafe_expressions") && !warn){
 				warn = true;
-				Skript.warning("§4Warning: §cThe expression '§4" + arg3.expr + "§c' has possibility to stop your server"
-						+ " if you use pattern that can return a huge possibilities, like '§4.+§c' or '§4.{1,10000}§c'."
+				Skript.warning("Â§4Warning: Â§cThe expression 'Â§4" + arg3.expr + "Â§c' has possibility to stop your server"
+						+ " if you use pattern that can return a huge possibilities, like 'Â§4.+Â§c' or 'Â§4.{1,10000}Â§c'."
 						+ " Consider to make it safely or use 'MundoSK async' function. If you already know about this,"
 						+ " disable this message in configs.");
 			}

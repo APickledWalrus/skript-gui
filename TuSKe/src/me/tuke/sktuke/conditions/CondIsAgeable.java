@@ -1,5 +1,6 @@
 package me.tuke.sktuke.conditions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;
@@ -12,6 +13,10 @@ import ch.njol.util.Checker;
 import ch.njol.util.Kleenean;
 
 public class CondIsAgeable extends Condition{
+	static {
+		NewRegister.newCondition(CondIsAgeable.class, "%entities% ((is|are) ageable|can grow up)", "%entities% ((is|are)(n't| not) ageable|can(n't| not) grow up)");
+
+	}
 
 	private Expression<Entity> ent;
 	@SuppressWarnings("unchecked")

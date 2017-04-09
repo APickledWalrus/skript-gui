@@ -1,5 +1,6 @@
 package me.tuke.sktuke.conditions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
@@ -11,6 +12,9 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 
 public class CondCanEat extends Condition{
+	static {
+		NewRegister.newCondition(CondCanEat.class, "%itemstack% is edible", "%itemstack% is(n't| not) edible");
+	}
 
 	private Expression<ItemStack> o;
 	private int neg;

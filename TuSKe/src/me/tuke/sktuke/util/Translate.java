@@ -508,22 +508,4 @@ public class Translate{
 			
 			}
 		}
-		/*public String asdadasada(){
-			PacketContainer pc = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.CHAT);
-			pc.getChatComponents().write(0, WrappedChatComponent.fromJson("{\"translate\":\"item.stick.name\"}"));
-			try {
-				ProtocolLibrary.getProtocolManager().sendServerPacket(Bukkit.getPlayer("Tuke_Nuke"), pc);
-			} catch (InvocationTargetException e) {
-				Bukkit.getLogger().info("Nao foi possivel");
-				e.printStackTrace();
-			};
-			ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(TuSKe.getInstance(), PacketType.Play.Client.CHAT){
-				@Override
-				public void onPacketReceiving(PacketEvent e){
-					String s = e.getPacket().getStrings().read(0);
-					Bukkit.broadcastMessage("Chat: " + s);
-				}
-			});
-			return "enchantment.none";
-		}*/
 }

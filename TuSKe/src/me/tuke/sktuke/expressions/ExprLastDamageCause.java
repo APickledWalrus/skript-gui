@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
@@ -8,6 +9,9 @@ import javax.annotation.Nullable;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 
 public class ExprLastDamageCause extends SimplePropertyExpression<LivingEntity, DamageCause>{
+	static {
+		NewRegister.newProperty(ExprLastDamageCause.class, "last damage cause", "livingentity");
+	}
 
 	@Override
 	public Class<? extends DamageCause> getReturnType() {
@@ -24,7 +28,7 @@ public class ExprLastDamageCause extends SimplePropertyExpression<LivingEntity, 
 
 	@Override
 	protected String getPropertyName() {
-		return "last damage cause";
+		return "lastInstance damage cause";
 	}
 
 }

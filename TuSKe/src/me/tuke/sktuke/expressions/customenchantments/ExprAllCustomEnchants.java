@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions.customenchantments;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
@@ -14,11 +15,14 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
-import me.tuke.sktuke.customenchantment.CEnchant;
-import me.tuke.sktuke.customenchantment.CustomEnchantment;
-import me.tuke.sktuke.customenchantment.EnchantManager;
+import me.tuke.sktuke.manager.customenchantment.CEnchant;
+import me.tuke.sktuke.manager.customenchantment.CustomEnchantment;
+import me.tuke.sktuke.manager.customenchantment.EnchantManager;
 
 public class ExprAllCustomEnchants extends SimpleExpression<CEnchant> {
+	static {
+		NewRegister.newProperty(ExprAllCustomEnchants.class, "[all] custom enchantments", "itemstack");
+	}
 
 	private Expression<ItemStack> i;
 	@Override

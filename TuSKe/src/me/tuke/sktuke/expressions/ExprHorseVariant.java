@@ -2,6 +2,9 @@ package me.tuke.sktuke.expressions;
 
 import javax.annotation.Nullable;
 
+import ch.njol.skript.Skript;
+import ch.njol.skript.util.Version;
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
 import org.bukkit.event.Event;
@@ -12,6 +15,10 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.util.coll.CollectionUtils;
 
 public class ExprHorseVariant extends SimplePropertyExpression<Entity, String>{
+	static {
+		if (Skript.getMinecraftVersion().isSmallerThan(new Version(1, 11)))
+			NewRegister.newProperty(ExprHorseVariant.class, "horse variant", "entity");
+	}
 
 	@Override
 	public Class<? extends String> getReturnType() {

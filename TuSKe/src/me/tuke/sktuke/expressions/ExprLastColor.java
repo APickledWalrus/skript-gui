@@ -2,11 +2,15 @@ package me.tuke.sktuke.expressions;
 
 import javax.annotation.Nullable;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.ChatColor;
 
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 
 public class ExprLastColor extends SimplePropertyExpression<String, String>{
+	static {
+		NewRegister.newProperty(ExprLastColor.class, "last color", "string");
+	}
 
 	@Override
 	public Class<? extends String> getReturnType() {
@@ -16,14 +20,12 @@ public class ExprLastColor extends SimplePropertyExpression<String, String>{
 	@Override
 	@Nullable
 	public String convert(String str) {
-		if (str == null)
-			return null;
 		return ChatColor.getLastColors(str);
 	}
 
 	@Override
 	protected String getPropertyName() {
-		return "last color";
+		return "lastInstance color";
 	}
 
 }

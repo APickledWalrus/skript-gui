@@ -1,5 +1,6 @@
 package me.tuke.sktuke.effects;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.block.Block;
 import org.bukkit.block.Jukebox;
 import org.bukkit.event.Event;
@@ -11,6 +12,9 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 
 public class EffEjectRecord extends Effect{
+	static {
+		NewRegister.newEffect(EffEjectRecord.class, "eject record (of|from|) %block%");
+	}
 
 	private Expression<Block> block;
 	

@@ -3,6 +3,7 @@ package me.tuke.sktuke.expressions;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 
 import javax.annotation.Nullable;
@@ -21,16 +22,16 @@ import me.tuke.sktuke.util.CommandUtils;
 import me.tuke.sktuke.util.ReflectionUtils;
 
 @Name("All commands")
-@Description({
-	"Used to get all registered commands.",
-	"New in 1.7.1: You can get only script commands if you need it."})
+@Description("Returns a list containing all registered commands or scripts commands only.")
 @Examples({
-		"command /help [<text>]:",
-		"\ttrigger:",
-		"\tall commands doesn't contain arg",
-		"\t\tsend \"Unknown command!\""})
+		"send \"Current amount of script commands: %size of all script commands%",
+		"send \"Current amount of non script commands: %size of commansd - size of script commands%",
+		"send \"Total: %size of all commands%\""})
 @Since("1.6.9.7")
 public class ExprAllCommand extends SimpleExpression<String>{
+	static {
+		NewRegister.newSimple(ExprAllCommand.class, "[all] [registered] [script] commands");
+	}
 
 	private boolean scriptsOnly = false;
 	@Override

@@ -10,6 +10,11 @@ import ch.njol.skript.lang.Statement;
 import ch.njol.skript.lang.TriggerSection;
 import ch.njol.skript.lang.util.SimpleExpression;
 
+/**
+ * A class to handle some simple stuffs between old parser x new parser
+ * <b>Deprecated</b>: The new parser was abandoned and it might be gone too.
+ */
+@Deprecated()
 public class ParserUtils {
 	
 	private static Constructor<SkriptParser> newParser = null; 

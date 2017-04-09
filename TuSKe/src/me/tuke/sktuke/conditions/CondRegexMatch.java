@@ -1,5 +1,6 @@
 package me.tuke.sktuke.conditions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
 
@@ -11,6 +12,9 @@ import ch.njol.util.Kleenean;
 import me.tuke.sktuke.util.Regex;
 
 public class CondRegexMatch extends Condition{
+	static {
+		NewRegister.newCondition(CondRegexMatch.class, "%string% [regex] matches %string%", "%string% [regex] does(n't| not) match %string%");
+	}
 	private Expression<String> str;
 	private Expression<?> regex;
 

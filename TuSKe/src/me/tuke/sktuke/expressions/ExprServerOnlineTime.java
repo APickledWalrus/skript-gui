@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
 
@@ -8,9 +9,13 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.skript.util.Timespan;
 import ch.njol.util.Kleenean;
-import me.tuke.sktuke.TuSKe;
 
 public class ExprServerOnlineTime extends SimpleExpression<Timespan>{
+	static {
+		NewRegister.newSimple(ExprServerOnlineTime.class, "[the] online time of server", "server'[s] online time");
+	}
+
+	private static final long time = System.currentTimeMillis();
 
 	@Override
 	public Class<? extends Timespan> getReturnType() {
@@ -35,7 +40,7 @@ public class ExprServerOnlineTime extends SimpleExpression<Timespan>{
 	@Override
 	@Nullable
 	protected Timespan[] get(Event e) {
-		return new Timespan[]{ new Timespan(System.currentTimeMillis() - TuSKe.getTime())};
+		return new Timespan[]{ new Timespan(System.currentTimeMillis() - time)};
 	}
 
 }

@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -10,6 +11,9 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import me.tuke.sktuke.TuSKe;
 
 public class ExprLanguage extends SimplePropertyExpression<Player, String>{
+	static {
+		NewRegister.newProperty(ExprLanguage.class, "(locale|language)", "player");
+	}
 	
 	static final boolean isSpigot = TuSKe.isSpigot();
 

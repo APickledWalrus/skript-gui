@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions.recipe;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
@@ -12,6 +13,9 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 
 public class ExprShapeOfRecipe extends SimpleExpression<String>{
+	static {
+		NewRegister.newProperty(ExprShapeOfRecipe.class, "shape", "recipe");
+	}
 
 	private Expression<Recipe> rec;
 	

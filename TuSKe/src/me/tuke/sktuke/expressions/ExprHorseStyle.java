@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
 import org.bukkit.event.Event;
@@ -12,6 +13,9 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.util.coll.CollectionUtils;
 
 public class ExprHorseStyle extends SimplePropertyExpression<Entity, String>{
+	static {
+		NewRegister.newProperty(ExprHorseStyle.class, "horse style", "entity");
+	}
 
 	@Override
 	public Class<? extends String> getReturnType() {

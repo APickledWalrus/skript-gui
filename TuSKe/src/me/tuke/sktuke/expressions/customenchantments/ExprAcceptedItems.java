@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 
 import ch.njol.skript.classes.Changer;
@@ -14,11 +15,14 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
-import me.tuke.sktuke.customenchantment.AcceptedItems;
-import me.tuke.sktuke.customenchantment.CEnchant;
-import me.tuke.sktuke.customenchantment.EnchantConfig;
+import me.tuke.sktuke.manager.customenchantment.AcceptedItems;
+import me.tuke.sktuke.manager.customenchantment.CEnchant;
+import me.tuke.sktuke.manager.customenchantment.EnchantConfig;
 
 public class ExprAcceptedItems extends SimpleExpression<String>{
+	static {
+		NewRegister.newSimple(ExprAcceptedItems.class, "accepted items for %customenchantment%");
+	}
 
 	private Expression<CEnchant> ce;
 	@Override

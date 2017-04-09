@@ -5,12 +5,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import br.com.devpaulo.legendchat.api.events.ChatMessageEvent;
-import me.tuke.sktuke.hooks.legendchat.LegendConfig;
+import me.tuke.sktuke.hooks.legendchat.LegendchatConfig;
 
 public class TagChat implements Listener{
 	
-	private LegendConfig config;
-	public TagChat(LegendConfig config){
+	private LegendchatConfig config;
+	public TagChat(LegendchatConfig config){
 		this.config = config;
 	}
 	

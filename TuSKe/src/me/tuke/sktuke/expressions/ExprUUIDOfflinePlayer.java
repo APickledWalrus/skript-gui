@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Event;
@@ -14,6 +15,9 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 
 public class ExprUUIDOfflinePlayer extends SimpleExpression<OfflinePlayer>{
+	static {
+		NewRegister.newSimple(ExprUUIDOfflinePlayer.class, "offline player from [uuid] %string%");
+	}
 
 	private Expression<String> uuid;
 	@Override

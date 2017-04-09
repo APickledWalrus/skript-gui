@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 
 import ch.njol.skript.classes.Changer;
@@ -13,11 +14,14 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
-import me.tuke.sktuke.customenchantment.CEnchant;
-import me.tuke.sktuke.customenchantment.CustomEnchantment;
-import me.tuke.sktuke.customenchantment.EnchantConfig;
+import me.tuke.sktuke.manager.customenchantment.CEnchant;
+import me.tuke.sktuke.manager.customenchantment.CustomEnchantment;
+import me.tuke.sktuke.manager.customenchantment.EnchantConfig;
 
 public class ExprCEConflicts extends SimpleExpression<CEnchant>{
+	static {
+		NewRegister.newSimple(ExprCEConflicts.class, "conflicts for %customenchantment%");
+	}
 
 	private Expression<CEnchant> ce;
 	@Override

@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -12,6 +13,9 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 
 public class ExprDropsOfBlock extends SimpleExpression<ItemStack>{
+	static {
+		NewRegister.newSimple(ExprDropsOfBlock.class, "drops of %block% [(with|using) %-itemstack%]", "%block%'[s] drops [(with|using) %-itemstack%]");
+	}
 	
 	private Expression<Block> b;
 	private Expression<ItemStack> i;

@@ -15,10 +15,10 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import me.tuke.sktuke.customenchantment.EnchantManager;
+import me.tuke.sktuke.manager.customenchantment.EnchantManager;
 import me.tuke.sktuke.TuSKe;
-import me.tuke.sktuke.customenchantment.CustomEnchantment;
-import me.tuke.sktuke.customenchantment.EnchantConfig;
+import me.tuke.sktuke.manager.customenchantment.CustomEnchantment;
+import me.tuke.sktuke.manager.customenchantment.EnchantConfig;
 
 public class EnchantCheck implements Listener{
 	

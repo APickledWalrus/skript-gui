@@ -1,5 +1,6 @@
 package me.tuke.sktuke.effects;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
@@ -10,11 +11,17 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.TuSKe;
-import me.tuke.sktuke.recipe.CustomFurnaceRecipe;
-import me.tuke.sktuke.recipe.CustomShapedRecipe;
-import me.tuke.sktuke.recipe.CustomShapelessRecipe;
+import me.tuke.sktuke.manager.recipe.CustomFurnaceRecipe;
+import me.tuke.sktuke.manager.recipe.CustomShapedRecipe;
+import me.tuke.sktuke.manager.recipe.CustomShapelessRecipe;
 
 public class EffRegisterRecipe extends Effect{
+	static {
+		NewRegister.newEffect(EffRegisterRecipe.class,
+				"(create|register) [new] [custom] shaped recipe with (return|result) %itemstack% using [ingredients] %itemstacks% [with shape %-strings%]",
+				"(create|register) [new] [custom] shapeless recipe with (return|result) %itemstack% using [ingredients] %itemstacks%",
+				"(create|register) [new] [custom] furnace recipe with (return|result) %itemstack% using [source] %itemstack% [[and] with experience %-number%]");
+	}
 
 	private int type;
 	private Expression<ItemStack> result;

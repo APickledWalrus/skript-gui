@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions.recipe;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.Recipe;
 import javax.annotation.Nullable;
@@ -7,6 +8,9 @@ import javax.annotation.Nullable;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 
 public class ExprFurnaceRecipeLevel extends SimplePropertyExpression<Recipe, Number>{
+	static {
+		NewRegister.newProperty(ExprFurnaceRecipeLevel.class, "furnace level", "recipe");
+	}
 
 	@Override
 	public Class<? extends Number> getReturnType() {

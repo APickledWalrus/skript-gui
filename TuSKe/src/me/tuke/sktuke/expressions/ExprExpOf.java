@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -11,6 +12,9 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.util.coll.CollectionUtils;
 
 public class ExprExpOf extends SimplePropertyExpression<Player, Integer>{
+	static {
+		NewRegister.newProperty(ExprExpOf.class, "[total] [e]xp", "player");
+	}
 	
 	@Override
 	public Class<? extends Integer> getReturnType() {

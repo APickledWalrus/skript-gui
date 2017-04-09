@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.Material;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -17,6 +18,9 @@ import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 
 public class ExprDraggedItem extends SimpleExpression<ItemStack>{
+	static {
+		NewRegister.newSimple(ExprDraggedItem.class, "[event-][old(-| )]dragged(-| )item");
+	}
 
 	private boolean isOld;
 	@Override
