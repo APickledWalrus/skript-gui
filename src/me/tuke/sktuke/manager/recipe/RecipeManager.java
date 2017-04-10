@@ -3,12 +3,8 @@ package me.tuke.sktuke.manager.recipe;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -226,18 +222,38 @@ public class RecipeManager implements Listener{
 		}else
 			return new ItemStack[]{((FurnaceRecipe)rec).getInput()};
 	}
-	public ItemStack[] fixIngredients(ItemStack[] items){
-		for (int x = 0; x < items.length; x++){
-			if (items[x] == null)
-				items[x] = new ItemStack(Material.AIR);
-			else if (items[x].getDurability() == (short) 32767){
-				items[x].setDurability((short)0);
+	public ItemStack[] getShapedIngredients(ShapedRecipe sr) {
+		Map<Character, ItemStack> map = sr.getIngredientMap();
+		if (map.size() < 9) {
+			ItemStack[] items = new ItemStack[9];
+			String[] shape = sr.getShape();
+			int x = 0;
+			for (String str : shape) {
+				for (Character ch : str.toCharArray()) {
+					items[x++] = map.get(ch);
+				}
+				x += 3 - str.length();
 			}
-			if (items[x].getAmount() <= 0)
-				items[x].setAmount(1);
+			return fixIngredients(items);
+		} else
+			return map.values().toArray(new ItemStack[map.size()]);
+	}
+	public ItemStack[] fixIngredients(ItemStack[] items){
+		for (int x = 0; x < items.length; x++) {
+			items[x] = fixItem(items[x]);
 		}
 		return items;
 		
+	}
+	private ItemStack fixItem(ItemStack item) {
+		if (item == null)
+			return new ItemStack(Material.AIR);
+		if (item.getDurability() == (short) 32767){
+			item.setDurability((short)0);
+		}
+		if (item.getAmount() <= 0)
+			item.setAmount(1);
+		return item;
 	}
 	public void clearRecipes(){
 		HandlerList.unregisterAll(this);

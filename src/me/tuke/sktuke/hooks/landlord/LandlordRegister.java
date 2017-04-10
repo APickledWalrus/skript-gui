@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Leandro Pereira (aka Tuke_Nuke)
+ * @author Tuke_Nuke on 10/04/2017
  */
 public class LandlordRegister {
 

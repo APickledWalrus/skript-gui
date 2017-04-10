@@ -7,15 +7,12 @@ import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.Node;
 import ch.njol.skript.config.SectionNode;
-import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.SkriptParser;
+import ch.njol.skript.lang.*;
 import ch.njol.skript.log.SkriptLogger;
 import ch.njol.util.Kleenean;
 import ch.njol.util.StringUtils;
 import me.tuke.sktuke.TuSKe;
 import org.bukkit.event.Event;
-
-import ch.njol.skript.lang.Condition;
 
 /**
  * A class to allow you to create effects that you can run its section.
@@ -23,7 +20,7 @@ import ch.njol.skript.lang.Condition;
  */
 public abstract class EffectSection extends Condition {
 	private SectionNode section = null;
-	private RunnableSection trigger = null;
+	private TriggerSection trigger = null;
 	private boolean hasIfOrElseIf = false;
 
 	public EffectSection(){
@@ -49,27 +46,42 @@ public abstract class EffectSection extends Condition {
 
 	/**
 	 * It is to replicate {@link ch.njol.skript.lang.Effect#execute(Event)}
-	 * @param e
+	 * @param e - The Event
 	 */
 	public abstract void execute(Event e);
 	@Override
 	public boolean check(Event e){
 		execute(e);
-		//It needs to return false to not enter side the section
-		//And return true in case it is inline condition.
+		//It needs to return false to not enter inside the section
+		//And return true in case it is inline condition, so the code
+		//can continue.
 		return !hasSection();
 	}
 
 	/**
-	 * It will load the section of this if any. It must be used before {@link #hasSection()} and {@link #runSection(Event)}.
+	 * It will load the section of this if any. It must be used before {@link #runSection(Event)}.
 	 */
 	public void loadSection(){
-		if (hasSection())
-			trigger = new RunnableSection(section);
+		if (section != null) {
+			trigger = new TriggerSection(section) {
+
+				@Override
+				public String toString(Event event, boolean b) {
+					return EffectSection.this.toString(event, b);
+				}
+
+				@Override
+				public TriggerItem walk(Event event) {
+					return walk(event, true);
+				}
+			};
+			//Just to not keep a instance of SectionNode.
+			section = null;
+		}
 	}
 
 	/**
-	 * It will load the section of this if any and then it will parser as an event.
+	 * It will load the section of this if any and then it will parse as in specific event.
 	 * Basically it will call {@link ScriptLoader#setCurrentEvent(String, Class[])}, parse the current section,
 	 * and then set the current event back to the previous one.
 	 * Useful to load a code from event X and parse as Y, allowing to use syntaxes that work on it.
@@ -78,16 +90,14 @@ public abstract class EffectSection extends Condition {
 	 * @param events - The classes that extends {@link Event}.
 	 */
 	public void loadSection(String name, Class<? extends Event>... events){
-		if (hasSection() && name != null && events != null && events.length > 0) {
+		if (section != null && name != null && events != null && events.length > 0) {
 			String previousName = ScriptLoader.getCurrentEventName();
 			Class<? extends Event>[] previousEvents = ScriptLoader.getCurrentEvents();
-			Kleenean hasDelay = ScriptLoader.hasDelayBefore;
+			Kleenean previousDelay = ScriptLoader.hasDelayBefore;
 			ScriptLoader.setCurrentEvent(name, events);
-			trigger = new RunnableSection(section);
+			loadSection();
 			ScriptLoader.setCurrentEvent(previousName, previousEvents);
-			ScriptLoader.hasDelayBefore = hasDelay;
-			//Just to not keep a instance of SectionNode.
-			section = null;
+			ScriptLoader.hasDelayBefore = previousDelay;
 		}
 	}
 
@@ -101,11 +111,12 @@ public abstract class EffectSection extends Condition {
 
 	/**
 	 * Run the section.
-	 * <b>Note</b>: You must call it with same event when you parsed it.
+	 * <b>Note</b>: You must {@link #loadSection()} first and you should run it with same
+	 * event from {@link #execute(Event)}
 	 * @param e - The event
 	 */
 	public void runSection(Event e){
-		trigger.execute(e);
+		TriggerItem.walk(trigger, e);
 	}
 
 	/**
@@ -121,16 +132,26 @@ public abstract class EffectSection extends Condition {
 	 * <code>
 	 *     public boolean init(...) {
 	 *		if (checkIfCondition()) { //It will send a error if true
-	 *		 return false;
+	 *		 return false; //Then return false to not continue the code
 	 *		}
 	 *		//continue here
 	 *     }
 	 * </code>
-	 * @return True if the EffectSection wasn't used as condition in if/else if
+	 * @return True if the EffectSection was used as condition in if/else if
 	 */
 	public boolean checkIfCondition() {
 		if (hasIfOrElseIf)
 			Skript.error("You can't use the effect in if/else if section.");
 		return hasIfOrElseIf;
+	}
+
+	/**
+	 * The section node of {@link EffectSection}.
+	 * It can return null if it was used after {@link #loadSection()} or
+	 * if this doesn't have any section.
+	 * @return The SectionNode
+	 */
+	public SectionNode getSectionNode() {
+		return section;
 	}
 }

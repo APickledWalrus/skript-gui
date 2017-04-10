@@ -1,11 +1,13 @@
 package me.tuke.sktuke.util;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * @author Leandro Pereira (aka Tuke_Nuke)
+ * @author Tuke_Nuke on 10/04/2017
  */
 public class InventoryUtils {
 
@@ -43,5 +45,29 @@ public class InventoryUtils {
 			if ((invTo.getItem(x) == null) || (invTo.getItem(x) != null && invTo.getItem(x).getData().equals(i.getDurability()) && invTo.getItem(x).getAmount() < invTo.getItem(x).getMaxStackSize()))
 				return x;
 		return -1;
+	}
+
+	public static Inventory newInventory(InventoryType type, Integer size, String name) {
+		if (size == null)
+			size = type.getDefaultSize();
+		else
+			size *= 9;
+		if (name == null)
+			name = type.getDefaultTitle();
+		else if (name.length() > 32)
+			name = name.substring(0, 32);
+		switch (type) {
+			case BEACON:
+			case MERCHANT:
+			case CRAFTING:
+			case CREATIVE:
+				return null;
+			case CHEST:
+				return Bukkit.getServer().createInventory(null, size, name);
+			case DROPPER:
+				type = InventoryType.DISPENSER;
+			default:
+				return Bukkit.getServer().createInventory(null, type, name);
+		}
 	}
 }

@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import me.tuke.sktuke.expressions.gui.ExprVirtualInv;
+import me.tuke.sktuke.util.InventoryUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -120,21 +121,14 @@ public class GUIInventory {
 		}
 		if (newName != null && newSize != null) {
 			List<HumanEntity> viewers = inv.getViewers();
-			inv = ExprVirtualInv.getInventory(inv.getType(), newSize, newName);
+			inv = InventoryUtils.newInventory(inv.getType(), newSize, newName);
 			inv.setContents(copy);
-			viewers.parallelStream().forEach(human -> {
+			viewers.stream().forEach(human -> {
 				ItemStack cursor = human.getItemOnCursor();
 				human.setItemOnCursor(null);
 				human.openInventory(inv);
 				human.setItemOnCursor(cursor);
 			});
-			/*for (int x = 0; x < viewrs.size(); x++) {
-				HumanEntity h = viewrs.get(x);
-				h.setItemOnCursor(null);
-				viewrs.get(x).openInventory(inv);
-				h.setItemOnCursor(cursor);
-
-			}*/
 		} else
 			inv.setContents(copy);
 		return this;

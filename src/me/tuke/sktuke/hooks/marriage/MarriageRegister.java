@@ -5,7 +5,7 @@ import com.lenis0012.bukkit.marriage2.Gender;
 import me.tuke.sktuke.util.EnumType;
 
 /**
- * @author Leandro Pereira (aka Tuke_Nuke)
+ * @author Tuke_Nuke on 10/04/2017
  */
 public class MarriageRegister {
 	public MarriageRegister(SkriptAddon tuske) {

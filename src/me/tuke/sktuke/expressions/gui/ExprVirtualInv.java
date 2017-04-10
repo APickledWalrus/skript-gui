@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions.gui;
 
+import me.tuke.sktuke.util.InventoryUtils;
 import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
@@ -55,29 +56,8 @@ public class ExprVirtualInv extends SimpleExpression<Inventory>{
 		if (type != null){
 			Integer size = this.size != null ? this.size.getSingle(e).intValue() : null;
 			String name = this.name != null ? this.name.getSingle(e) : null;
-			return new Inventory[]{getInventory(type, size, name)};
+			return new Inventory[]{InventoryUtils.newInventory(type, size, name)};
 		}
 		return null;
 	}
-	
-	public static Inventory getInventory(InventoryType type, Integer size, String name){
-		if (size == null)
-			size = type.getDefaultSize();
-		else if (size % 9 != 0)
-			size *= 9;
-		if (name == null)
-			name = type.getDefaultTitle();
-		else if (name.length() > 32)
-			name = name.substring(0, 32);
-		switch (type){
-		case BEACON:
-		case MERCHANT:
-		case CRAFTING:
-		case CREATIVE: return null;
-		case CHEST:	return Bukkit.getServer().createInventory(null, size, name);
-		case DROPPER: type = InventoryType.DISPENSER;
-		default: return Bukkit.getServer().createInventory(null, type, name);
-		}
-	}
-
 }

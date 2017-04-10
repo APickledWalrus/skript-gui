@@ -19,7 +19,7 @@ import org.bukkit.entity.Player;
 import javax.annotation.Nullable;
 
 /**
- * @author Leandro Pereira (aka Tuke_Nuke)
+ * @author Tuke_Nuke on 10/04/2017
  */
 public class LegendchatRegister {
 	public static LegendchatConfig config;

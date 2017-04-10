@@ -13,6 +13,9 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.manager.recipe.RecipeManager;
+import org.bukkit.inventory.ShapedRecipe;
+
+import java.awt.*;
 
 public class ExprItemsOfRecipe extends SimpleExpression<ItemStack>{
 	static {
@@ -51,7 +54,8 @@ public class ExprItemsOfRecipe extends SimpleExpression<ItemStack>{
 			Recipe r2 = rm.getIfContainsCustomRecipe(r.getResult(), rm.getIngredients(r));
 			if (r2 != null)
 				r = r2;
-			return rm.fixIngredients(rm.getIngredients(r));
+			TuSKe.debug("is Shaped? " + (r instanceof ShapedRecipe));
+			return r instanceof ShapedRecipe ? rm.getShapedIngredients((ShapedRecipe) r) : rm.fixIngredients(rm.getIngredients(r));
 		}
 		return null;
 	}

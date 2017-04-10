@@ -10,6 +10,7 @@ import me.tuke.sktuke.util.NewRegister;
 import org.bukkit.event.Event;
 
 /**
+ * It should be only be useful for me, don't try to enable or use it (it won't do nothing more than spam your console btw)
  * @author Tuke_Nuke on 01/02/2017
  */
 public class EffDebug extends Effect {
