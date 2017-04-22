@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -18,7 +18,7 @@ import me.tuke.sktuke.listeners.OnlineStatusCheck;
 
 public class ExprOnlineTime extends SimplePropertyExpression<Player, Timespan>{
 	static {
-		NewRegister.newProperty(ExprOnlineTime.class, "online time", "player");
+		Registry.newProperty(ExprOnlineTime.class, "online time", "player");
 	}
 
 

@@ -1,9 +1,13 @@
 package me.tuke.sktuke.sections.gui;
 
 import ch.njol.skript.Skript;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Name;
 import ch.njol.skript.variables.Variables;
 import me.tuke.sktuke.TuSKe;
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.manager.gui.v2.GUIHandler;
+import me.tuke.sktuke.manager.gui.v2.GUIInventory;
+import me.tuke.sktuke.util.Registry;
 import me.tuke.sktuke.util.ReflectionUtils;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -19,19 +23,17 @@ import java.util.*;
 /**
  * @author Tuke_Nuke on 01/04/2017
  */
+@Name("Make GUI")
+@Description("Used to format a gui slot inside of gui creation/editing section")
 public class EffMakeGUI extends EffectSection {
 	static {
-		NewRegister.newEffect(EffMakeGUI.class,
-				"make next gui [slot] (with|to) %itemstack%",
-				"make gui [slot] %string/number% (with|to) %itemstack%"
-				//"make next gui [slot] (with|to) %itemstack% with (var[iable]|value)[s] %objects%",
-				//"make gui [slot] %string/number% (with|to) %itemstack% with (var[iable]|value)[s] %objects%"
-				);
+		Registry.newEffect(EffMakeGUI.class,
+				"(make|format) next gui [slot] (with|to) %itemstack%",
+				"(make|format) gui [slot] %strings/numbers% (with|to) %itemstack%");
 	}
 	public static WeakHashMap<Event, Object> map = ReflectionUtils.getField(Variables.class, null, "localVariables");
 	public static EffMakeGUI lastInstance = null;
 
-	private EffCreateGUI effGui;
 	private Expression<?> slot; //Can be number or a string
 	//private Expression<?> where; //Can be the player or a gui inventory.
 	private Expression<ItemStack> item;
@@ -52,13 +54,11 @@ public class EffMakeGUI extends EffectSection {
 			slot = arg[0].getConvertedExpression(Object.class);
 			item = (Expression<ItemStack>) arg[1];
 		}
-		effGui = EffCreateGUI.lastInstance;
 		if (hasSection()) {
 			EffMakeGUI last = lastInstance;
 			lastInstance = this;
 			loadSection("gui effect", InventoryClickEvent.class);
 			lastInstance = last;
-			//loadSection();
 		}
 		return true;
 	}
@@ -66,24 +66,28 @@ public class EffMakeGUI extends EffectSection {
 	@Override
 	public void execute(Event e) {
 		ItemStack item = this.item.getSingle(e);
-		//if (item == null)
-		//	item = new ItemStack(Material.AIR);
-		Object[] slot = this.slot != null ? this.slot.getArray(e) : new Object[]{effGui.gui.nextSlot()};
+		GUIInventory gui = GUIHandler.getInstance().eventGuis.get(e);
+		TuSKe.debug("isNull? ", gui == null);
+		if (gui == null)
+			return;
+		Object[] slot = this.slot != null ? this.slot.getArray(e) : new Object[]{gui.nextSlot()};
 		for (Object s : slot) {
 			if (hasSection()) {
-				Object variables = copyVariables(e);
-				effGui.gui.setItem(s, item, event -> {
+				final Object variables = copyVariables(e);
+				TuSKe.debug("With section");
+				gui.setItem(s, item, event -> {
 					pasteVariables(event, variables);
+					GUIHandler.getInstance().eventGuis.put(event, gui);
 					runSection(event);
 				});
 			} else
-				effGui.gui.setItem(s, item);
+				gui.setItem(s, item);
 		}
 	}
 	
 	@Override
 	public String toString(Event arg0, boolean arg1) {
-		return "make " + (slot != null ? "a gui slot "+ slot.toString(arg0, arg1) : "next gui slot") + " of gui with " + item.toString(arg0, arg1);
+		return "make " + (slot != null ? " a gui slot "+ slot.toString(arg0, arg1) : "next gui slot") + " of gui with " + item.toString(arg0, arg1);
 	}
 	//
 	// Some hacking methods to copy variables from one event, and paste

@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions.recipe;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -17,7 +17,7 @@ import ch.njol.util.Kleenean;
 
 public class ExprRecipesOf extends SimpleExpression<Recipe>{
 	static {
-		NewRegister.newProperty(ExprRecipesOf.class, "[all] recipes", "itemstack");
+		Registry.newProperty(ExprRecipesOf.class, "[all] recipes", "itemstack");
 	}
 
 	private Expression<ItemStack> i;

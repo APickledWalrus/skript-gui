@@ -1,6 +1,6 @@
 package me.tuke.sktuke.conditions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Tameable;
@@ -12,29 +12,28 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 
+//TODO Update with new mobs
 public class CondIsMobType extends Condition{
 	static {
-		NewRegister.newCondition(CondIsMobType.class,"%livingentities% (is|are) [a] (0¦hostile|1¦neutral|2¦passive) [mob]", "%livingentities% (is|are)(n't| not) [a] (0¦hostile|1¦neutral|2¦passive) [mob]");
+		Registry.newCondition(CondIsMobType.class,
+				"%livingentities% (is|are) [a] (0¦hostile|1¦neutral|2¦passive) [mob]",
+				"%livingentities% (is|are)(n't| not) [a] (0¦hostile|1¦neutral|2¦passive) [mob]");
 	}
 
 	private Expression<LivingEntity> et;
 	private MobType mt;
+
 	public enum MobType{
 		HOSTILE,
 		NEUTRAL,
 		PASSIVE;
-		
-		static MobType getByID(int id){
-			return values()[id];
-		}
-		
-		
 	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
 		et = (Expression<LivingEntity>) arg[0];
-		mt = MobType.getByID(arg3.mark);
+		mt = MobType.values()[arg3.mark];
 		setNegated(arg1 == 1);
 		return true;
 	}
@@ -46,18 +45,7 @@ public class CondIsMobType extends Condition{
 
 	@Override
 	public boolean check(Event e) {
-		if (et.getArray(e) == null)
-			return false;
-		boolean r = true;
-		for (LivingEntity ent : et.getArray(e)){
-			if (ent != null && ent instanceof Creature && !isMobType((Creature)ent, mt)){
-				r = false;
-				break;
-			}
-		}
-		if (isNegated())
-			r = !r;
-		return r;
+		return et.check(e, le -> le instanceof Creature && isMobType((Creature) le, mt), isNegated());
 	}
 
 	public boolean isMobType(Creature et, MobType mt){

@@ -2,7 +2,7 @@ package me.tuke.sktuke.expressions.customenchantments;
 
 import javax.annotation.Nullable;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
@@ -14,7 +14,7 @@ import me.tuke.sktuke.manager.customenchantment.CEnchant;
 
 public class ExprLevelOfCustomEnchant extends SimpleExpression<Number> {
 	static {
-		NewRegister.newSimple(ExprLevelOfCustomEnchant.class, "level of [custom enchantment] %customenchantment% of %itemstack%");
+		Registry.newSimple(ExprLevelOfCustomEnchant.class, "level of [custom enchantment] %customenchantment% of %itemstack%");
 	}
 
 	private Expression<ItemStack> i;

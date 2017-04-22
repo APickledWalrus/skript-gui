@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.legendchat.effects;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -16,7 +16,7 @@ import ch.njol.util.Kleenean;
 
 public class EffUnMute extends Effect{
 	static {
-		NewRegister.newEffect(EffUnMute.class, 1, "unmute %player%");
+		Registry.newEffect(EffUnMute.class, 1, "unmute %player%");
 	}
 	
 	private Expression<Player> p;

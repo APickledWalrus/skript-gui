@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.legendchat.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
 
@@ -18,7 +18,7 @@ import ch.njol.util.coll.CollectionUtils;
 
 public class ExprTellMessage extends SimpleExpression<String> {
 	static {
-		NewRegister.newSimple(ExprTellMessage.class, 0, "tell message");
+		Registry.newSimple(ExprTellMessage.class, 0, "tell message");
 	}
 	private boolean noWait = true;
 

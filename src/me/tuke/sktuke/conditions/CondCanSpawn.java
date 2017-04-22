@@ -19,6 +19,7 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 
+//Never used it, but now it's unnecessary
 public class CondCanSpawn extends Condition{
 
 	private Expression<?> loc;

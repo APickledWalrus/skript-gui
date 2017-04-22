@@ -17,9 +17,7 @@ public class EffExampleEffectSection extends EffectSection {
 	static {
 		//You need to register it as condition cause
 		//EffectSection extends a condition.
-
-		assert false; // Just to not register it
-		Skript.registerCondition(EffExampleEffectSection.class, "example of how to use this");
+		//Skript.registerCondition(EffExampleEffectSection.class, "example of how to use this");
 	}
 
 	@Override

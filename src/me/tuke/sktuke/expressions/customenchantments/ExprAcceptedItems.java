@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 import ch.njol.skript.classes.Changer;
@@ -21,7 +21,7 @@ import me.tuke.sktuke.manager.customenchantment.EnchantConfig;
 
 public class ExprAcceptedItems extends SimpleExpression<String>{
 	static {
-		NewRegister.newSimple(ExprAcceptedItems.class, "accepted items for %customenchantment%");
+		Registry.newSimple(ExprAcceptedItems.class, "accepted items for %customenchantment%");
 	}
 
 	private Expression<CEnchant> ce;

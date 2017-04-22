@@ -1,7 +1,7 @@
 package me.tuke.sktuke.hooks.marriage.expressions;
 
 import com.lenis0012.bukkit.marriage2.MPlayer;
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -14,7 +14,7 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 
 public class ExprPartnerOf extends SimplePropertyExpression <Player, OfflinePlayer>{
 	static {
-		NewRegister.newProperty(ExprPartnerOf.class, "partner", "player");
+		Registry.newProperty(ExprPartnerOf.class, "partner", "player");
 	}
 
 	@Override

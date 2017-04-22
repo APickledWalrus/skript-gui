@@ -260,7 +260,7 @@ public class Documentation implements Runnable{
 		Method m = ReflectionUtils.getMethod(EventValues.class, "getEventValuesList", int.class);
 		List<?> values = ReflectionUtils.invokeMethod(m, null, time);
 		if (values != null)
-			for (Class<? extends Event> c : classes) {
+			for (Class<?> c : classes) {
 				for (Object eventValue : values) {
 					Class<?> event = ReflectionUtils.getField(eventValue.getClass(), eventValue, "event");
 					if (event != null && (c.isAssignableFrom(event) || event.isAssignableFrom(c))) {

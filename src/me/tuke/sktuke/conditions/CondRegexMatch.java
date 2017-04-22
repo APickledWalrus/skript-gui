@@ -1,19 +1,22 @@
 package me.tuke.sktuke.conditions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
 
 import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
-import ch.njol.util.Checker;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.util.Regex;
 
+import java.util.regex.Pattern;
+
 public class CondRegexMatch extends Condition{
 	static {
-		NewRegister.newCondition(CondRegexMatch.class, "%string% [regex] matches %string%", "%string% [regex] does(n't| not) match %string%");
+		Registry.newCondition(CondRegexMatch.class,
+				"%strings% [regex] matches %string%",
+				"%strings% [regex] does(n't| not) match %string%");
 	}
 	private Expression<String> str;
 	private Expression<?> regex;
@@ -34,17 +37,10 @@ public class CondRegexMatch extends Condition{
 
 	@Override
 	public boolean check(Event e) {
-		if (str.getSingle(e) == null || regex.getSingle(e) == null)
+		final Pattern p = Regex.getInstance().getPattern(regex.getSingle(e));
+		if (p == null)
 			return false;
-		final Regex reg = regex.getSingle(e) instanceof String ? new Regex((String)regex.getSingle(e)) : (Regex)regex.getSingle(e);
-		if (!reg.isPatternParsed())
-			return false;
-		return str.check(e, new Checker<String>() {
-
-			@Override
-			public boolean check(String arg) {
-				return arg.matches(reg.getRegex());
-			}}, isNegated());
+		return str.check(e, from -> p.matcher(from).matches(), isNegated());
 	}
 
 }

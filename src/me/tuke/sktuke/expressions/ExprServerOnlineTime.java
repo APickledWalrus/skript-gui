@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
 
@@ -12,7 +12,7 @@ import ch.njol.util.Kleenean;
 
 public class ExprServerOnlineTime extends SimpleExpression<Timespan>{
 	static {
-		NewRegister.newSimple(ExprServerOnlineTime.class, "[the] online time of server", "server'[s] online time");
+		Registry.newSimple(ExprServerOnlineTime.class, "[the] online time of server", "server'[s] online time");
 	}
 
 	private static final long time = System.currentTimeMillis();

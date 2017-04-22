@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.legendchat.conditions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -16,7 +16,7 @@ import ch.njol.util.Kleenean;
 
 public class CondMuted extends Condition{
 	static {
-		NewRegister.newCondition(CondMuted.class, "%player% is muted", "%player% is(n't| not) muted");
+		Registry.newCondition(CondMuted.class, "%player% is muted", "%player% is(n't| not) muted");
 	}
 	private Expression<Player> p;
 	private int neg;

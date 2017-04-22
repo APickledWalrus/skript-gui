@@ -2,7 +2,7 @@ package me.tuke.sktuke.hooks.simpleclans.effects;
 
 import javax.annotation.Nullable;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -16,7 +16,7 @@ import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 
 public class EffPlacePlayerInClan  extends Effect{
 	static {
-		NewRegister.newEffect(EffPlacePlayerInClan.class, "(add|place) %player% (to|in) [clan] %clan%", "[make] %player% join to %clan%");
+		Registry.newEffect(EffPlacePlayerInClan.class, "(add|place) %player% (to|in) [clan] %clan%", "[make] %player% join to %clan%");
 	}
 
 	private Expression<Player> p;

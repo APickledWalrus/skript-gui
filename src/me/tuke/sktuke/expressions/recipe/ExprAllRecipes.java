@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import ch.njol.skript.doc.Since;
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.FurnaceRecipe;
@@ -43,7 +43,7 @@ import me.tuke.sktuke.TuSKe;
 @Since("1.6.8, 1.7.5 (recipe type list)")
 public class ExprAllRecipes extends SimpleExpression<Recipe>{
 	static {
-		NewRegister.newSimple(ExprAllRecipes.class, "[all] [registred] (shaped|shapeless|furnace|) recipes");
+		Registry.newSimple(ExprAllRecipes.class, "[all] [registred] (shaped|shapeless|furnace|) recipes");
 	}
 
 	int type = 0;
@@ -133,7 +133,7 @@ public class ExprAllRecipes extends SimpleExpression<Recipe>{
 	@SuppressWarnings("unchecked")
 	@Override
 	public Class<?>[] acceptChange(final Changer.ChangeMode mode) {
-		if (mode == ChangeMode.DELETE || mode == ChangeMode.RESET /*|| mode == ChangeMode.REMOVE*/) //The REMOVE changer is not yet finished
+		if (mode == ChangeMode.DELETE || mode == ChangeMode.RESET || mode == ChangeMode.REMOVE)
 			return CollectionUtils.array(Recipe[].class);
 		return null;
 		

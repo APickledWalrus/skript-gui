@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.simpleclans.conditions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
@@ -14,7 +14,7 @@ import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 
 public class CondClan extends Condition{
 	static {
-		NewRegister.newCondition(CondClan.class, "%player% (has|have) [a] clan", "%player% (hasn't|doesn't have) [a] clan");
+		Registry.newCondition(CondClan.class, "%player% (has|have) [a] clan", "%player% (hasn't|doesn't have) [a] clan");
 	}
 	private Expression<Player> p;
 	private boolean neg = false;

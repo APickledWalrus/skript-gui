@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.landlord.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.event.Event;
@@ -15,7 +15,7 @@ import ch.njol.util.Kleenean;
 
 public class ExprLandClaimAt extends SimpleExpression<LowOwnedLand>{
 	static {
-		NewRegister.newSimple(ExprLandClaimAt.class, "land[lord] claim at %location/chunk%");
+		Registry.newSimple(ExprLandClaimAt.class, "land[lord] claim at %location/chunk%");
 	}
 
 	private Expression<Object> l;

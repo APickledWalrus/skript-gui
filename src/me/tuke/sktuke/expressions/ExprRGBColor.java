@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -19,7 +19,7 @@ import ch.njol.util.coll.CollectionUtils;
 
 public class ExprRGBColor extends SimpleExpression<Integer>{
 	static {
-		NewRegister.newProperty(ExprRGBColor.class, "R[ed, ]G[reen and ]B[blue] [colo[u]r[s]]", "-itemstacks/colors");
+		Registry.newProperty(ExprRGBColor.class, "R[ed, ]G[reen and ]B[blue] [colo[u]r[s]]", "-itemstacks/colors");
 	}
 
 	private Expression<?> i;

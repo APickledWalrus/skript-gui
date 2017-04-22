@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.Color;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -19,7 +19,7 @@ import ch.njol.util.coll.CollectionUtils;
 
 public class ExprLeatherColor extends SimpleExpression<Integer>{
 	static {
-		NewRegister.newProperty(ExprLeatherColor.class, "[leather] (0¦red|1¦green|2¦blue) colo[u]r", "-itemstacks/colors");
+		Registry.newProperty(ExprLeatherColor.class, "[leather] (0¦red|1¦green|2¦blue) colo[u]r", "-itemstacks/colors");
 	}
 
 	private Expression<?> i;

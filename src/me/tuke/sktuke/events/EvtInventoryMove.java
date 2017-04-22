@@ -5,7 +5,7 @@ import ch.njol.skript.lang.SelfRegisteringSkriptEvent;
 import ch.njol.skript.lang.Trigger;
 import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.events.customevent.InventoryMoveEvent;
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import me.tuke.sktuke.util.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -30,7 +30,7 @@ import java.util.List;
 //TODO Improve the listener
 public class EvtInventoryMove extends SelfRegisteringSkriptEvent{
 	static {
-		NewRegister.newEvent(EvtInventoryMove.class, InventoryMoveEvent.class, "Inventory move", "inventory move");
+		Registry.newEvent(EvtInventoryMove.class, InventoryMoveEvent.class, "Inventory move", "inventory move");
 	}
 
 	private static List<Trigger> triggers = new ArrayList<>();

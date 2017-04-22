@@ -11,6 +11,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,8 @@ import java.util.function.Consumer;
  * @author Tuke_Nuke on 15/03/2017
  */
 public class SkriptGUIEvent extends SkriptEvent {
+
+	private static final Map<Class, List<Trigger>> triggers = ReflectionUtils.getField(SkriptEventHandler.class, null, "triggers");
 
 	private Trigger t;
 	private GUIInventory gui;
@@ -33,10 +36,9 @@ public class SkriptGUIEvent extends SkriptEvent {
 		//     #TuSKe check here if it is a proper GUI.
 		//     stop
 		t = new Trigger(null, "gui inventory click", this, new ArrayList<>());
-		Class[] clz = new Class[]{InventoryClickEvent.class, InventoryCloseEvent.class, InventoryDragEvent.class};
+		addTrigger(t, 0 , InventoryClickEvent.class, InventoryDragEvent.class);
+		addTrigger(t, 1 , InventoryCloseEvent.class);
 
-		//These methods are only public in Bensku's fork, so just to keep old support.
-		ReflectionUtils.invokeMethod(SkriptEventHandler.class, "addTrigger", null, clz, t);
 		//It register the bukkit listener for the class event in case it isn't yet.
 		ReflectionUtils.invokeMethod(SkriptEventHandler.class, "registerBukkitEvents", null);
 	}
@@ -46,6 +48,7 @@ public class SkriptGUIEvent extends SkriptEvent {
 	}
 	@Override
 	public boolean check(Event event) {
+		TuSKe.debug("GUI CLICK");
 		if (event instanceof InventoryClickEvent && !((InventoryClickEvent) event).isCancelled()) {
 			InventoryClickEvent e = (InventoryClickEvent) event;
 			if (isAllowedType(e.getClick())){
@@ -74,7 +77,7 @@ public class SkriptGUIEvent extends SkriptEvent {
 						gui.getOnClose().accept(e);
 					} catch (Exception ex){
 						if (TuSKe.debug())
-							Skript.exception(ex, "A error occurred while closing a gui");
+							Skript.exception(ex, "A error occurred while closing a Gui");
 					}
 				}
 				if (e.getViewers().size() == 1) //Only clear when the last one close.
@@ -164,5 +167,33 @@ public class SkriptGUIEvent extends SkriptEvent {
 			}
 		}
 		 */
+	}
+	private void addTrigger(Trigger t, int priority, Class<? extends Event>... clzz) {
+		if (priority == 0) {
+			for (Class clz : clzz) {
+				List<Trigger> current = triggers.get(clz);
+				List<Trigger> newList = new ArrayList<>();
+				TuSKe.debug("Antes: ", current == null ? newList.size() : current.size());
+				if (current == null) {
+					//It will add a new array in case it doesn't have the event.
+					newList.add(t);
+					TuSKe.debug("+1 null");
+					triggers.put(clz, newList);
+				} else {
+					//It will put this trigger at first index
+					//Then adding the rest all again.
+					//This little workaround needed just to not
+					//have conflicts between different objects.
+					newList.addAll(current);
+					current.clear();
+					current.add(t);
+					current.addAll(newList);
+				}
+				TuSKe.debug("Depois: ", current == null ? newList.size() : current.size());
+			}
+		} else {
+			Method m = ReflectionUtils.getMethod(SkriptEventHandler.class, "addTrigger", clzz.getClass(), Trigger.class);
+			ReflectionUtils.invokeMethod(m, null, clzz, t);
+		}
 	}
 }

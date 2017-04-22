@@ -4,7 +4,7 @@ import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 import javax.annotation.Nullable;
@@ -21,7 +21,7 @@ import ch.njol.util.Kleenean;
 @Since("1.0")
 public class ExprAlphabetOrder extends SimpleExpression<Object>{
 	static {
-		NewRegister.newCombined(ExprAlphabetOrder.class, "alphabetical order of %objects%");
+		Registry.newCombined(ExprAlphabetOrder.class, "alphabetical order of %objects%");
 	}
 	
 	private Expression<Object> o;

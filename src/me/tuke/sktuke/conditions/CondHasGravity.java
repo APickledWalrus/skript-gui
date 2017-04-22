@@ -2,9 +2,9 @@ package me.tuke.sktuke.conditions;
 
 import javax.annotation.Nullable;
 
-import me.tuke.sktuke.util.NewRegister;
+import ch.njol.skript.aliases.ItemType;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
-import org.bukkit.inventory.ItemStack;
 
 import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Expression;
@@ -13,16 +13,18 @@ import ch.njol.util.Kleenean;
 
 public class CondHasGravity extends Condition{
 	static {
-		NewRegister.newCondition(CondHasGravity.class, "%itemstack% has gravity", "%itemstack% has(n't| not) gravity");
+		Registry.newCondition(CondHasGravity.class,
+				"%itemtypes% has gravity",
+				"%itemtypes% has(n't| not) gravity");
 	}
 
-	private Expression<ItemStack> o;
+	private Expression<ItemType> o;
 	private int neg;
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
-		this.o = (Expression<ItemStack>) arg[0];
-		this.neg = arg1;
+		this.o = (Expression<ItemType>) arg[0];
+		setNegated(arg1 == 1);
 		return true;
 	}
 	@Override
@@ -32,10 +34,7 @@ public class CondHasGravity extends Condition{
 
 	@Override
 	public boolean check(Event e) {
-		ItemStack i = this.o.getSingle(e);
-		if (neg == 1)
-			return !i.getType().hasGravity();
-		return i.getType().hasGravity();
+		return o.check(e, item -> item.getRandom().getType().hasGravity(), isNegated());
 	}
 	
 }

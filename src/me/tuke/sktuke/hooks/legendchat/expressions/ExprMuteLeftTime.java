@@ -1,7 +1,7 @@
 package me.tuke.sktuke.hooks.legendchat.expressions;
 
 import ch.njol.skript.util.Timespan;
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 
 import br.com.devpaulo.legendchat.api.Legendchat;
@@ -13,7 +13,7 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 
 public class ExprMuteLeftTime extends SimplePropertyExpression<Player, Timespan>{
 	static {
-		NewRegister.newProperty(ExprMuteLeftTime.class, "mute (left|remaining) time", "player");
+		Registry.newProperty(ExprMuteLeftTime.class, "mute (left|remaining) time", "player");
 	}
 	@Override
 	public Class<? extends Timespan> getReturnType() {

@@ -1,7 +1,7 @@
 package me.tuke.sktuke.expressions;
 
 import ch.njol.skript.doc.NoDoc;
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import javax.annotation.Nullable;
@@ -19,7 +19,7 @@ import me.tuke.sktuke.events.customevent.AnvilRenameEvent;
 @NoDoc
 public class ExprAnvilItem extends SimpleExpression<ItemStack>{
 	static {
-		NewRegister.newSimple(ExprAnvilItem.class, "[event-]item-(one|two|result|three)");
+		Registry.newSimple(ExprAnvilItem.class, "[event-]item-(one|two|result|three)");
 	}
 
 	private int i;

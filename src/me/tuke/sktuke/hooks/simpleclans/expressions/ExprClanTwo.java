@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.simpleclans.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
 
@@ -19,7 +19,7 @@ import net.sacredlabyrinth.phaed.simpleclans.events.RivalClanRemoveEvent;
 
 public class ExprClanTwo extends SimpleExpression<Clan>{
 	static {
-		NewRegister.newSimple(ExprClanTwo.class, 0,"[event-]clan-two");
+		Registry.newSimple(ExprClanTwo.class, 0,"[event-]clan-two");
 	}
 	
 	private Integer e;

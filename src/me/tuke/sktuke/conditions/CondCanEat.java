@@ -1,8 +1,8 @@
 package me.tuke.sktuke.conditions;
 
-import me.tuke.sktuke.util.NewRegister;
+import ch.njol.skript.aliases.ItemType;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
-import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nullable;
 
@@ -13,16 +13,17 @@ import ch.njol.util.Kleenean;
 
 public class CondCanEat extends Condition{
 	static {
-		NewRegister.newCondition(CondCanEat.class, "%itemstack% is edible", "%itemstack% is(n't| not) edible");
+		Registry.newCondition(CondCanEat.class,
+				"%itemtypes% is edible",
+				"%itemtypes% is(n't| not) edible");
 	}
 
-	private Expression<ItemStack> o;
-	private int neg;
+	private Expression<ItemType> o;
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
-		this.o = (Expression<ItemStack>) arg[0];
-		this.neg = arg1;
+		this.o = (Expression<ItemType>) arg[0];
+		setNegated(arg1 == 1);
 		return true;
 	}
 
@@ -33,10 +34,7 @@ public class CondCanEat extends Condition{
 
 	@Override
 	public boolean check(Event e) {
-		ItemStack i = this.o.getSingle(e);
-		if (neg == 1)
-			return !i.getType().isEdible();
-		return i.getType().isEdible();
+		return o.check(e, item -> item.getRandom().getType().isEdible(), isNegated());
 	}
 	
 

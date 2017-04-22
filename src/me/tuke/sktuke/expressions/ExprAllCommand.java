@@ -3,7 +3,7 @@ package me.tuke.sktuke.expressions;
 import java.util.HashMap;
 import java.util.Map;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 import javax.annotation.Nullable;
@@ -30,7 +30,7 @@ import me.tuke.sktuke.util.ReflectionUtils;
 @Since("1.6.9.7")
 public class ExprAllCommand extends SimpleExpression<String>{
 	static {
-		NewRegister.newSimple(ExprAllCommand.class, "[all] [registered] [script] commands");
+		Registry.newSimple(ExprAllCommand.class, "[all] [registered] [script] commands");
 	}
 
 	private boolean scriptsOnly = false;

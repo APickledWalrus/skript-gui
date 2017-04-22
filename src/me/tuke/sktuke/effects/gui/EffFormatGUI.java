@@ -2,8 +2,10 @@ package me.tuke.sktuke.effects.gui;
 
 import ch.njol.skript.registrations.Classes;
 import me.tuke.sktuke.manager.gui.GUI;
+import me.tuke.sktuke.manager.gui.v2.GUIHandler;
+import me.tuke.sktuke.manager.gui.v2.GUIInventory;
 import me.tuke.sktuke.sections.gui.EffMakeGUI;
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -29,7 +31,7 @@ import me.tuke.sktuke.util.EvalFunction;
 public class EffFormatGUI extends Effect{
 	static {
 		String cr = "string/" + Classes.getExactClassInfo(ClickType.class).getCodeName();
-		NewRegister.newEffect(EffFormatGUI.class,
+		Registry.newEffect(EffFormatGUI.class,
 				"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% [to [do] nothing]",
 				"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to (1¦close|2¦open %-inventory%) [(using|with) %-" + cr + "% [(button|click|action)]]",
 				"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to [(1¦close|2¦open %-inventory%) then] (run|exe[cute]) %commandsender% command %string% [(using|with) perm[ission] %-string%][[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
@@ -107,7 +109,7 @@ public class EffFormatGUI extends Effect{
 			for (int x = 0; x < slots.length; x++)
 				for(int y = 0; y < p.length; y++){
 					if (p[y] == null)
-						break;
+						continue;
 					Inventory inv = p[y].getOpenInventory().getTopInventory();
 					if (slots[x] != null && slots[x].intValue() >= 0 && slots[x].intValue() < inv.getSize()){
 						Runnable rn = null;
@@ -116,20 +118,11 @@ public class EffFormatGUI extends Effect{
 							final CommandSender s = sender != null ? sender.getSingle(e) : (Player)p[y];
 							final String pe = perm != null ? perm.getSingle(e) : null;
 							final String c = cmd.getSingle(e);
-							rn = new Runnable(){
-								@Override
-								public void run() {
-									TuSKe.getGUIManager().runCommand(s, c, pe);
-								}};
+							rn = () -> TuSKe.getGUIManager().runCommand(s, c, pe);
 							break;
 						case 3:
 							final EvalFunction f = func.getParemetersValues(e);
-							rn = new Runnable(){
-								
-								@Override
-								public void run() {
-									f.run();
-								}};
+							rn = f::run;
 							break;
 						}
 						GUI gui = new GUI(rn, (i2 != null && i2.getSingle(e) != null ? i2.getSingle(e) : null), (ct != null ? getFromObject(ct.getSingle(e)) : null));
@@ -143,8 +136,7 @@ public class EffFormatGUI extends Effect{
 							if (this.inv != null)
 								gui.toOpenInventory(this.inv.getSingle(e));								
 							TuSKe.getGUIManager().newGUI(inv, slots[x].intValue(), i.getSingle(e), gui);
-						}		
-						
+						}
 					}
 				}
 		}

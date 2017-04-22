@@ -2,7 +2,7 @@ package me.tuke.sktuke.effects.customenchantments;
 
 import javax.annotation.Nullable;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 import ch.njol.skript.lang.Effect;
@@ -16,7 +16,7 @@ import me.tuke.sktuke.manager.customenchantment.EnchantConfig;
 
 public class EffUnregisterEnchantment extends Effect{
 	static {
-		NewRegister.newEffect(EffUnregisterEnchantment.class, "unregister [the] [custom] enchantment %customenchantment%");
+		Registry.newEffect(EffUnregisterEnchantment.class, "unregister [the] [custom] enchantment %customenchantment%");
 	}
 
 	private Expression<CEnchant> id;

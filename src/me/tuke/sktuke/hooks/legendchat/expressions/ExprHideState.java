@@ -2,7 +2,7 @@ package me.tuke.sktuke.hooks.legendchat.expressions;
 
 import javax.annotation.Nullable;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -15,7 +15,7 @@ import ch.njol.util.coll.CollectionUtils;
 
 public class ExprHideState extends SimplePropertyExpression<Player, Boolean>{
 	static {
-		NewRegister.newProperty(ExprHideState.class, "hide state", "player");
+		Registry.newProperty(ExprHideState.class, "hide state", "player");
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package me.tuke.sktuke.expressions;
 
 import javax.annotation.Nullable;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
 import org.bukkit.event.Event;
@@ -14,7 +14,7 @@ import ch.njol.util.coll.CollectionUtils;
 
 public class ExprHorseColor extends SimplePropertyExpression<Entity, String>{
 	static {
-		NewRegister.newProperty(ExprHorseColor.class, "horse color", "entity");
+		Registry.newProperty(ExprHorseColor.class, "horse color", "entity");
 	}
 
 	@Override
@@ -54,5 +54,4 @@ public class ExprHorseColor extends SimplePropertyExpression<Entity, String>{
 		return null;
 		
 	}
-
 }

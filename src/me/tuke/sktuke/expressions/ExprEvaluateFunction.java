@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 import javax.annotation.Nullable;
@@ -13,7 +13,7 @@ import me.tuke.sktuke.util.EvalFunction;
 
 public class ExprEvaluateFunction extends SimpleExpression<Object>{
 	static {
-		NewRegister.newSimple(ExprEvaluateFunction.class, "result of function %string% [with <.+?>]", "result of function %string\\(<.+?>\\)");
+		Registry.newSimple(ExprEvaluateFunction.class, "result of function %string% [with <.+?>]", "result of function %string\\(<.+?>\\)");
 	}
 
 	private Expression<String> func;

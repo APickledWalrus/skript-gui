@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.legendchat.effects;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -16,7 +16,7 @@ import ch.njol.util.Kleenean;
 
 public class EffMakeTell extends Effect{
 	static {
-		NewRegister.newEffect(EffMakeTell.class, "[make] %player% [send] tell %string% to %player%");
+		Registry.newEffect(EffMakeTell.class, "[make] %player% [send] tell %string% to %player%");
 	}
 
 	private Expression<Player> s;

@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.marriage.conditions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -16,7 +16,7 @@ import ch.njol.util.Kleenean;
 
 public class CondMarried extends Condition{
 	static {
-		NewRegister.newCondition(CondMarried.class, "%player% is married", "%player% is(n't| not) married");
+		Registry.newCondition(CondMarried.class, "%player% is married", "%player% is(n't| not) married");
 	}
 	private Expression<Player> p;
 	private int neg;

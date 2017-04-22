@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions.customenchantments;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
 
@@ -13,7 +13,7 @@ import me.tuke.sktuke.manager.customenchantment.EnchantConfig;
 
 public class ExprEnabled extends SimplePropertyExpression<CEnchant, Boolean>{
 	static {
-		NewRegister.newSimple(ExprEnabled.class, "enabled for %customenchantment%");
+		Registry.newSimple(ExprEnabled.class, "enabled for %customenchantment%");
 	}
 
 	@Override

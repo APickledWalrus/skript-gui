@@ -3,6 +3,7 @@ package me.tuke.sktuke.manager.gui.v2;
 import java.util.*;
 import java.util.function.Consumer;
 
+import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.expressions.gui.ExprVirtualInv;
 import me.tuke.sktuke.util.InventoryUtils;
 import org.bukkit.Material;
@@ -150,7 +151,8 @@ public class GUIInventory {
 		return slot != null ? getSlot(convertSlot(slot)) : null;
 	}
 	public Consumer<InventoryClickEvent> getSlot(Character ch){
-		if (ch !=  null && slots.containsKey(ch))
+		TuSKe.debug("getSlot", ch, slots.containsKey(ch));
+		if (ch !=  null)
 			return slots.get(ch);
 		return null;
 	}

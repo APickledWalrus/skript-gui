@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import ch.njol.util.Kleenean;
 
 public class ExprListPaged extends SimpleExpression<Object>{
 	static {
-		NewRegister.newSimple(ExprListPaged.class, "page %number% of %objects% with %number% lines");
+		Registry.newSimple(ExprListPaged.class, "page %number% of %objects% with %number% lines");
 	}
 	
 	private Expression<Number> p; //Page

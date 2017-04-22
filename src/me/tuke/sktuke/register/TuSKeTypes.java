@@ -1,6 +1,7 @@
 package me.tuke.sktuke.register;
 
 import ch.njol.skript.lang.ParseContext;
+import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.manager.customenchantment.CEnchant;
 import me.tuke.sktuke.manager.customenchantment.CustomEnchantment;
 import me.tuke.sktuke.manager.customenchantment.EnchantManager;
@@ -10,25 +11,24 @@ import me.tuke.sktuke.util.Regex;
 import me.tuke.sktuke.util.SimpleType;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.FurnaceRecipe;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.inventory.*;
 
 import javax.annotation.Nullable;
+import java.util.regex.Pattern;
 
 /**
  * @author Tuke_Nuke on 06/04/2017
  */
 public class TuSKeTypes {
 	static {
+		new EnumType(InventoryType.class, "inventorytype", "inventory ?types?");
+		new EnumType(ClickType.class, "clicktype", "click ?(actions|types)");
+		new EnumType(InventoryAction.class, "inventoryaction", "inventory ?actions?");
+		new EnumType(InventoryType.SlotType.class, "slottype", "slot ?types?");
+		new EnumType(EntityDamageEvent.DamageModifier.class, "damagemodifier", "damage ?modifiers?");
 		new SimpleType<Recipe>(Recipe.class, "recipe", "recipes?"){
-				@Override
-				@Nullable
-				public Recipe parse(String s, ParseContext arg1) {
-					return null;
-				}
 
 				@Override
 				public String toString(Recipe r, int arg1) {
@@ -51,17 +51,28 @@ public class TuSKeTypes {
 					else if (r instanceof FurnaceRecipe)
 						return "furnacerecipe:" + r.toString().split("@")[1];
 					return null;
-				}};
-		new EnumType(InventoryType.class, "inventorytype", "inventory ?types?");
-		new EnumType(ClickType.class, "clicktype", "click ?(action|type)?");
-		new SimpleType<Regex>(Regex.class, "regex", "reg(ular )?ex(pression)?", "Regular expression"){
+
+				}
+				@Override
+				public Class<?>[] acceptChange(ChangeMode mode) {
+					if (mode == ChangeMode.RESET || mode == ChangeMode.DELETE)
+						return new Class[]{Recipe.class};
+					return null;
+				}
+				@Override
+				public void change(Recipe[] recipes, Object[] set, ChangeMode mode) {
+					if (mode == ChangeMode.DELETE)
+						TuSKe.getRecipeManager().removeRecipe(recipes);
+					else if (mode == ChangeMode.RESET)
+						TuSKe.getRecipeManager().removeCustomRecipe(recipes);
+				}
+		};
+		new SimpleType<Pattern>(Pattern.class, "regex", "reg(ular )?ex(pressions?|es)?", "Regular expression"){
 			@Override
 			@Nullable
-			public Regex parse(String s, ParseContext arg1) {
+			public Pattern parse(String s, ParseContext arg1) {
 				if (arg1 == ParseContext.COMMAND){
-					Regex reg = new Regex(s);
-					if (reg.isPatternParsed())
-						return reg;
+					return Regex.getInstance().parse(s);
 				}
 				return null;
 			}
@@ -70,13 +81,13 @@ public class TuSKeTypes {
 				return arg1 == ParseContext.COMMAND;
 			}
 			@Override
-			public String toString(Regex reg, int arg1) {
-				return reg.getRegex();
+			public String toString(Pattern reg, int arg1) {
+				return reg.pattern();
 			}
 
 			@Override
-			public String toVariableNameString(Regex reg) {
-				return reg.getRegex();
+			public String toVariableNameString(Pattern reg) {
+				return reg.pattern();
 			}};
 		new SimpleType<CEnchant>(CEnchant.class, "customenchantment", "custom ?enchantments?"){
 			@Override
@@ -100,12 +111,10 @@ public class TuSKeTypes {
 				return "ce:" + ce.getEnchant().getId();
 			}
 		};
-		//1.7.1
-		new EnumType(EntityDamageEvent.DamageModifier.class, "damagemodifier", "damage ?modifiers?");
-		new SimpleType<GUIInventory>(GUIInventory.class, "gui", "gui ?inventor(y|ies)") {
+		new SimpleType<GUIInventory>(GUIInventory.class, "fromGui", "gui ?inventor(y|ies)") {
 			@Override
 			public String toString(GUIInventory arg0, int arg1) {
-				return "gui inventory";
+				return "gui inventory with "+ EnumType.toString(arg0.getInventory().getType()) +" inventory shape \"" + arg0.getRawShape() + "\"";
 			}
 
 			@Override

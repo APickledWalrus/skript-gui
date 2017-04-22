@@ -1,6 +1,6 @@
 package me.tuke.sktuke.effects.gui;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
@@ -13,9 +13,9 @@ import me.tuke.sktuke.TuSKe;
 
 public class EffUnformatGUI extends Effect{
 	static {
-		NewRegister.newEffect(EffUnformatGUI.class,
-				"(unformat|remove|clear|reset) [the] gui slot %numbers% of %players%",
-				"(unformat|remove|clear|reset) [all] [the] gui slots of %players%");
+		Registry.newEffect(EffUnformatGUI.class,
+				"(unformat|remove|clear|reset) [the] fromGui slot %numbers% of %players%",
+				"(unformat|remove|clear|reset) [all] [the] fromGui slots of %players%");
 	}
 
 	private Expression<Player> p;

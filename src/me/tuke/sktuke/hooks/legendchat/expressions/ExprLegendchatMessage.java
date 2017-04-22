@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.legendchat.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
 
@@ -18,7 +18,7 @@ import ch.njol.util.coll.CollectionUtils;
 
 public class ExprLegendchatMessage extends SimpleExpression<String> {
 	{
-		NewRegister.newSimple(ExprLegendchatMessage.class, 0, "l[egend]c[hat] message");
+		Registry.newSimple(ExprLegendchatMessage.class, 0, "l[egend]c[hat] message");
 	}
 	private Kleenean delay = Kleenean.FALSE;
 	@Override

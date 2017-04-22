@@ -1,6 +1,6 @@
 package me.tuke.sktuke.conditions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Tameable;
 import org.bukkit.event.Event;
@@ -9,12 +9,11 @@ import javax.annotation.Nullable;
 import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
-import ch.njol.util.Checker;
 import ch.njol.util.Kleenean;
 
 public class CondIsTameable extends Condition{
 	static {
-		NewRegister.newCondition(CondIsTameable.class, "%entities% (is|are) tameable", "%entities% (is|are)(n't| not) tameable");
+		Registry.newCondition(CondIsTameable.class, "%entities% (is|are) tameable", "%entities% (is|are)(n't| not) tameable");
 	}
 
 	private Expression<Entity> ent;
@@ -33,13 +32,7 @@ public class CondIsTameable extends Condition{
 
 	@Override
 	public boolean check(Event e) {
-		return ent.check(e, new Checker<Entity>(){
-
-			@Override
-			public boolean check(Entity et) {
-				
-				return et instanceof Tameable;
-			}}, isNegated());
+		return ent.check(e, et -> et instanceof Tameable, isNegated());
 	}
 
 }

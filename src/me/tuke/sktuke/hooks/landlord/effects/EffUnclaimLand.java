@@ -2,7 +2,7 @@ package me.tuke.sktuke.hooks.landlord.effects;
 
 import javax.annotation.Nullable;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.event.Event;
@@ -16,7 +16,7 @@ import ch.njol.util.Kleenean;
 
 public class EffUnclaimLand extends Effect{
 	static {
-		NewRegister.newEffect(EffUnclaimLand.class, "unclaim land[lord] at %location/chunk%");
+		Registry.newEffect(EffUnclaimLand.class, "unclaim land[lord] at %location/chunk%");
 	}
 
 	private Expression<Object> l;

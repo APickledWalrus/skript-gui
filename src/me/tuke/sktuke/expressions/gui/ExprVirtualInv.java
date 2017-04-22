@@ -1,8 +1,7 @@
 package me.tuke.sktuke.expressions.gui;
 
 import me.tuke.sktuke.util.InventoryUtils;
-import me.tuke.sktuke.util.NewRegister;
-import org.bukkit.Bukkit;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -16,7 +15,7 @@ import ch.njol.util.Kleenean;
 
 public class ExprVirtualInv extends SimpleExpression<Inventory>{
 	static {
-		NewRegister.newSimple(ExprVirtualInv.class,
+		Registry.newSimple(ExprVirtualInv.class,
 				"virtual %inventorytype% [inventory] [with size %-number%] [(named|with (name|title)) %-string%]",
 				"virtual %inventorytype% [inventory] [with %-number% row[s]] [(named|with (name|title)) %-string%]");
 	}

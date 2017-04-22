@@ -5,8 +5,7 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.TuSKe;
-import me.tuke.sktuke.util.EffectSection;
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 /**
@@ -16,7 +15,7 @@ import org.bukkit.event.Event;
 public class EffDebug extends Effect {
 	static {
 		if (TuSKe.debug())
-			NewRegister.newEffect(EffDebug.class, "debug");
+			Registry.newEffect(EffDebug.class, "debug");
 	}
 	public static long time = 0L;
 	@Override

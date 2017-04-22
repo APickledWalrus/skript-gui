@@ -2,7 +2,7 @@ package me.tuke.sktuke.expressions;
 
 import javax.annotation.Nullable;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Rabbit;
 import org.bukkit.event.Event;
@@ -14,7 +14,7 @@ import ch.njol.util.coll.CollectionUtils;
 
 public class ExprRabbitType extends SimplePropertyExpression<Entity, String>{
 	static {
-		NewRegister.newProperty(ExprRabbitType.class, "rabbit type", "entity");
+		Registry.newProperty(ExprRabbitType.class, "rabbit type", "entity");
 	}
 
 	@Override

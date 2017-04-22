@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.simpleclans.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Event;
@@ -19,7 +19,7 @@ import net.sacredlabyrinth.phaed.simpleclans.ClanPlayer;
 
 public class ExprClanMembers extends SimpleExpression<OfflinePlayer>{
 	static {
-		NewRegister.newProperty(ExprClanMembers.class, "clan members", "clan");
+		Registry.newProperty(ExprClanMembers.class, "clan members", "clan");
 	}
 	
 	private int x;

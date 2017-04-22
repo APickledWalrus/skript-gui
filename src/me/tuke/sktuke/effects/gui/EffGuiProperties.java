@@ -7,7 +7,7 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.manager.gui.v2.GUIInventory;
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 /**
@@ -15,7 +15,7 @@ import org.bukkit.event.Event;
  */
 public class EffGuiProperties extends Effect {
 	static {
-		NewRegister.newEffect(EffGuiProperties.class, 1, "change %gui inventory% properties to [name %-string% and size %-number% and] [shape %strings%]");
+		Registry.newEffect(EffGuiProperties.class, 1, "change %fromGui inventory% properties to [name %-string% and size %-number% and] [shape %strings%]");
 	}
 
 	private Expression<GUIInventory> gui;
@@ -42,7 +42,7 @@ public class EffGuiProperties extends Effect {
 	@Override
 	public boolean init(Expression<?>[] arg, int i, Kleenean kleenean, SkriptParser.ParseResult parseResult) {
 		if (arg[1] == null && arg[3] == null) {
-			Skript.error("You need to choose a gui property to change. As the name and size or/and the shape.");
+			Skript.error("You need to choose a fromGui property to change. As the name and size or/and the shape.");
 			return false;
 		}
 		gui = (Expression<GUIInventory>) arg[0];

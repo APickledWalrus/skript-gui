@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import javax.annotation.Nullable;
@@ -13,7 +13,7 @@ public class ExprPlayerVersion extends SimplePropertyExpression<Player, String>{
 
 	static {
 		if (isViaversion || isProtocolSupport)
-			NewRegister.newProperty(ExprPlayerVersion.class, "(mc|minecraft) version", "player");
+			Registry.newProperty(ExprPlayerVersion.class, "(mc|minecraft) version", "player");
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package me.tuke.sktuke.expressions;
 
 import javax.annotation.Nullable;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.OfflinePlayer;
 
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
@@ -10,7 +10,7 @@ import ch.njol.skript.util.Date;
 
 public class ExprFirstLogin extends SimplePropertyExpression<OfflinePlayer, Date>{
 	static {
-		NewRegister.newProperty(ExprFirstLogin.class, "first login", "offlineplayer");
+		Registry.newProperty(ExprFirstLogin.class, "first login", "offlineplayer");
 	}
 
 	@Override

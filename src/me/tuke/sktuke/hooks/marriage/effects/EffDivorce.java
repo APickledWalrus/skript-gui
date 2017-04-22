@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.marriage.effects;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -16,7 +16,7 @@ import ch.njol.util.Kleenean;
 
 public class EffDivorce extends Effect{
 	static {
-		NewRegister.newEffect(EffDivorce.class, "divorce %player%", "make %player% divorce");
+		Registry.newEffect(EffDivorce.class, "divorce %player%", "make %player% divorce");
 	}
 
 	private Expression<Player> p;

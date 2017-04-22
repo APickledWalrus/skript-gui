@@ -2,7 +2,7 @@ package me.tuke.sktuke.hooks.legendchat.expressions;
 
 import me.tuke.sktuke.hooks.legendchat.LegendchatConfig;
 import me.tuke.sktuke.hooks.legendchat.LegendchatRegister;
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
@@ -11,15 +11,13 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
-import me.tuke.sktuke.TuSKe;
 
-import java.util.List;
 import java.util.Map;
 
 public class ExprPlayerTags extends SimpleExpression<String>{
 	static final LegendchatConfig config = LegendchatRegister.config;
 	static {
-		NewRegister.newProperty(ExprPlayerTags.class, "[chat] tags", "offlineplayer");
+		Registry.newProperty(ExprPlayerTags.class, "[chat] tags", "offlineplayer");
 	}
 
 	private Expression<OfflinePlayer> p;

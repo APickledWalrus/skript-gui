@@ -2,7 +2,7 @@ package me.tuke.sktuke.hooks.simpleclans.effects;
 
 import javax.annotation.Nullable;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 import ch.njol.skript.lang.Effect;
@@ -13,7 +13,7 @@ import net.sacredlabyrinth.phaed.simpleclans.Clan;
 
 public class EffDisbandClan extends Effect{
 	static {
-		NewRegister.newEffect(EffDisbandClan.class, 1, "disband [clan] %clan%");
+		Registry.newEffect(EffDisbandClan.class, 1, "disband [clan] %clan%");
 	}
 
 	private Expression<Clan> c;

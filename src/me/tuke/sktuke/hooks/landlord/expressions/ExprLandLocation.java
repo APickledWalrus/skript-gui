@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.landlord.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 
@@ -12,7 +12,7 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 
 public class ExprLandLocation extends SimplePropertyExpression<LowOwnedLand, Location>{
 	static {
-		NewRegister.newProperty(ExprLandLocation.class, "land[lord] location", "landclaim");
+		Registry.newProperty(ExprLandLocation.class, "land[lord] location", "landclaim");
 	}
 
 	@Override

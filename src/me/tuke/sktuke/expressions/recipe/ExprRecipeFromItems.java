@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions.recipe;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -19,7 +19,7 @@ import me.tuke.sktuke.manager.recipe.RecipeManager;
 
 public class ExprRecipeFromItems extends SimpleExpression<Recipe>{
 	static {
-		NewRegister.newSimple(ExprRecipeFromItems.class, "recipe from ingredients %itemstacks%");
+		Registry.newSimple(ExprRecipeFromItems.class, "recipe from ingredients %itemstacks%");
 	}
 
 	private Expression<ItemStack> items;
@@ -51,7 +51,7 @@ public class ExprRecipeFromItems extends SimpleExpression<Recipe>{
 		RecipeManager rm = TuSKe.getRecipeManager();
 		ItemStack[] items = this.items.getAll(e);
 		for (Recipe r : Lists.newArrayList(Bukkit.recipeIterator()))
-			if (rm.equalsRecipe(r, items))
+			if (rm.equalsRecipe(r, items) > 0)
 				return new Recipe[]{r};
 		return null;
 	}

@@ -1,6 +1,6 @@
-package me.tuke.sktuke.expressions;
+package me.tuke.sktuke.expressions.regex;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 import javax.annotation.Nullable;
@@ -11,14 +11,18 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.util.Regex;
 
+import java.util.regex.Pattern;
+
 public class ExprRegexReplace extends SimpleExpression<String>{
 	static {
-		NewRegister.newSimple(ExprRegexReplace.class, "regex replace [all] [pattern] %regex/string% with [group[s]] %string% in %string%");
+		Registry.newSimple(ExprRegexReplace.class,
+				"regex replace (all|every|first|) [pattern] %regex/string% with [group[s]] %string% in %string%");
 	}
 
 	private Expression<?> regex;
 	private Expression<String> with;
 	private Expression<String> from;
+	private boolean isFirst = false;
 	
 	@Override
 	public Class<? extends String> getReturnType() {
@@ -36,6 +40,7 @@ public class ExprRegexReplace extends SimpleExpression<String>{
 		regex = arg[0].getConvertedExpression(Object.class);
 		with = (Expression<String>) arg[1];
 		from = (Expression<String>) arg[2];
+		isFirst = arg3.expr.toLowerCase().startsWith("regex replace first");
 		return true;
 	}
 
@@ -49,17 +54,9 @@ public class ExprRegexReplace extends SimpleExpression<String>{
 	protected String[] get(Event e) {
 		String with = this.with.getSingle(e);
 		String from = this.from.getSingle(e);
-		if (from != null){
-			if (with != null && regex.getSingle(e) != null){
-				final Regex reg = regex.getSingle(e) instanceof String ? new Regex((String)regex.getSingle(e)) : (Regex)regex.getSingle(e);
-				try {
-					from = from.replaceAll(reg.getRegex(), with);
-				} catch (IndexOutOfBoundsException ibe){
-					ExprParseRegexError.parserError = ibe.getMessage() + " in '" +reg.getRegex() + "' with replacement '" + with + "'";
-				}
-			}
-			return new String[]{from};
-		}
+		Pattern p = Regex.getInstance().getPattern(regex.getSingle(e));
+		if (from != null && with != null && p != null)
+			return new String[]{Regex.getInstance().regexReplace(p, with, from, isFirst)};
 		return null;
 	}
 

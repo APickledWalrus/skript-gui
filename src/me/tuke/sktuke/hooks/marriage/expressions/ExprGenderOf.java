@@ -1,7 +1,7 @@
 package me.tuke.sktuke.hooks.marriage.expressions;
 
 import com.lenis0012.bukkit.marriage2.MPlayer;
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -18,7 +18,7 @@ import ch.njol.util.coll.CollectionUtils;
 
 public class ExprGenderOf extends SimplePropertyExpression<Player, Gender> {
 	static {
-		NewRegister.newProperty(ExprGenderOf.class, "gender", "player");
+		Registry.newProperty(ExprGenderOf.class, "gender", "player");
 	}
 
 	@Override

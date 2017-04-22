@@ -2,6 +2,7 @@ package me.tuke.sktuke.util;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
@@ -24,12 +25,10 @@ public abstract class EffectSection extends Condition {
 	private boolean hasIfOrElseIf = false;
 
 	public EffectSection(){
-		Node n = SkriptLogger.getNode(); //Skript set node before parsing this effect
+		Node n = SkriptLogger.getNode(); //Skript sets the node before parsing this 'effect'
 		if (n!= null && n instanceof SectionNode) { //Check in case it wasn't loaded as inline condition
-
 			//True if it was used as condition
 			hasIfOrElseIf = StringUtils.startsWithIgnoreCase(n.getKey(), "if ") || StringUtils.startsWithIgnoreCase(n.getKey(), "else if ");
-
 			//The comment value of a note is protected, so it is needed but not really necessary tho.
 			//It doesn't make difference, it's just to make a exactly copy.
 			String comment = ReflectionUtils.getField(Node.class, n, "comment");
@@ -43,7 +42,6 @@ public abstract class EffectSection extends Condition {
 			ReflectionUtils.setField(SectionNode.class, n, "nodes", new ArrayList<Node>());
 		}
 	}
-
 	/**
 	 * It is to replicate {@link ch.njol.skript.lang.Effect#execute(Event)}
 	 * @param e - The Event

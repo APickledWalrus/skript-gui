@@ -13,9 +13,7 @@ import me.tuke.sktuke.hooks.landlord.LandlordRegister;
 import me.tuke.sktuke.hooks.legendchat.LegendchatRegister;
 import me.tuke.sktuke.hooks.marriage.MarriageRegister;
 import me.tuke.sktuke.hooks.simpleclans.SimpleClansRegister;
-import me.tuke.sktuke.register.TuSKeEventValues;
-import me.tuke.sktuke.register.TuSKeTypes;
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -69,7 +67,7 @@ public class TuSKe extends JavaPlugin {
 		// ----------------------------------------------------------
 		// ------------------------ Listener ------------------------
 		// TODO temporary: make them auto-enable
-		Bukkit.getServer().getPluginManager().registerEvents(new EnchantCheck(this), this);
+		// Bukkit.getServer().getPluginManager().registerEvents(new EnchantCheck(this), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new OnlineStatusCheck(this), this);
 		// ----------------------------------------------------------
 		// ------- Some stuffs like Metrics, docs and updater -------
@@ -99,7 +97,7 @@ public class TuSKe extends JavaPlugin {
 				new MarriageRegister(tuske);
 			if (ReflectionUtils.hasClass("com.jcdesimp.landlord.persistantData.LowOwnedLand")) //TODO Landlord provides support for an older version of API. Update needed
 				new LandlordRegister(tuske);
-			info("Loaded %d events, %d conditions, %d effects, %d expressions and %d types. Have fun!", NewRegister.getResults());
+			info("Loaded %d events, %d conditions, %d effects, %d expressions and %d types. Have fun!", Registry.getResults());
 
 		} catch (Exception e) {
 			info("Error while registering stuffs. Please, report it at %s", getDescription().getWebsite() + "/issues" );

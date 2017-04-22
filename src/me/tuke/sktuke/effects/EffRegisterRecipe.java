@@ -1,6 +1,6 @@
 package me.tuke.sktuke.effects;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
@@ -17,7 +17,7 @@ import me.tuke.sktuke.manager.recipe.CustomShapelessRecipe;
 
 public class EffRegisterRecipe extends Effect{
 	static {
-		NewRegister.newEffect(EffRegisterRecipe.class,
+		Registry.newEffect(EffRegisterRecipe.class,
 				"(create|register) [new] [custom] shaped recipe with (return|result) %itemstack% using [ingredients] %itemstacks% [with shape %-strings%]",
 				"(create|register) [new] [custom] shapeless recipe with (return|result) %itemstack% using [ingredients] %itemstacks%",
 				"(create|register) [new] [custom] furnace recipe with (return|result) %itemstack% using [source] %itemstack% [[and] with experience %-number%]");

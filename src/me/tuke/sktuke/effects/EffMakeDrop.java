@@ -2,7 +2,7 @@ package me.tuke.sktuke.effects;
 
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.util.Slot;
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -17,7 +17,7 @@ import me.tuke.sktuke.TuSKe;
 
 public class EffMakeDrop extends Effect{
 	static {
-		NewRegister.newEffect(EffMakeDrop.class, "(make|force) %player% drop[s] %itemstack% [from (%slot%|his inventory)]");
+		Registry.newEffect(EffMakeDrop.class, "(make|force) %player% drop[s] %itemstack% [from (%slot%|his inventory)]");
 	}
 
 	private Expression<Player> p;

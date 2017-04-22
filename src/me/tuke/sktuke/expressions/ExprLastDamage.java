@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.LivingEntity;
 
 import javax.annotation.Nullable;
@@ -9,7 +9,7 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 
 public class ExprLastDamage extends SimplePropertyExpression<LivingEntity, Number>{
 	static {
-		NewRegister.newProperty(ExprLastDamage.class, "last damage", "livingentity");
+		Registry.newProperty(ExprLastDamage.class, "last damage", "livingentity");
 	}
 
 	@Override

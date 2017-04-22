@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -14,7 +14,7 @@ import ch.njol.util.Kleenean;
 
 public class ExprHighiestBlock extends SimpleExpression<Block>{
 	static {
-		NewRegister.newSimple(ExprHighiestBlock.class, "highest block at %location%");
+		Registry.newSimple(ExprHighiestBlock.class, "highest block at %location%");
 	}
 
 	private Expression<Location> l;

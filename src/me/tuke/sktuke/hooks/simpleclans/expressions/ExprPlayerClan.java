@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.simpleclans.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import javax.annotation.Nullable;
 
@@ -11,7 +11,7 @@ import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 
 public class ExprPlayerClan  extends SimplePropertyExpression<Player, Clan>{
 	{
-		NewRegister.newProperty(ExprPlayerClan.class, "clan", "player");
+		Registry.newProperty(ExprPlayerClan.class, "clan", "player");
 	}
 
 	@Override

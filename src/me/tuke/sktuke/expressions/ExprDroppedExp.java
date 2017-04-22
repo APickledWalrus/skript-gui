@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -20,7 +20,7 @@ import ch.njol.util.coll.CollectionUtils;
 
 public class ExprDroppedExp extends SimpleExpression<Experience>{
 	static {
-		NewRegister.newSimple(ExprDroppedExp.class, "[the] dropped [e]xp[erience] [orb[s]]");
+		Registry.newSimple(ExprDroppedExp.class, "[the] dropped [e]xp[erience] [orb[s]]");
 	}
 
 	@Override

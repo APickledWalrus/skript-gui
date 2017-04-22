@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.legendchat.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -16,7 +16,7 @@ import ch.njol.util.coll.CollectionUtils;
 
 public class ExprSpyState extends SimplePropertyExpression<Player, Boolean>{
 	static {
-		NewRegister.newProperty(ExprSpyState.class, "spy state", "player");
+		Registry.newProperty(ExprSpyState.class, "spy state", "player");
 	}
 
 	@Override

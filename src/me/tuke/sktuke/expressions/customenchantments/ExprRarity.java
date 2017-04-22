@@ -2,7 +2,7 @@ package me.tuke.sktuke.expressions.customenchantments;
 
 import javax.annotation.Nullable;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 import ch.njol.skript.classes.Changer;
@@ -14,7 +14,7 @@ import me.tuke.sktuke.manager.customenchantment.EnchantConfig;
 
 public class ExprRarity extends SimplePropertyExpression<CEnchant, Number>{
 	static {
-		NewRegister.newProperty(ExprMaxLevel.class, "max level", "customenchantment");
+		Registry.newProperty(ExprMaxLevel.class, "max level", "customenchantment");
 	}
 
 	@Override

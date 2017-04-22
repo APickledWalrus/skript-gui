@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.event.Event;
@@ -29,7 +29,7 @@ import me.tuke.sktuke.util.ReflectionUtils;
 @Since("1.6.9.6, 1.6.9.7")
 public class ExprCommandInfo extends SimpleExpression<String>{
 	static {
-		NewRegister.newSimple(ExprCommandInfo.class,
+		Registry.newSimple(ExprCommandInfo.class,
 				"[the] description of command %string%", "command %string%'[s] description",
 				"[the] main [command] of command %string%", "command %string%'[s] main [command]",
 				"[the] permission of command %string%", "command %string%'[s] permission",

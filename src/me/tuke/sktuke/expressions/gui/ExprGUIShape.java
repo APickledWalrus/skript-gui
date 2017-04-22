@@ -6,7 +6,7 @@ import ch.njol.skript.lang.SkriptParser;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.sections.gui.EffCreateGUI;
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 /**
@@ -14,7 +14,7 @@ import org.bukkit.event.Event;
  */
 public class ExprGUIShape extends SimpleExpression<String> {
 	static {
-		NewRegister.newSimple(ExprGUIShape.class, "gui shape");
+		Registry.newSimple(ExprGUIShape.class, "fromGui shape");
 	}
 
 	private EffCreateGUI effGui;
@@ -35,13 +35,13 @@ public class ExprGUIShape extends SimpleExpression<String> {
 
 	@Override
 	public String toString(Event event, boolean b) {
-		return "gui shape";
+		return "fromGui shape";
 	}
 
 	@Override
 	public boolean init(Expression<?>[] expressions, int i, Kleenean kleenean, SkriptParser.ParseResult parseResult) {
 		if (EffCreateGUI.lastInstance == null) {
-			Skript.info("You can't use '" + parseResult.expr + "' outside of gui create section");
+			Skript.info("You can't use '" + parseResult.expr + "' outside of fromGui create section");
 			return false;
 		}
 		effGui = EffCreateGUI.lastInstance;

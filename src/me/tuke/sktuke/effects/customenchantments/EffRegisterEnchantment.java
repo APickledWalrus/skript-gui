@@ -1,6 +1,6 @@
 package me.tuke.sktuke.effects.customenchantments;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import me.tuke.sktuke.manager.customenchantment.EnchantConfig;
 
 public class EffRegisterEnchantment extends Effect{
 	static {
-		NewRegister.newEffect(EffRegisterEnchantment.class, "(register|create) [a] [new] [custom] enchantment with id [name] %string%");
+		Registry.newEffect(EffRegisterEnchantment.class, "(register|create) [a] [new] [custom] enchantment with id [name] %string%");
 	}
 
 	private Expression<String> id;

@@ -2,7 +2,7 @@ package me.tuke.sktuke.hooks.marriage.effects;
 
 import javax.annotation.Nullable;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -16,7 +16,7 @@ import ch.njol.util.Kleenean;
 
 public class EffSendMarry extends Effect {
 	static {
-		NewRegister.newEffect(EffSendMarry.class, "[make] %player% invite %player% to marry", "send invite of marry from %player% to %player%");
+		Registry.newEffect(EffSendMarry.class, "[make] %player% invite %player% to marry", "send invite of marry from %player% to %player%");
 	}
 
 	private Expression<Player> p1;

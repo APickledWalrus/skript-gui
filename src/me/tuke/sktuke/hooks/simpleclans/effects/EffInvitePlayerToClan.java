@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.simpleclans.effects;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
@@ -14,7 +14,7 @@ import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 
 public class EffInvitePlayerToClan extends Effect{
 	static {
-		NewRegister.newEffect(EffInvitePlayerToClan.class, "[make] %player% [a] invite %player% to his clan", "send invite of clan from %player% to %player%");
+		Registry.newEffect(EffInvitePlayerToClan.class, "[make] %player% [a] invite %player% to his clan", "send invite of clan from %player% to %player%");
 	}
 
 	private Expression<Player> ps;

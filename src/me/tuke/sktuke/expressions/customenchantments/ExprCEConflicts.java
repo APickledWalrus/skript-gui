@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 import ch.njol.skript.classes.Changer;
@@ -20,7 +20,7 @@ import me.tuke.sktuke.manager.customenchantment.EnchantConfig;
 
 public class ExprCEConflicts extends SimpleExpression<CEnchant>{
 	static {
-		NewRegister.newSimple(ExprCEConflicts.class, "conflicts for %customenchantment%");
+		Registry.newSimple(ExprCEConflicts.class, "conflicts for %customenchantment%");
 	}
 
 	private Expression<CEnchant> ce;

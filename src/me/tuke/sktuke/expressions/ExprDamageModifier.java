@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
@@ -18,7 +18,7 @@ import ch.njol.util.coll.CollectionUtils;
 
 public class ExprDamageModifier extends SimpleExpression<Double>{
 	static {
-		NewRegister.newSimple(ExprDamageModifier.class, "damage [modifier] %damagemodifier%");
+		Registry.newSimple(ExprDamageModifier.class, "damage [modifier] %damagemodifier%");
 	}
 
 	private Expression<DamageModifier> dm;

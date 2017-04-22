@@ -2,7 +2,7 @@ package me.tuke.sktuke.expressions;
 
 import javax.annotation.Nullable;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Ocelot;
 import org.bukkit.event.Event;
@@ -14,7 +14,7 @@ import ch.njol.util.coll.CollectionUtils;
 
 public class ExprCatType extends SimplePropertyExpression<Entity, String>{
 	static {
-		NewRegister.newProperty(ExprCatType.class, "(cat|ocelot) type", "entity");
+		Registry.newProperty(ExprCatType.class, "(cat|ocelot) type", "entity");
 	}
 
 	@Override

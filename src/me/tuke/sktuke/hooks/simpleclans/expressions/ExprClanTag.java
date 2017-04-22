@@ -2,7 +2,7 @@ package me.tuke.sktuke.hooks.simpleclans.expressions;
 
 import javax.annotation.Nullable;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 import ch.njol.skript.classes.Changer;
@@ -15,7 +15,7 @@ import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 
 public class ExprClanTag extends SimplePropertyExpression<Clan, String>{
 	static {
-		NewRegister.newProperty(ExprClanTag.class, "[clan] tag", "clan");
+		Registry.newProperty(ExprClanTag.class, "[clan] tag", "clan");
 	}
 
 	@Override

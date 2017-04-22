@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.legendchat.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
 
@@ -18,7 +18,7 @@ import ch.njol.util.Kleenean;
 public class ExprTellReceiver extends SimpleExpression<CommandSender>{
 
 	static {
-		NewRegister.newSimple(ExprTellReceiver.class, 0, "[tell] receiver");
+		Registry.newSimple(ExprTellReceiver.class, 0, "[tell] receiver");
 	}
 	//private boolean noWait = true;
 	@Override

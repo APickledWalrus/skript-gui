@@ -1,6 +1,6 @@
 package me.tuke.sktuke.conditions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;
@@ -9,12 +9,13 @@ import javax.annotation.Nullable;
 import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
-import ch.njol.util.Checker;
 import ch.njol.util.Kleenean;
 
 public class CondIsAgeable extends Condition{
 	static {
-		NewRegister.newCondition(CondIsAgeable.class, "%entities% ((is|are) ageable|can grow up)", "%entities% ((is|are)(n't| not) ageable|can(n't| not) grow up)");
+		Registry.newCondition(CondIsAgeable.class,
+				"%entities% ((is|are) ageable|can grow up)",
+				"%entities% ((is|are)(n't| not) ageable|can(n't| not) grow up)");
 
 	}
 
@@ -34,13 +35,7 @@ public class CondIsAgeable extends Condition{
 
 	@Override
 	public boolean check(Event e) {
-		return ent.check(e, new Checker<Entity>(){
-
-			@Override
-			public boolean check(Entity et) {
-				
-				return et instanceof Ageable;
-			}}, isNegated());
+		return ent.check(e, et -> et instanceof Ageable, isNegated());
 	}
 
 }

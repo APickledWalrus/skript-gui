@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.legendchat.conditions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -18,7 +18,7 @@ import ch.njol.util.Kleenean;
 public class CondCanSayChannel extends Condition{
 
 	static {
-		NewRegister.newCondition(CondCanSayChannel.class, "%player% can (see|say in) [channel] %channel%", "%player% can't (see|say in) [channel] %channel%");
+		Registry.newCondition(CondCanSayChannel.class, "%player% can (see|say in) [channel] %channel%", "%player% can't (see|say in) [channel] %channel%");
 	}
 	private Expression<Player> p;
 	private Expression<Channel> c;

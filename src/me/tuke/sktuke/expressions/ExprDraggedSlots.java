@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryDragEvent;
 
@@ -18,7 +18,7 @@ import ch.njol.util.Kleenean;
 
 public class ExprDraggedSlots extends SimpleExpression<Integer>{
 	static {
-		NewRegister.newSimple(ExprDraggedSlots.class, "[event-]dragged(-| )(top|bottom)(-| )slots");
+		Registry.newSimple(ExprDraggedSlots.class, "[event-]dragged(-| )(top|bottom)(-| )slots");
 	}
 
 	private boolean isTop = false;

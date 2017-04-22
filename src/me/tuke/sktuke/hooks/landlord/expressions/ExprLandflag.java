@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.landlord.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 import com.jcdesimp.landlord.Landlord;
@@ -19,7 +19,7 @@ import ch.njol.util.coll.CollectionUtils;
 
 public class ExprLandflag extends SimpleExpression<Boolean>{
 	static {
-		NewRegister.newSimple(ExprLandflag.class, "landflag %landflag% of %landclaim% for (1¦everyone|2¦friends)");
+		Registry.newSimple(ExprLandflag.class, "landflag %landflag% of %landclaim% for (1¦everyone|2¦friends)");
 	}
 
 	private Expression<LowOwnedLand> ol;

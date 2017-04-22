@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.landlord.effects;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -17,7 +17,7 @@ import ch.njol.util.Kleenean;
 
 public class EffClaimLand extends Effect{
 	static {
-		NewRegister.newEffect(EffClaimLand.class, "claim land[lord] at %location/chunk% for %player%");
+		Registry.newEffect(EffClaimLand.class, "claim land[lord] at %location/chunk% for %player%");
 	}
 
 	private Expression<Object> l;

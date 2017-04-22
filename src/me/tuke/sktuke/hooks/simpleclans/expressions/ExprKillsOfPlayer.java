@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.simpleclans.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -19,7 +19,7 @@ import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 
 public class ExprKillsOfPlayer extends SimpleExpression<Number>{
 	static {
-		NewRegister.newProperty(ExprKillsOfPlayer.class, "clan (1¦rival|2¦neutral|3¦civilian) kills", "player");
+		Registry.newProperty(ExprKillsOfPlayer.class, "clan (1¦rival|2¦neutral|3¦civilian) kills", "player");
 	}
 	
 	private Expression<Player> p;

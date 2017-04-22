@@ -1,8 +1,9 @@
-package me.tuke.sktuke.expressions;
+package me.tuke.sktuke.expressions.regex;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 import com.mifmif.common.regex.Generex;
@@ -17,7 +18,7 @@ import me.tuke.sktuke.util.Regex;
 
 public class ExprRegexRandom extends SimpleExpression<String>{
 	static {
-		NewRegister.newSimple(ExprRegexRandom.class,
+		Registry.newSimple(ExprRegexRandom.class,
 				"(first|random) string matching [pattern] %regex/string%",
 				"random strings matching [pattern] %regex/string%");
 	}
@@ -64,16 +65,9 @@ public class ExprRegexRandom extends SimpleExpression<String>{
 	
 	@Override
 	protected String[] get(Event e) {
-		Object expr = regex.getSingle(e);
-		if (expr != null){
-			Regex reg;
-			if (expr instanceof String) {
-				reg = new Regex((String)expr);
-				if (!reg.isPatternParsed())
-					return null;
-			} else
-				reg = (Regex)expr;
-			Generex gen = new Generex(reg.getRegex());
+		Pattern pattern = Regex.getInstance().getPattern(regex.getSingle(e));
+		if (pattern != null){
+			Generex gen = new Generex(pattern.pattern());
 			switch (mode) {
 				case 1: return new String[]{gen.getFirstMatch()};
 				case 2: return new String[]{gen.random()};

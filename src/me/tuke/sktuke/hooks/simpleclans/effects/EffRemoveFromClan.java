@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.simpleclans.effects;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
@@ -13,7 +13,7 @@ import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 
 public class EffRemoveFromClan extends Effect{
 	static {
-		NewRegister.newEffect(EffRemoveFromClan.class, "(remove|kick) %player% from his clan", "[make] %player% resign from his clan");
+		Registry.newEffect(EffRemoveFromClan.class, "(remove|kick) %player% from his clan", "[make] %player% resign from his clan");
 	}
 
 	private Expression<Player> p;

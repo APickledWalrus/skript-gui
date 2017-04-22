@@ -1,6 +1,6 @@
 package me.tuke.sktuke.conditions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
@@ -15,7 +15,9 @@ import me.tuke.sktuke.manager.customenchantment.CustomEnchantment;
 
 public class CondHasCustom extends Condition{
 	static {
-		NewRegister.newCondition(CondHasCustom.class, "%itemstack% has [a] custom enchantment [%-customenchantment%]", "%itemstack% has(n't| not) [a] custom enchantment [%-customenchantment%]");
+		Registry.newCondition(CondHasCustom.class,
+				"%itemstack% has [a] custom enchantment [%-customenchantment%]",
+				"%itemstack% has(n't| not) [a] custom enchantment [%-customenchantment%]");
 	}
 
 	private Expression<ItemStack> i;

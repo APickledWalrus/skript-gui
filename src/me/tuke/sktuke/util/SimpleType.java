@@ -2,6 +2,7 @@ package me.tuke.sktuke.util;
 
 import javax.annotation.Nullable;
 
+import ch.njol.skript.classes.Changer;
 import ch.njol.skript.classes.ClassInfo;
 import ch.njol.skript.classes.Parser;
 import ch.njol.skript.expressions.base.EventValueExpression;
@@ -9,7 +10,7 @@ import ch.njol.skript.lang.ParseContext;
 import ch.njol.skript.registrations.Classes;
 import me.tuke.sktuke.TuSKe;
 
-public abstract class SimpleType<T>{
+public abstract class SimpleType<T> implements Changer<T>{
 	
 	private String variableName;
 	private String name;
@@ -39,10 +40,21 @@ public abstract class SimpleType<T>{
 	public boolean canParse(ParseContext pc){
 		return true;
 	}
-	
+
+	@Override
+	public Class<?>[] acceptChange(ChangeMode mode) {
+		return null;
+	}
+	public void change(T[] source, Object[] set, ChangeMode mode) {
+
+	}
 	private void register(){
 		try {
-			Classes.registerClass(new ClassInfo<T>(clz, name.toLowerCase().replaceAll("\\s+", "")).user(pattern).name(name).defaultExpression(new EventValueExpression<T>(clz)).parser(new Parser<T>() {
+			Classes.registerClass(new ClassInfo<T>(clz, name.toLowerCase().replaceAll("\\s+", ""))
+					.user(pattern)
+					.name(name)
+					.defaultExpression(new EventValueExpression<>(clz))
+					.parser(new Parser<T>() {
 
 				@Override
 				public String getVariableNamePattern() {

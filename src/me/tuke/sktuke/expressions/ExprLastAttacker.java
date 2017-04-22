@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
@@ -18,7 +18,7 @@ import ch.njol.util.Kleenean;
 
 public class ExprLastAttacker extends SimpleExpression<Object> {
 	static {
-		NewRegister.newProperty(ExprLastAttacker.class, "last attacker", "entity");
+		Registry.newProperty(ExprLastAttacker.class, "last attacker", "entity");
 	}
 
 	private Expression<Entity> ent;

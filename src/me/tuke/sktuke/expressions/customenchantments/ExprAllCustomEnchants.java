@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions.customenchantments;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,7 +21,7 @@ import me.tuke.sktuke.manager.customenchantment.EnchantManager;
 
 public class ExprAllCustomEnchants extends SimpleExpression<CEnchant> {
 	static {
-		NewRegister.newProperty(ExprAllCustomEnchants.class, "[all] custom enchantments", "itemstack");
+		Registry.newProperty(ExprAllCustomEnchants.class, "[all] custom enchantments", "itemstack");
 	}
 
 	private Expression<ItemStack> i;

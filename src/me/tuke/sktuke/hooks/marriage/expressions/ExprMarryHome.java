@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.marriage.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -17,7 +17,7 @@ import ch.njol.util.coll.CollectionUtils;
 
 public class ExprMarryHome extends SimplePropertyExpression <Player, Location>{
 	static {
-		NewRegister.newProperty(ExprMarryHome.class, "marry home", "player");
+		Registry.newProperty(ExprMarryHome.class, "marry home", "player");
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.simpleclans.conditions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
@@ -13,7 +13,7 @@ import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 
 public class CondLeader extends Condition {
 	static {
-		NewRegister.newCondition(CondLeader.class, "%player% is leader of his clan", "%player% is(n't| not) leader of his clan");
+		Registry.newCondition(CondLeader.class, "%player% is leader of his clan", "%player% is(n't| not) leader of his clan");
 	}
 	private Expression<Player> p;
 	private boolean neg = false;

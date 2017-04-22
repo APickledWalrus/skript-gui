@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.legendchat.effects;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -17,7 +17,7 @@ import ch.njol.util.Kleenean;
 
 public class EffMakeSay extends Effect{
 	static {
-		NewRegister.newEffect(EffMakeSay.class, "make %player% say %string% in [channel] %channel%");
+		Registry.newEffect(EffMakeSay.class, "make %player% say %string% in [channel] %channel%");
 	}
 
 	private Expression<Player> p;

@@ -2,7 +2,7 @@ package me.tuke.sktuke.expressions.customenchantments;
 
 import javax.annotation.Nullable;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 import ch.njol.skript.classes.Changer;
@@ -15,7 +15,7 @@ import me.tuke.sktuke.manager.customenchantment.EnchantConfig;
 
 public class ExprLoreName extends SimplePropertyExpression<CEnchant, String>{
 	static {
-		NewRegister.newProperty(ExprLoreName.class, "lore name", "customenchantment");
+		Registry.newProperty(ExprLoreName.class, "lore name", "customenchantment");
 	}
 
 	@Override

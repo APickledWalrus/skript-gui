@@ -1,6 +1,6 @@
 package me.tuke.sktuke.effects;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
@@ -13,7 +13,7 @@ import me.tuke.sktuke.TuSKe;
 
 public class EffExecutePermission extends Effect{
 	static {
-		NewRegister.newEffect(EffExecutePermission.class,
+		Registry.newEffect(EffExecutePermission.class,
 				"[execute] [the] command %strings% by %players% with perm[ission] %string%",
 				"[execute] [the] %players% command %strings% with perm[ission] %string%",
 				"(let|make) %players% execute [[the] command] %strings% with perm[ission] %string%");

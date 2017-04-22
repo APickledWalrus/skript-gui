@@ -1,6 +1,6 @@
 package me.tuke.sktuke.conditions.gui;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import javax.annotation.Nullable;
@@ -13,7 +13,7 @@ import me.tuke.sktuke.TuSKe;
 
 public class CondHasGUI extends Condition{
 	static {
-		NewRegister.newCondition(CondHasGUI.class, "%player% has [a] gui", "slot %number% of %player% is a gui","%player% does(n't| not) have [a] gui", "slot %number% of %player% is(n't| not) [a] gui");
+		Registry.newCondition(CondHasGUI.class, "%player% has [a] fromGui", "slot %number% of %player% is a fromGui","%player% does(n't| not) have [a] fromGui", "slot %number% of %player% is(n't| not) [a] fromGui");
 	}
 
 	private Expression<Player> p;
@@ -34,7 +34,7 @@ public class CondHasGUI extends Condition{
 
 	@Override
 	public String toString(@Nullable Event arg0, boolean arg1) {
-		return this.p + "' inventory has a gui";
+		return this.p + "' inventory has a fromGui";
 	}
 
 	@Override

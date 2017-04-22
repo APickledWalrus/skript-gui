@@ -23,8 +23,8 @@ public class CustomShapedRecipe extends ShapedRecipe{
 			for (int x = 0;x < shape.length(); x++){
 				int index = shape.charAt(x) - 97;
 				if (index < items.length){
-					map.put(Character.valueOf(c), items[index]);
-					setIngredient(c, items[x].getData());
+					map.put(c, items[index]);
+					setIngredient(c, items[index].getData());
 				}
 				c++;
 			}

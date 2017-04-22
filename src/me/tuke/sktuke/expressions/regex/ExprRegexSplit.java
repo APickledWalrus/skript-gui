@@ -1,6 +1,6 @@
-package me.tuke.sktuke.expressions;
+package me.tuke.sktuke.expressions.regex;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 import javax.annotation.Nullable;
@@ -11,9 +11,11 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.util.Regex;
 
+import java.util.regex.Pattern;
+
 public class ExprRegexSplit extends SimpleExpression<String>{
 	static {
-		NewRegister.newSimple(ExprRegexSplit.class, "regex split %string% (with|using) [pattern] %regex/string%");
+		Registry.newSimple(ExprRegexSplit.class, "regex split %string% (with|using) [pattern] %regex/string%");
 	}
 
 	private Expression<String> str;
@@ -45,9 +47,9 @@ public class ExprRegexSplit extends SimpleExpression<String>{
 	@Nullable
 	protected String[] get(Event e) {
 		String string = str.getSingle(e);
-		final Regex reg = regex.getSingle(e) instanceof String ? new Regex((String)regex.getSingle(e)) : (Regex)regex.getSingle(e);
-		if (string != null && reg != null && reg.isPatternParsed())
-			return string.split(reg.getRegex());
+		final Pattern p = Regex.getInstance().getPattern(regex.getSingle(e));
+		if (string != null && p != null)
+			return Regex.getInstance().regexSplit(string, p);
 		return null;
 	}
 

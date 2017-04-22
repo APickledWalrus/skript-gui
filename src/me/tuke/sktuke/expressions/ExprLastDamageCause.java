@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
@@ -10,7 +10,7 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 
 public class ExprLastDamageCause extends SimplePropertyExpression<LivingEntity, DamageCause>{
 	static {
-		NewRegister.newProperty(ExprLastDamageCause.class, "last damage cause", "livingentity");
+		Registry.newProperty(ExprLastDamageCause.class, "last damage cause", "livingentity");
 	}
 
 	@Override

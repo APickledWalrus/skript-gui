@@ -9,7 +9,7 @@ import ch.njol.skript.lang.Trigger;
 import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.events.customevent.AnvilCombineEvent;
 import me.tuke.sktuke.events.customevent.AnvilRenameEvent;
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -29,8 +29,8 @@ import java.util.List;
 
 public class EvtAnvil extends SelfRegisteringSkriptEvent{
 	static {
-		NewRegister.newEvent(EvtAnvil.class, AnvilRenameEvent.class, "Anvil Rename", "anvil [item] rename");
-		NewRegister.newEvent(EvtAnvil.class, AnvilCombineEvent.class, "Anvil Combine", "anvil [item] (combine|merge)");
+		Registry.newEvent(EvtAnvil.class, AnvilRenameEvent.class, "Anvil Rename", "anvil [item] rename");
+		Registry.newEvent(EvtAnvil.class, AnvilCombineEvent.class, "Anvil Combine", "anvil [item] (combine|merge)");
 	}
 	private static List<Trigger> rename = new ArrayList<>();
 	private static List<Trigger> merge = new ArrayList<>();

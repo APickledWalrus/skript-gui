@@ -1,6 +1,6 @@
 package me.tuke.sktuke.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.inventory.ItemStack;
 import javax.annotation.Nullable;
 
@@ -8,7 +8,7 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 
 public class ExprMaxDurability extends SimplePropertyExpression<ItemStack, Integer>{
 	static {
-		NewRegister.newProperty(ExprMaxDurability.class, "max durability", "itemstack");
+		Registry.newProperty(ExprMaxDurability.class, "max durability", "itemstack");
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package me.tuke.sktuke.hooks.landlord.expressions;
 
-import me.tuke.sktuke.util.NewRegister;
+import me.tuke.sktuke.util.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Event;
@@ -22,7 +22,7 @@ import ch.njol.util.coll.CollectionUtils;
 
 public class ExprLandFriends extends SimpleExpression<OfflinePlayer>{
 	static {
-		NewRegister.newProperty(ExprLandFriends.class, "land[lord] friends", "landclaim");
+		Registry.newProperty(ExprLandFriends.class, "land[lord] friends", "landclaim");
 	}
 
 	private Expression<LowOwnedLand> ol;
