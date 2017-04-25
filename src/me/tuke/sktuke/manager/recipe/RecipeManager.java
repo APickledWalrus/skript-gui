@@ -32,7 +32,6 @@ public class RecipeManager implements Listener{
 		// -1 == No custom recipe found, let it work alone
 		Pair<Integer, Recipe> pair = getMatchingRecipe(e.getInventory().getMatrix());
 		if (pair.getKey() == 0) {
-			TuSKe.debug("Cleared");
 			e.getInventory().setResult(new ItemStack(Material.AIR)); // workaround to cancel the event
 		} else if (pair.getKey() == 1) {
 			e.getInventory().setResult(pair.getValue().getResult()); // workaround to make same recipes with different ingredients' nbts work.

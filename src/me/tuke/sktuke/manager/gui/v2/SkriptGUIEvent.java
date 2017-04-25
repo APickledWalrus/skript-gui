@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 public class SkriptGUIEvent extends SkriptEvent {
 
 	private static final Map<Class, List<Trigger>> triggers = ReflectionUtils.getField(SkriptEventHandler.class, null, "triggers");
-
+	private static boolean firstInstance = true;
 	private Trigger t;
 	private GUIInventory gui;
 	public SkriptGUIEvent(GUIInventory gui){
@@ -36,11 +36,16 @@ public class SkriptGUIEvent extends SkriptEvent {
 		//     #TuSKe check here if it is a proper GUI.
 		//     stop
 		t = new Trigger(null, "gui inventory click", this, new ArrayList<>());
+		//Those will be added before all triggers to cancel it before them.
 		addTrigger(t, 0 , InventoryClickEvent.class, InventoryDragEvent.class);
+		//It will add for the last one
 		addTrigger(t, 1 , InventoryCloseEvent.class);
 
 		//It register the bukkit listener for the class event in case it isn't yet.
-		ReflectionUtils.invokeMethod(SkriptEventHandler.class, "registerBukkitEvents", null);
+		if (firstInstance) {
+			ReflectionUtils.invokeMethod(SkriptEventHandler.class, "registerBukkitEvents", null);
+			firstInstance = false;
+		}
 	}
 	@Override
 	public boolean init(Literal<?>[] literals, int i, SkriptParser.ParseResult parseResult) {
@@ -48,22 +53,38 @@ public class SkriptGUIEvent extends SkriptEvent {
 	}
 	@Override
 	public boolean check(Event event) {
-		TuSKe.debug("GUI CLICK");
 		if (event instanceof InventoryClickEvent && !((InventoryClickEvent) event).isCancelled()) {
 			InventoryClickEvent e = (InventoryClickEvent) event;
 			if (isAllowedType(e.getClick())){
 				Inventory click = InventoryUtils.getClickedInventory(e);
-				if (click != null) {//TODO remake this
-				//if (click != null && (e.getInventory().equals(gui.getInventory()) || click.equals(gui.getInventory()))) {
-					//Integer slot = e.getSlot();
-					//if ((e.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY) && !inv.getType().equals(e.getInventory().getType())) || e.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
-						//inv = e.getInventory();
-						//ItemStack i = (e.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) ? e.getCursor() : click.getItem(e.getSlot()) ;
-						//slot = getSlotTo(inv, i);
-					//}
+				if (click != null) {
+					Inventory op = InventoryUtils.getOpositiveInventory(e.getView(), click);
+					if (op == null || !click.equals(gui.getInventory()) && !op.equals(gui.getInventory()))
+						return false;
+					Integer slot = e.getSlot();
+					switch (e.getAction()) {
+						case MOVE_TO_OTHER_INVENTORY:
+							if (gui.getInventory().equals(op)) {
+								click = op;
+								slot = InventoryUtils.getSlotTo(op, e.getCurrentItem());
+							}
+							break;
+						case COLLECT_TO_CURSOR:
+							click = gui.getInventory();
+							slot = InventoryUtils.getSlotTo(click, e.getCursor());
+							break;
+						case HOTBAR_SWAP:
+						case HOTBAR_MOVE_AND_READD:
+							if (gui.getInventory().getType().equals(InventoryType.PLAYER)) {
+								slot = e.getHotbarButton();
+								click = gui.getInventory();
+							}
+							break;
+
+					}
 					if (click.equals(gui.getInventory())) {
-						Consumer<InventoryClickEvent> run = gui.getSlot(e.getSlot());
-						if (run != null)
+						Consumer<InventoryClickEvent> run = gui.getSlot(slot);
+						if (run != null && slot == e.getSlot() && click.equals(InventoryUtils.getClickedInventory(e)))
 							run.accept(e);
 						e.setCancelled(run != null || gui.isSlotsLocked());
 					}
@@ -80,8 +101,9 @@ public class SkriptGUIEvent extends SkriptEvent {
 							Skript.exception(ex, "A error occurred while closing a Gui");
 					}
 				}
-				if (e.getViewers().size() == 1) //Only clear when the last one close.
+				if (e.getViewers().size() == 1) {//Only clear when the last one close.
 					Bukkit.getScheduler().runTask(TuSKe.getInstance(), () -> unregister());
+				}
 
 				//	gui.clear();
 			}
@@ -150,34 +172,15 @@ public class SkriptGUIEvent extends SkriptEvent {
 			}
 		}
 		gui.setListener(null);
-		/*
-
-
-		final Iterator<List<Trigger>> triggersIter = SkriptEventHandler.triggers.values().iterator();
-		while (triggersIter.hasNext()) {
-			final List<Trigger> ts = triggersIter.next();
-			for (int i = 0; i < ts.size(); i++) {
-				if (script.equals(ts.get(i).getScript())) {
-					info.triggers++;
-					ts.remove(i);
-					i--;
-					if (ts.isEmpty())
-						triggersIter.remove();
-				}
-			}
-		}
-		 */
 	}
 	private void addTrigger(Trigger t, int priority, Class<? extends Event>... clzz) {
 		if (priority == 0) {
 			for (Class clz : clzz) {
 				List<Trigger> current = triggers.get(clz);
 				List<Trigger> newList = new ArrayList<>();
-				TuSKe.debug("Antes: ", current == null ? newList.size() : current.size());
 				if (current == null) {
 					//It will add a new array in case it doesn't have the event.
 					newList.add(t);
-					TuSKe.debug("+1 null");
 					triggers.put(clz, newList);
 				} else {
 					//It will put this trigger at first index
@@ -189,7 +192,6 @@ public class SkriptGUIEvent extends SkriptEvent {
 					current.add(t);
 					current.addAll(newList);
 				}
-				TuSKe.debug("Depois: ", current == null ? newList.size() : current.size());
 			}
 		} else {
 			Method m = ReflectionUtils.getMethod(SkriptEventHandler.class, "addTrigger", clzz.getClass(), Trigger.class);

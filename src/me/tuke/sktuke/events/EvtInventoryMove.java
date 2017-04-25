@@ -84,7 +84,7 @@ public class EvtInventoryMove extends SelfRegisteringSkriptEvent{
 	@Override
 	public void register(Trigger trigger) {
 		triggers.add(trigger);
-		if (triggers.size() == 0) {
+		if (triggers.size() == 1) {
 			Bukkit.getPluginManager().registerEvents(listener, TuSKe.getInstance());
 		}
 	}

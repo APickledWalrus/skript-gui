@@ -72,16 +72,17 @@ public class EvtAnvil extends SelfRegisteringSkriptEvent{
 			}
 		}
 	};
+	private int type = 0;
 	@Override
 	public String toString(@Nullable Event e, boolean b) {
-		return "anvil rename";
+		return "anvil event";
 	}
 
 	@Override
 	public void register(Trigger trigger) {
-		if (ScriptLoader.isCurrentEvent(AnvilRenameEvent.class))
+		if (type == 0)
 			rename.add(trigger);
-		else if (ScriptLoader.isCurrentEvent(AnvilCombineEvent.class))
+		else
 			merge.add(trigger);
 		if (rename.size() + merge.size() == 1)
 			Bukkit.getPluginManager().registerEvents(listener, TuSKe.getInstance());
@@ -104,6 +105,8 @@ public class EvtAnvil extends SelfRegisteringSkriptEvent{
 
 	@Override
 	public boolean init(Literal<?>[] arg, int arg1, ParseResult arg2) {
+		if (!arg2.expr.toLowerCase().contains("rename"))
+			type = 1;
 		return true;
 	}
 

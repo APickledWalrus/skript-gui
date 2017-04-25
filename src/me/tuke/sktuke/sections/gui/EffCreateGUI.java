@@ -14,6 +14,7 @@ import me.tuke.sktuke.manager.gui.v2.GUIInventory;
 import me.tuke.sktuke.util.EffectSection;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 
 /**
@@ -38,7 +39,7 @@ public class EffCreateGUI extends EffectSection {
 	static {
 		Registry.newEffect(EffCreateGUI.class,
 				"create [a] [new] gui [[with id] %-string%] with %inventory% [and shape %-strings%]",
-				"(change|edit) %gui inventory%");
+				"(change|edit) %guiinventory%");
 	}
 	public static EffCreateGUI lastInstance = null;
 	public GUIInventory gui = null;
@@ -49,16 +50,15 @@ public class EffCreateGUI extends EffectSection {
 	public void execute(Event e) {
 		if (exprGui == null) { //It will create a new one
 			Inventory inv = this.inv.getSingle(e);
-			if (inv != null) {
+			if (inv != null && inv.getType() != InventoryType.PLAYER && inv.getType() != InventoryType.CRAFTING) {
 				gui = new GUIInventory(inv);
 				if (str != null)
 					gui.shape(str.getArray(e));
 				else
 					gui.shapeDefault();
-				GUIHandler.getInstance().lastCreated = gui;
 				String id = this.id != null ? this.id.getSingle(e) : null;
-				if (id != null)
-					GUIHandler.getInstance().list.put(id, gui);
+				if (id != null && !id.isEmpty())
+					GUIHandler.getInstance().setGUI(id, gui);
 				GUIHandler.getInstance().setGUIEvent(e, gui);
 				runSection(e);
 			}

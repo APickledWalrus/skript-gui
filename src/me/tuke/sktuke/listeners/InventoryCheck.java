@@ -29,7 +29,7 @@ public class InventoryCheck implements Listener{
 	}
 
 	@EventHandler
-	public void InventoryEvent(final InventoryClickEvent e) {
+	public void onClick(final InventoryClickEvent e) {
 		if (getClickedInventory(e) != null && gm.isAllowedType(e.getClick()) && (gm.hasGUI(getClickedInventory(e)) || gm.hasGUI(e.getInventory()))){
 			final Inventory click = getClickedInventory(e);
 			Inventory inv = click;
@@ -69,7 +69,7 @@ public class InventoryCheck implements Listener{
 	}
 	
 	@EventHandler
-	public void InventoryClose(final InventoryCloseEvent e){
+	public void onClose(final InventoryCloseEvent e){
 		if (TuSKe.getGUIManager().hasGUI(e.getInventory())){
 			TuSKe.getGUIManager().removeAll(e.getInventory());
 			Bukkit.getScheduler().runTaskLater(instance, new Runnable(){
@@ -81,15 +81,14 @@ public class InventoryCheck implements Listener{
 		}
 	}
 	@EventHandler
-	public void InventoryDrag(InventoryDragEvent e){
-		if (e.getInventory() != null && e.getInventorySlots() != null && e.getInventorySlots().size() > 0 && e.getWhoClicked() instanceof Player)
+	public void onDrag(InventoryDragEvent e){
+		if (e.getInventory() != null && e.getInventorySlots() != null && e.getInventorySlots().size() > 0 && e.getWhoClicked() instanceof Player) {
 			for (Integer slot : e.getInventorySlots())
-				if (TuSKe.getGUIManager().isGUI(e.getInventory(), slot)){
+				if (slot < e.getInventory().getSize() && TuSKe.getGUIManager().isGUI(e.getInventory(), e.getView().convertSlot(slot))) {
 					e.setCancelled(true);
 					return;
 				}
-				
-		
+		}
 	}
 
 	@SuppressWarnings("unused")

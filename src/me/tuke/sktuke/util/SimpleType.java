@@ -45,6 +45,7 @@ public abstract class SimpleType<T> implements Changer<T>{
 	public Class<?>[] acceptChange(ChangeMode mode) {
 		return null;
 	}
+	@Override
 	public void change(T[] source, Object[] set, ChangeMode mode) {
 
 	}

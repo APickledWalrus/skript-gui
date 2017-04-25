@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -27,6 +28,11 @@ public class InventoryUtils {
 			return event.getView().getTopInventory();
 		else
 			return event.getView().getBottomInventory();
+	}
+	public static Inventory getOpositiveInventory(InventoryView view, Inventory inv) {
+		if (view == null || inv == null)
+			return null;
+		return view.getTopInventory().equals(inv) ? view.getBottomInventory() : view.getBottomInventory().equals(inv) ? view.getTopInventory() : null;
 	}
 
 	public static int getSlotTo(Inventory invTo, ItemStack i){

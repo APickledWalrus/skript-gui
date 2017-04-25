@@ -19,7 +19,7 @@ import org.bukkit.event.Event;
 @NoDoc
 public class EffEvaluateSection extends EffectSection{
 	static {
-		Registry.newEffect(EffEvaluateSection.class, "evaluate [logging [error[s]] in %-objects%]");
+		Registry.newEffect(EffEvaluateSection.class, "evaluate [logging [[the] error[s]] in %-objects%]");
 	}
 
 	private Variable<?> result;

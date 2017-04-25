@@ -28,46 +28,47 @@ public class TuSKeTypes {
 		new EnumType(InventoryAction.class, "inventoryaction", "inventory ?actions?");
 		new EnumType(InventoryType.SlotType.class, "slottype", "slot ?types?");
 		new EnumType(EntityDamageEvent.DamageModifier.class, "damagemodifier", "damage ?modifiers?");
-		new SimpleType<Recipe>(Recipe.class, "recipe", "recipes?"){
+		new SimpleType<Recipe>(Recipe.class, "recipe", "recipes?") {
+			@Override
+			public boolean canParse(ParseContext pc) {
+				return false;
+			}
 
-				@Override
-				public String toString(Recipe r, int arg1) {
+			@Override
+			public String toString(Recipe r, int arg1) {
+				if (r instanceof ShapelessRecipe)
+					return "shapeless recipe";
+				else if (r instanceof ShapedRecipe)
+					return "shaped recipe";
+				else if (r instanceof FurnaceRecipe)
+					return "furnace recipe";
+				return null;
+			}
+			@Override
+			public String toVariableNameString(Recipe r) {
 					if (r instanceof ShapelessRecipe)
-						return "shapeless recipe";
-					else if (r instanceof ShapedRecipe)
-						return "shaped recipe";
-					else if (r instanceof FurnaceRecipe)
-						return "furnace recipe";
-					return null;
+					return "shapelessrecipe:" + r.toString().split("@")[1];
+				else if (r instanceof ShapedRecipe)
+					return "shapedrecipe:" + r.toString().split("@")[1];
+				else if (r instanceof FurnaceRecipe)
+					return "furnacerecipe:" + r.toString().split("@")[1];
+				return null;
 				}
-
-				@Override
-				public String toVariableNameString(Recipe r) {
-
-					if (r instanceof ShapelessRecipe)
-						return "shapelessrecipe:" + r.toString().split("@")[1];
-					else if (r instanceof ShapedRecipe)
-						return "shapedrecipe:" + r.toString().split("@")[1];
-					else if (r instanceof FurnaceRecipe)
-						return "furnacerecipe:" + r.toString().split("@")[1];
-					return null;
-
-				}
-				@Override
-				public Class<?>[] acceptChange(ChangeMode mode) {
-					if (mode == ChangeMode.RESET || mode == ChangeMode.DELETE)
-						return new Class[]{Recipe.class};
-					return null;
-				}
-				@Override
-				public void change(Recipe[] recipes, Object[] set, ChangeMode mode) {
-					if (mode == ChangeMode.DELETE)
-						TuSKe.getRecipeManager().removeRecipe(recipes);
-					else if (mode == ChangeMode.RESET)
-						TuSKe.getRecipeManager().removeCustomRecipe(recipes);
-				}
+			@Override
+			public Class<?>[] acceptChange(ChangeMode mode) {
+				if (mode == ChangeMode.RESET || mode == ChangeMode.DELETE)
+					return new Class[]{Recipe.class};
+				return null;
+			}
+			@Override
+			public void change(Recipe[] recipes, Object[] set, ChangeMode mode) {
+				if (mode == ChangeMode.DELETE)
+					TuSKe.getRecipeManager().removeRecipe(recipes);
+				else if (mode == ChangeMode.RESET)
+					TuSKe.getRecipeManager().removeCustomRecipe(recipes);
+			}
 		};
-		new SimpleType<Pattern>(Pattern.class, "regex", "reg(ular )?ex(pressions?|es)?", "Regular expression"){
+		new SimpleType<Pattern>(Pattern.class, "regex", "reg(ular )?ex(pressions?|es)?", "Regular expression") {
 			@Override
 			@Nullable
 			public Pattern parse(String s, ParseContext arg1) {
@@ -89,7 +90,7 @@ public class TuSKeTypes {
 			public String toVariableNameString(Pattern reg) {
 				return reg.pattern();
 			}};
-		new SimpleType<CEnchant>(CEnchant.class, "customenchantment", "custom ?enchantments?"){
+		new SimpleType<CEnchant>(CEnchant.class, "customenchantment", "custom ?enchantments?") {
 			@Override
 			@Nullable
 			public CEnchant parse(String s, ParseContext arg1) {
@@ -111,7 +112,12 @@ public class TuSKeTypes {
 				return "ce:" + ce.getEnchant().getId();
 			}
 		};
-		new SimpleType<GUIInventory>(GUIInventory.class, "fromGui", "gui ?inventor(y|ies)") {
+		new SimpleType<GUIInventory>(GUIInventory.class, "guiinventory", "gui( )?inventor(y|ies)") {
+			@Override
+			public boolean canParse(ParseContext pc) {
+				return false;
+			}
+
 			@Override
 			public String toString(GUIInventory arg0, int arg1) {
 				return "gui inventory with "+ EnumType.toString(arg0.getInventory().getType()) +" inventory shape \"" + arg0.getRawShape() + "\"";

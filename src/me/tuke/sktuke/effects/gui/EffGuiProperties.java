@@ -6,7 +6,10 @@ import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.util.Kleenean;
+import me.tuke.sktuke.TuSKe;
+import me.tuke.sktuke.manager.gui.v2.GUIHandler;
 import me.tuke.sktuke.manager.gui.v2.GUIInventory;
+import me.tuke.sktuke.sections.gui.EffCreateGUI;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
@@ -15,40 +18,50 @@ import org.bukkit.event.Event;
  */
 public class EffGuiProperties extends Effect {
 	static {
-		Registry.newEffect(EffGuiProperties.class, 1, "change %fromGui inventory% properties to [name %-string% and size %-number% and] [shape %strings%]");
+		Registry.newEffect(EffGuiProperties.class, 1,
+				"change gui inventory to name %string% and size %number%",
+				"change gui shape [of (1¦items|2¦actions)] to %strings%",
+				"change gui properties of inventory to name %string% [with %-number% row[s]] and shape [of (1¦items|2¦actions)] to %strings%");
 	}
 
-	private Expression<GUIInventory> gui;
 	private Expression<String> name;
 	private Expression<String> rawShape;
 	private Expression<Number> size;
+	private int shapeMode = -1;
 	@Override
 	protected void execute(Event e) {
-		GUIInventory gui = this.gui.getSingle(e);
+		GUIInventory gui = GUIHandler.getInstance().getGUIEvent(e);
 		if (gui != null) {
 			String name = this.name != null ? this.name.getSingle(e) : null;
 			String rawShape = this.rawShape != null ? this.rawShape.getSingle(e) : null;
 			Integer size = this.size != null && this.size.getSingle(e) != null ? this.size.getSingle(e).intValue() : null;
-			gui.changeProperties(name, size, rawShape);
+			gui.changeProperties(name, size, rawShape, shapeMode);
 		}
 	}
 
 	@Override
 	public String toString(Event event, boolean b) {
-		return "change " + gui.toString(event, b) + " properties to name " + name.toString(event, b) + " and size " +size.toString(event, b) + " and shape " + rawShape.toString(event ,b);
+		return "change gui properties to name " + name.toString(event, b) + " and size " +size.toString(event, b) + " and shape " + rawShape.toString(event ,b);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] arg, int i, Kleenean kleenean, SkriptParser.ParseResult parseResult) {
-		if (arg[1] == null && arg[3] == null) {
-			Skript.error("You need to choose a fromGui property to change. As the name and size or/and the shape.");
+		if (EffCreateGUI.lastInstance == null) {
+			Skript.error("You can't change the gui properties outside of 'create/edit gui' effect.");
 			return false;
 		}
-		gui = (Expression<GUIInventory>) arg[0];
-		name = (Expression<String>) arg[1];
-		size = (Expression<Number>) arg[2];
-		rawShape = (Expression<String>) arg[3];
+		if (i == 0 || i == 2) {
+			name = (Expression<String>) arg[0];
+			size = (Expression<Number>) arg[1];
+		}
+		if (i == 1)
+			rawShape = (Expression<String>) arg[0];
+		else if (i == 2)
+			rawShape = (Expression<String>) arg[2];
+		if (i > 0) {
+			shapeMode = parseResult.mark;
+		}
 		return true;
 	}
 }

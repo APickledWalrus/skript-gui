@@ -2,9 +2,13 @@ package me.tuke.sktuke.manager.gui;
 
 import java.util.HashMap;
 
+import me.tuke.sktuke.listeners.InventoryCheck;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -13,6 +17,8 @@ import ch.njol.skript.Skript;
 import me.tuke.sktuke.TuSKe;
 
 public class GUIManager {
+
+	private Listener listener = new InventoryCheck(TuSKe.getInstance());
 	private HashMap<Inventory, HashMap<Integer, GUI[]>> invs = new HashMap<>();
 	
 	public boolean isGUI(Inventory inv, int slot){
@@ -37,6 +43,8 @@ public class GUIManager {
 		if (invs.containsKey(inv) && (guislot2 = invs.get(inv)).containsKey(slot)){
 			guislot2.get(slot)[getIndex(gui.getClickType())] = gui;
 		} else {
+			if (invs.size() == 0)
+				Bukkit.getPluginManager().registerEvents(listener, TuSKe.getInstance());
 			guis2 = new GUI[ClickType.values().length - 2];
 			guis2[getIndex(gui.getClickType())] = gui;
 			guislot2.put(slot, guis2);
@@ -53,11 +61,13 @@ public class GUIManager {
 			invs.put(inv, map);
 		else
 			invs.remove(inv);
+		unregisterListener();
 	}
 	public void removeAll(Inventory inv){
 		for (int slot : invs.get(inv).keySet())
 			inv.setItem(slot, new ItemStack(Material.AIR));
 		invs.remove(inv);
+		unregisterListener();
 		
 	}
 	public void clearAll(){
@@ -98,5 +108,14 @@ public class GUIManager {
 		if (index > 6)
 			index -=2;
 		return index;
+	}
+
+	private void registerListener() {
+		if (invs.size() == 0)
+			Bukkit.getPluginManager().registerEvents(listener, TuSKe.getInstance());
+	}
+	private void unregisterListener() {
+		if (invs.size() == 0)
+			HandlerList.unregisterAll(listener);
 	}
 }

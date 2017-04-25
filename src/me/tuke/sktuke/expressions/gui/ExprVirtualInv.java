@@ -17,7 +17,9 @@ public class ExprVirtualInv extends SimpleExpression<Inventory>{
 	static {
 		Registry.newSimple(ExprVirtualInv.class,
 				"virtual %inventorytype% [inventory] [with size %-number%] [(named|with (name|title)) %-string%]",
-				"virtual %inventorytype% [inventory] [with %-number% row[s]] [(named|with (name|title)) %-string%]");
+				"virtual %inventorytype% [inventory] [with %-number% row[s]] [(named|with (name|title)) %-string%]",
+				"virtual %inventorytype% [inventory] [(named|with (name|title)) %-string%] with size %-number%",
+				"virtual %inventorytype% [inventory] [(named|with (name|title)) %-string%] with %-number% row[s]");
 	}
 
 	private Expression<InventoryType> it;
@@ -38,8 +40,13 @@ public class ExprVirtualInv extends SimpleExpression<Inventory>{
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
 		it = (Expression<InventoryType>) arg[0];
-		size = (Expression<Number>) arg[1];
-		name = (Expression<String>) arg[2];
+		if (arg1 > 1) {
+			name = (Expression<String>) arg[1];
+			size = (Expression<Number>) arg[2];
+		} else {
+			size = (Expression<Number>) arg[1];
+			name = (Expression<String>) arg[2];
+		}
 		return true;
 	}
 

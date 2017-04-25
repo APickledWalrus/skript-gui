@@ -100,7 +100,7 @@ public class ExprGUIValue extends SimpleExpression<Object>{
 	@Override
 	@Nullable
 	protected Object[] get(Event e) {
-		GUIInventory gui = GUIHandler.getInstance().eventGuis.get(e);
+		GUIInventory gui = GUIHandler.getInstance().getGUIEvent(e);
 		if (gui != null && e instanceof InventoryClickEvent){
 			switch (type){
 				case 0: return new Number[]{((InventoryClickEvent) e).getSlot()};

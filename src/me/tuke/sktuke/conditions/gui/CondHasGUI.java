@@ -13,7 +13,7 @@ import me.tuke.sktuke.TuSKe;
 
 public class CondHasGUI extends Condition{
 	static {
-		Registry.newCondition(CondHasGUI.class, "%player% has [a] fromGui", "slot %number% of %player% is a fromGui","%player% does(n't| not) have [a] fromGui", "slot %number% of %player% is(n't| not) [a] fromGui");
+		Registry.newCondition(CondHasGUI.class, "%player% has [a] gui", "slot %number% of %player% is a gui","%player% does(n't| not) have [a] gui", "slot %number% of %player% is(n't| not) [a] gui");
 	}
 
 	private Expression<Player> p;
@@ -34,7 +34,7 @@ public class CondHasGUI extends Condition{
 
 	@Override
 	public String toString(@Nullable Event arg0, boolean arg1) {
-		return this.p + "' inventory has a fromGui";
+		return this.p + "' inventory has a gui";
 	}
 
 	@Override

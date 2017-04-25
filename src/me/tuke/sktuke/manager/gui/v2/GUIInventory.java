@@ -20,9 +20,7 @@ public class GUIInventory {
 
 	private static final Consumer<InventoryClickEvent> nullConsumer = e -> {};
 
-	//It will copy the variables from main event to here
 	private String rawShape;
-	//private Map<Character, Entry<ItemStack, RunnableEvent<InventoryClickEvent>>> slots = new HashMap<>();
 	private Map<Character, Consumer<InventoryClickEvent>> slots = new HashMap<>();
 	private Map<Character, ItemStack> items = new HashMap<>();
 	private Consumer<InventoryCloseEvent> onClose;
@@ -33,36 +31,21 @@ public class GUIInventory {
 	public GUIInventory(Inventory inv){
 		this.inv = inv;
 	}
-	
-	public GUIInventory setInventory(Inventory inv){
-		if (this.inv.getContents().length > inv.getSize()){
-			ItemStack[] newArray = new ItemStack[inv.getSize()];
-			ItemStack[] oldArray = this.inv.getContents();
-			for (int x = 0; x < newArray.length; x++){
-				if (x < inv.getSize())
-					newArray[x] = oldArray[x];
-			}
-			inv.setContents(newArray);			
-		} else {
-			inv.setContents(this.inv.getContents());
-		}
-		this.inv = inv;
-		return this;		
-	}
-	
+
 	public GUIInventory shape(String... shapes){
-		rawShape = "";
+		StringBuilder sb = new StringBuilder();
 		for (String shape : shapes)
-			rawShape = rawShape + shape;
-		while (rawShape.length() < inv.getSize())
-			rawShape += " ";
-		//TuSKe.debug("Shape: -" + rawShape+ "-" );
+			sb.append(shape);
+		while (sb.length() < inv.getSize())
+			sb.append(' ');
+		rawShape = sb.toString();
 		return this;
 	}
 	public GUIInventory shapeDefault(){
-		rawShape = "";
+		StringBuilder sb = new StringBuilder();
 		for (char c = 'A'; c < inv.getSize() + 'A'; c++)
-			rawShape = rawShape + c;
+			sb.append(c);
+		rawShape = sb.toString();
 		return this;
 	}
 	public String getRawShape(){
@@ -79,7 +62,6 @@ public class GUIInventory {
 		return setItem(slot, item, nullConsumer);
 	}
 	public GUIInventory setItem(Object slot, final ItemStack item, Consumer<InventoryClickEvent> con){
-		//TuSKe.debug(slot, slot.getClass());
 		char ch = 0;
 		if (slot instanceof Number)
 			ch = convertSlot(((Number) slot).intValue());
@@ -103,25 +85,42 @@ public class GUIInventory {
 		setItem(ch, item);
 		return this;
 	}
-	public GUIInventory changeProperties(String newName, Integer newSize, String newRawShape){
+	public GUIInventory changeProperties(String newName, Integer newSize, String newRawShape, int shapeMode){
 		ItemStack[] copy = inv.getContents();
 		if (newRawShape != null) {
-			ItemStack[] newItems = copy.clone();
-			copy = new ItemStack[newItems.length];
-			int x = 0;
-			for (char ch1 : newRawShape.toCharArray()) {
-				int slot = rawShape.indexOf(ch1);
-				if (slot >= 0 && slot < newItems.length && x < copy.length)
-					copy[x] = newItems[slot];
-				else
-					break;
-				x++;
-			}
+			if (shapeMode < 2) {
+				ItemStack[] newItems = copy.clone();
+				int length = newSize == null ? newItems.length : 9 * newSize.intValue();
+				copy = new ItemStack[length];
+				int x = 0;
+				Map<Character, ItemStack> items = new HashMap<>();
+				for (char ch1 : rawShape.toCharArray())
+					if (x < newItems.length)
+						items.put(ch1, newItems[x++]);
 
-			rawShape = newRawShape;
+				x = 0;
+				for (char ch : newRawShape.toCharArray()) {
+					ItemStack item = items.get(ch);
+					if (item != null && x < copy.length) {
+						copy[x] = item;
+					}
+					x++;
+				}
+
+			}
+			if (shapeMode % 2 == 0) {
+				/*Map<Character, Consumer<InventoryClickEvent>> newSlotsAction = new HashMap<>();
+				for (char ch : newRawShape.toCharArray()) {
+					Consumer<InventoryClickEvent> action = slots.get(ch);
+					if (action != null)
+						newSlotsAction.put(ch, action);
+				}
+				slots = newSlotsAction;*/
+				rawShape = newRawShape;
+			}
 		}
 		if (newName != null && newSize != null) {
-			List<HumanEntity> viewers = inv.getViewers();
+			List<HumanEntity> viewers = new ArrayList<>(inv.getViewers());
 			inv = InventoryUtils.newInventory(inv.getType(), newSize, newName);
 			inv.setContents(copy);
 			viewers.stream().forEach(human -> {
@@ -135,8 +134,10 @@ public class GUIInventory {
 		return this;
 	}
 	private void setItem(char ch, ItemStack item){
-		//If the inventory wasn't open yet, it will set it later
-		if (event == null) {
+		//If the inventory is a virtual inventory, it will set them later
+		//If it is a inventory from somwhere (like a block) or has someone already viewing it
+		//It will set the slot them.
+		if (event == null && (inv.getHolder() == null || inv.getViewers().size() == 0)) {
 			items.put(ch, item);
 			return;
 		}
@@ -151,7 +152,6 @@ public class GUIInventory {
 		return slot != null ? getSlot(convertSlot(slot)) : null;
 	}
 	public Consumer<InventoryClickEvent> getSlot(Character ch){
-		TuSKe.debug("getSlot", ch, slots.containsKey(ch));
 		if (ch !=  null)
 			return slots.get(ch);
 		return null;

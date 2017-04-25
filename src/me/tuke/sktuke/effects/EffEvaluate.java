@@ -41,7 +41,7 @@ import org.bukkit.event.Event;
 		"#The code. It is the same concept of Skript Options.",
 		" ",
 		"evaluate: kill all players #Not really needed for this but just an example",
-		"evaluate: broadcast \"Hi everyone\"",
+		"evaluate: \"broadcast \"\"Hi everyone\"\"\"",
 		"evaluate:",
 		"\tif true is true:",
 		"\t\tgive a diamond sword of %{Enchantment}% 1 to all players",
@@ -56,7 +56,7 @@ import org.bukkit.event.Event;
 @Since("1.7.5")
 public class EffEvaluate extends Effect{
 	static {
-		Registry.newEffect(EffEvaluate.class, "evaluate[ logging [error[s]] in %-objects%]: (%-strings%|<.+?>)");
+		Registry.newEffect(EffEvaluate.class, "evaluate[ logging [[the] error[s]] in %-objects%]: (%-strings%|<.+?>)");
 	}
 
 	private Variable results;
@@ -99,6 +99,11 @@ public class EffEvaluate extends Effect{
 					if (vs != null)
 						code = vs.getSingle(e);
 				}
+				code = code
+						.replaceAll("\\\\n", "\n")
+						.replaceAll("\\\\t", "\t")
+						;
+				//code = code.replace("\\n", "\n").replace("\\t", "\t");
 				Config c = new Config(code, "TuSKe/evaluate.sk", true, false, ":");
 				ScriptLoader.setCurrentEvent("evaluate effect", e.getClass());
 				TriggerSection ts = new TriggerSection(c.getMainNode()) {

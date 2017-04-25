@@ -28,8 +28,9 @@ public class GUIHandler {
 
 	private WeakHashMap<Event, GUIInventory> eventGuis = new WeakHashMap<>();
 
-	public GUIInventory lastCreated = null;
-
+	public GUIInventory getGUIEvent(Event e) {
+		return e != null ? eventGuis.get(e) : null;
+	}
 	public void setGUIEvent(Event e, GUIInventory gui) {
 		if (e != null && gui != null && !eventGuis.containsKey(e)) {
 			eventGuis.put(e, gui);

@@ -5,6 +5,8 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
+import me.tuke.sktuke.manager.gui.v2.GUIHandler;
+import me.tuke.sktuke.manager.gui.v2.GUIInventory;
 import me.tuke.sktuke.sections.gui.EffCreateGUI;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
@@ -14,12 +16,14 @@ import org.bukkit.event.Event;
  */
 public class ExprGUIShape extends SimpleExpression<String> {
 	static {
-		Registry.newSimple(ExprGUIShape.class, "fromGui shape");
+		//Registry.newSimple(ExprGUIShape.class, "gui shape");
 	}
-
 	private EffCreateGUI effGui;
 	@Override
 	protected String[] get(Event event) {
+		GUIInventory gui = GUIHandler.getInstance().getGUIEvent(event);
+		if (gui != null)
+			return new String[]{gui.getRawShape()};
 		return new String[0];
 	}
 
@@ -35,16 +39,15 @@ public class ExprGUIShape extends SimpleExpression<String> {
 
 	@Override
 	public String toString(Event event, boolean b) {
-		return "fromGui shape";
+		return "gui shape";
 	}
 
 	@Override
 	public boolean init(Expression<?>[] expressions, int i, Kleenean kleenean, SkriptParser.ParseResult parseResult) {
 		if (EffCreateGUI.lastInstance == null) {
-			Skript.info("You can't use '" + parseResult.expr + "' outside of fromGui create section");
+			Skript.info("You can't use '" + parseResult.expr + "' outside of gui create section");
 			return false;
 		}
-		effGui = EffCreateGUI.lastInstance;
 		return true;
 	}
 }

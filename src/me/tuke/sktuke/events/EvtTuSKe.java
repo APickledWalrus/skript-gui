@@ -17,7 +17,7 @@ import org.bukkit.event.player.PlayerItemDamageEvent;
 public class EvtTuSKe extends SkriptEvent{
 	static {
 		Registry.newEvent(EvtTuSKe.class, InventoryDragEvent.class, "Inventory drag", "inventory drag");
-		Registry.newEvent(EvtTuSKe.class, GUIActionEvent.class, "GUI click", "fromGui (action|click)");
+		Registry.newEvent(EvtTuSKe.class, GUIActionEvent.class, "GUI click", "gui (action|click)");
 		if (ReflectionUtils.hasClass("org.bukkit.event.entity.SpawnerSpawnEvent"))
 			Registry.newEvent(EvtTuSKe.class, SpawnerSpawnEvent.class, "Spawner spawn", "[mob] spawner spawn");
 		if (ReflectionUtils.hasClass("org.bukkit.event.player.PlayerItemDamageEvent"))

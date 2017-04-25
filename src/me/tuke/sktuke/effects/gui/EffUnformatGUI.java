@@ -14,8 +14,8 @@ import me.tuke.sktuke.TuSKe;
 public class EffUnformatGUI extends Effect{
 	static {
 		Registry.newEffect(EffUnformatGUI.class,
-				"(unformat|remove|clear|reset) [the] fromGui slot %numbers% of %players%",
-				"(unformat|remove|clear|reset) [all] [the] fromGui slots of %players%");
+				"(unformat|remove|clear|reset) [the] gui slot %numbers% of %players%",
+				"(unformat|remove|clear|reset) [all] [the] gui slots of %players%");
 	}
 
 	private Expression<Player> p;

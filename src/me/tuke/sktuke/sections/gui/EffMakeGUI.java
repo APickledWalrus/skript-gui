@@ -34,8 +34,8 @@ public class EffMakeGUI extends EffectSection {
 	public static WeakHashMap<Event, Object> map = ReflectionUtils.getField(Variables.class, null, "localVariables");
 	public static EffMakeGUI lastInstance = null;
 
+	private EffCreateGUI currentSection = null;
 	private Expression<?> slot; //Can be number or a string
-	//private Expression<?> where; //Can be the player or a gui inventory.
 	private Expression<ItemStack> item;
 	
 	@SuppressWarnings("unchecked")
@@ -45,7 +45,7 @@ public class EffMakeGUI extends EffectSection {
 			return false;
 		}
 		if (EffCreateGUI.lastInstance == null) {
-			Skript.error("You can't use 'make gui effect' out side of 'create gui effect'");
+			Skript.error("You can't make a gui outside of 'create/edit gui' effect.");
 			return false;
 		}
 		if (arg1 % 2 == 0) {
@@ -54,6 +54,7 @@ public class EffMakeGUI extends EffectSection {
 			slot = arg[0].getConvertedExpression(Object.class);
 			item = (Expression<ItemStack>) arg[1];
 		}
+		currentSection = EffCreateGUI.lastInstance;
 		if (hasSection()) {
 			EffMakeGUI last = lastInstance;
 			lastInstance = this;
@@ -66,18 +67,17 @@ public class EffMakeGUI extends EffectSection {
 	@Override
 	public void execute(Event e) {
 		ItemStack item = this.item.getSingle(e);
-		GUIInventory gui = GUIHandler.getInstance().eventGuis.get(e);
-		TuSKe.debug("isNull? ", gui == null);
+		GUIInventory gui = currentSection.gui;
+		//TuSKe.debug("isNull? ", gui == null);
 		if (gui == null)
 			return;
 		Object[] slot = this.slot != null ? this.slot.getArray(e) : new Object[]{gui.nextSlot()};
 		for (Object s : slot) {
 			if (hasSection()) {
 				final Object variables = copyVariables(e);
-				TuSKe.debug("With section");
 				gui.setItem(s, item, event -> {
 					pasteVariables(event, variables);
-					GUIHandler.getInstance().eventGuis.put(event, gui);
+					GUIHandler.getInstance().setGUIEvent(event, gui);
 					runSection(event);
 				});
 			} else

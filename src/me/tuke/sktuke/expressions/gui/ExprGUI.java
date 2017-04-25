@@ -39,7 +39,7 @@ public class ExprGUI extends SimpleExpression<GUIInventory> {
 	protected GUIInventory[] get(Event e) {
 		if (id != null)
 			return new GUIInventory[]{GUIHandler.getInstance().getGUI(id.getSingle(e))};
-		return new GUIInventory[]{GUIHandler.getInstance().lastCreated};
+		return new GUIInventory[]{GUIHandler.getInstance().getGUIEvent(e)};
 	}
 
 	@Override
