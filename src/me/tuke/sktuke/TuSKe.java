@@ -63,11 +63,10 @@ public class TuSKe extends JavaPlugin {
 		// ------------------ Initiate some stuffs ------------------
 		loadConfig();
 		EnchantConfig.loadEnchants();
-		updater = new GitHubUpdater(this, getFile(), "Tuke-Nuke/TuSKe");
+		updater = new GitHubUpdater(this, getFile(), "Tuke-Nuke/TuSKe", getConfig().getBoolean("updater.download_pre_releases"));
 		// ----------------------------------------------------------
 		// ------------------------ Listener ------------------------
 		// TODO temporary: make them auto-enable
-		// Bukkit.getServer().getPluginManager().registerEvents(new EnchantCheck(this), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new OnlineStatusCheck(this), this);
 		// ----------------------------------------------------------
 		// ------- Some stuffs like Metrics, docs and updater -------
@@ -89,6 +88,7 @@ public class TuSKe extends JavaPlugin {
 		try {
 			//                 It will return as "me.tuske.sktuke"
 			tuske.loadClasses(this.getClass().getPackage().getName(), "register", "events", "conditions", "effects", "sections", "expressions");
+			//TODO remove all dependencies and make them separated?
 			if (hasPlugin("SimpleClans") || hasPlugin("SimpleClansLegacy")) // It is the same plugin, but with different names. I don't know why
 				new SimpleClansRegister(tuske);
 			if (hasPlugin("Legendchat"))
@@ -113,7 +113,7 @@ public class TuSKe extends JavaPlugin {
 			gui.clearAll();
 		HandlerList.unregisterAll(this);
 		Bukkit.getScheduler().cancelTasks(this);
-		if(getConfig().getBoolean("updater.check_for_new_update") && getConfig().getBoolean("updater.auto_update") && updater.hasDownloadReady(true)){
+		if(updater != null && getConfig().getBoolean("updater.check_for_new_update") && getConfig().getBoolean("updater.auto_update") && updater.hasDownloadReady(true)){
 			updater.updatePlugin();
 		}
 	}
@@ -363,27 +363,23 @@ public class TuSKe extends JavaPlugin {
 		return ReflectionUtils.hasMethod(Player.class, "spigot");
 	}
 	private void checkUpdate(){
-		Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable(){
-			
-			@SuppressWarnings("deprecation")
-			@Override
-			public void run() {
-				log("Checking for latest update...");
-				updater.checkForUpdate(true);
-				if (updater.getLatestVersion() != null)
-					if (!updater.isLatestVersion()){
-						if (getConfig().getBoolean("updater.auto_update")){
-							if (updater.downloadLatest())
-								log("Downloaded the latest version. The plugin will be updated when the server restarts.");
-							else
-								log("A error occurred while checking for new updates.\n" + updater.getLastException().getMessage());
-						} else{
-							log("New update available: v" + updater.getLatestVersion());
-							log("Check what's new in: " + updater.getDownloadURL());
-							log("You can download and update it with /tuske update.");
-						}
-					} else
-						log("No new update was found!");
-			}}, 10L);
+		Bukkit.getScheduler().runTaskLaterAsynchronously(this, () -> {
+			log("Checking for latest update...");
+			updater.checkForUpdate(true);
+			if (updater.getLatestVersion() != null)
+				if (!updater.isLatestVersion()){
+					if (getConfig().getBoolean("updater.auto_update")){
+						if (updater.downloadLatest())
+							log("Downloaded the latest version. The plugin will be updated when the server restarts.");
+						else
+							log("A error occurred while checking for new updates.");
+					} else{
+						log("New update available: v" + updater.getLatestVersion());
+						log("Check what's new in: " + updater.getDownloadURL());
+						log("You can download and update it with /tuske update.");
+					}
+				} else
+					log("No new update was found!");
+		}, 10L);
 	}
 }
