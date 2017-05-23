@@ -23,9 +23,10 @@ import me.tuke.sktuke.util.ReflectionUtils;
 //TODO Separate all this events into parts and only active them when is used in scripts.
 public class InventoryCheck implements Listener{
 	private TuSKe instance;
-	private GUIManager gm = TuSKe.getGUIManager();
-	public InventoryCheck(TuSKe tuske){
+	private GUIManager gm;
+	public InventoryCheck(TuSKe tuske, GUIManager manager){
 		instance = tuske;
+		gm = manager;
 	}
 
 	@EventHandler

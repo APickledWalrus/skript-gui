@@ -112,5 +112,26 @@ public class SimpleClansRegister {
 						return event.getClanPlayer().toPlayer();
 					}
 				}, 0);
+		EventValues.registerEventValue(ClanChatEvent.class, Player.class,
+				new Getter<Player, ClanChatEvent>() {
+					@Override
+					public Player get(ClanChatEvent event) {
+						return event.getClanPlayer().toPlayer();
+					}
+				}, 0);
+		EventValues.registerEventValue(ClanChatEvent.class, String.class,
+				new Getter<String, ClanChatEvent>() {
+					@Override
+					public String get(ClanChatEvent event) {
+						return event.getMessage();
+					}
+				}, 0);
+		EventValues.registerEventValue(ClanChatEvent.class, Clan.class,
+				new Getter<Clan, ClanChatEvent>() {
+					@Override
+					public Clan get(ClanChatEvent event) {
+						return event.getClanPlayer().getClan();
+					}
+				}, 0);
 	}
 }

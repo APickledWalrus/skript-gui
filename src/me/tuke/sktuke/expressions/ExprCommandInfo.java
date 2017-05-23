@@ -1,8 +1,12 @@
 package me.tuke.sktuke.expressions;
 
+import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.util.Registry;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.command.defaults.BukkitCommand;
+import org.bukkit.command.defaults.VanillaCommand;
 import org.bukkit.event.Event;
 
 import java.util.HashMap;
@@ -79,7 +83,6 @@ public class ExprCommandInfo extends SimpleExpression<String>{
 				Command c = CommandUtils.getCommand(cmd);
 				if (c != null){
 					switch(id){
-					
 						case 0: return new String[]{c.getDescription() != null && !c.getDescription().equalsIgnoreCase("") ? c.getDescription(): null};
 						case 1: return new String[]{c.getLabel()};
 						case 2: return new String[]{c.getPermission() != null && !c.getPermission().equalsIgnoreCase("") ? c.getPermission(): null};
@@ -87,6 +90,13 @@ public class ExprCommandInfo extends SimpleExpression<String>{
 						case 4:
 							if (c instanceof PluginCommand)
 								return new String[]{((PluginCommand)c).getPlugin().getName()};
+							if (c instanceof BukkitCommand)
+								return new String[]{"Bukkit"};
+							if (c.getClass().getPackage().getName().startsWith("org.spigot")) //a spigot command
+								return new String[]{"Spigot"};
+							if (c instanceof VanillaCommand) //Deprecated "/
+								return new String[]{"Minecraft"};
+							//TODO Check for other jars if they have some extra commands.
 							break;
 						case 5: return new String[]{c.getUsage() != null ? c.getUsage().replaceAll("^/?<command>", "/"+ c.getName()) : null};
 						case 6: return c.getAliases().toArray(new String[c.getAliases().size()]);

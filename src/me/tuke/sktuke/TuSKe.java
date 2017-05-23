@@ -109,7 +109,8 @@ public class TuSKe extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		SkriptGUIEvent.unregisterAll();
-		gui.clearAll();
+		if (gui != null)
+			gui.clearAll();
 		HandlerList.unregisterAll(this);
 		Bukkit.getScheduler().cancelTasks(this);
 		if(getConfig().getBoolean("updater.check_for_new_update") && getConfig().getBoolean("updater.auto_update") && updater.hasDownloadReady(true)){
@@ -326,7 +327,7 @@ public class TuSKe extends JavaPlugin {
 	
 	public static GUIManager getGUIManager(){
 		if (gui == null)
-			 gui = new GUIManager();
+			 gui = new GUIManager(getInstance());
 	    return gui;
 	}
 	public static void log(String msg){

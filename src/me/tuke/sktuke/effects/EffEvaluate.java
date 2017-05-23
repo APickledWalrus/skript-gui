@@ -8,16 +8,17 @@ import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.*;
-import ch.njol.skript.log.LogEntry;
-import ch.njol.skript.log.RetainingLogHandler;
-import ch.njol.skript.log.SkriptLogger;
+import ch.njol.skript.log.*;
 import ch.njol.skript.variables.Variables;
 import ch.njol.util.Kleenean;
 import ch.njol.util.StringUtils;
+import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.sections.EffEvaluateSection;
 import me.tuke.sktuke.util.ReflectionUtils;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
+
+import java.util.Iterator;
 
 /**
  * @author Tuke_Nuke on 16/04/2017
@@ -88,6 +89,8 @@ public class EffEvaluate extends Effect{
 			str = parseResult.regexes.get(0).group(0);
 		else
 			varStr = (Expression<String>) expr[1];
+
+
 		return true;
 	}
 	public static void evaluate(String code, Event e, Variable results, boolean parseString) {

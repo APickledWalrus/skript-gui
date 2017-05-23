@@ -39,7 +39,7 @@ public class ExprGUIValue extends SimpleExpression<Object>{
 				"gui-inventory",
 				"gui-inventory-action",
 				"gui-click-(type|action)",
-				"gui-cursor",
+				"gui-cursor[-item]",
 				"gui-[(clicked|current)-]item",
 				"gui-slot-type",
 				"gui-player",

@@ -4,7 +4,7 @@ import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.variables.Variables;
-import me.tuke.sktuke.TuSKe;
+import me.tuke.sktuke.effects.gui.EffCreateGUI;
 import me.tuke.sktuke.manager.gui.v2.GUIHandler;
 import me.tuke.sktuke.manager.gui.v2.GUIInventory;
 import me.tuke.sktuke.util.Registry;
@@ -24,12 +24,15 @@ import java.util.*;
  * @author Tuke_Nuke on 01/04/2017
  */
 @Name("Make GUI")
-@Description("Used to format a gui slot inside of gui creation/editing section")
+@Description("Used to format a gui slot after creating/editing a gui")
 public class EffMakeGUI extends EffectSection {
 	static {
 		Registry.newEffect(EffMakeGUI.class,
 				"(make|format) next gui [slot] (with|to) %itemstack%",
-				"(make|format) gui [slot] %strings/numbers% (with|to) %itemstack%");
+				"(make|format) gui [slot] %strings/numbers% (with|to) %itemstack%",
+				"(un(make|format)|remove) next gui [slot]",
+				"(un(make|format)|remove) gui [slot] %strings/numbers%",
+				"(un(make|format)|remove) all gui [slot]");
 	}
 	public static WeakHashMap<Event, Object> map = ReflectionUtils.getField(Variables.class, null, "localVariables");
 	public static EffMakeGUI lastInstance = null;
@@ -37,6 +40,7 @@ public class EffMakeGUI extends EffectSection {
 	private EffCreateGUI currentSection = null;
 	private Expression<?> slot; //Can be number or a string
 	private Expression<ItemStack> item;
+	private int type;
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -44,15 +48,16 @@ public class EffMakeGUI extends EffectSection {
 		if (checkIfCondition()) {
 			return false;
 		}
-		if (EffCreateGUI.lastInstance == null) {
-			Skript.error("You can't make a gui outside of 'create/edit gui' effect.");
-			return false;
+		//if (EffCreateGUI.lastInstance == null) {
+		//	Skript.error("You can't make a gui outside of 'create/edit gui' effect.");
+		//	return false;
+		//}
+		type = arg1++;
+		if (arg.length > 0 && arg1 <= 2) {
+			item = (Expression<ItemStack>) arg[arg.length - 1];
 		}
 		if (arg1 % 2 == 0) {
-			item = (Expression<ItemStack>) arg[0];
-		} else {
 			slot = arg[0].getConvertedExpression(Object.class);
-			item = (Expression<ItemStack>) arg[1];
 		}
 		currentSection = EffCreateGUI.lastInstance;
 		if (hasSection()) {
@@ -66,11 +71,16 @@ public class EffMakeGUI extends EffectSection {
 
 	@Override
 	public void execute(Event e) {
-		ItemStack item = this.item.getSingle(e);
 		GUIInventory gui = currentSection.gui;
 		//TuSKe.debug("isNull? ", gui == null);
 		if (gui == null)
 			return;
+		if (type > 1) {
+			Object[] slots = this.slot != null ? this.slot.getArray(e) : type == 4 ? null : new Object[]{gui.nextInvertedSlot()};
+			gui.clearSlots(slots);
+			return;
+		}
+		ItemStack item = this.item.getSingle(e);
 		Object[] slot = this.slot != null ? this.slot.getArray(e) : new Object[]{gui.nextSlot()};
 		for (Object s : slot) {
 			if (hasSection()) {
@@ -87,6 +97,8 @@ public class EffMakeGUI extends EffectSection {
 	
 	@Override
 	public String toString(Event arg0, boolean arg1) {
+		if (type > 1)
+			return "unmake gui slot";
 		return "make " + (slot != null ? " a gui slot "+ slot.toString(arg0, arg1) : "next gui slot") + " of gui with " + item.toString(arg0, arg1);
 	}
 	//
@@ -111,9 +123,6 @@ public class EffMakeGUI extends EffectSection {
 			return newVariablesMap;
 		}
 		return null;
-	}
-	private Map<String, Object> getMap(Object variablesMap, String fieldName) {
-		return ReflectionUtils.getField(variablesMap.getClass(), variablesMap, fieldName);
 	}
 	public void pasteVariables(Event to, Object variables){
 		if (to != null)

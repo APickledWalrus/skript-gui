@@ -2,7 +2,6 @@ package me.tuke.sktuke.manager.recipe;
 
 import java.util.*;
 
-import ch.njol.skript.bukkitutil.PlayerUtils;
 import javafx.util.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -19,7 +18,6 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
 import me.tuke.sktuke.TuSKe;
-import org.bukkit.inventory.meta.SkullMeta;
 
 public class RecipeManager implements Listener{
 
@@ -134,7 +132,7 @@ public class RecipeManager implements Listener{
 		if (rec == null || items == null || items.length == 0)
 			return -1;
 		if (rec instanceof ShapedRecipe){
-			Map<Character, ItemStack> map = ((ShapedRecipe) rec).getIngredientMap();
+			Map<Character, ItemStack> map = rec instanceof CustomShapedRecipe ? ((CustomShapedRecipe) rec).getIngredientsMap() : ((ShapedRecipe) rec).getIngredientMap();
 			int length = ((ShapedRecipe) rec).getShape()[0].length();
 			boolean is2x2 = items.length < 9;
 			char ch = 'a';

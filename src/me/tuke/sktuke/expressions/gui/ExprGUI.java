@@ -34,6 +34,7 @@ public class ExprGUI extends SimpleExpression<GUIInventory> {
 	static {
 		Registry.newSimple(ExprGUI.class, "last[ly] [created] gui", "gui [with id] %string%");
 	}
+
 	private Expression<String> id;
 	@Override
 	protected GUIInventory[] get(Event e) {
@@ -61,7 +62,7 @@ public class ExprGUI extends SimpleExpression<GUIInventory> {
 	@Override
 	public boolean init(Expression<?>[] arg, int i, Kleenean kleenean, SkriptParser.ParseResult parseResult) {
 		if (i > 0)
-			id = (Expression<String>) arg[1];
+			id = (Expression<String>) arg[0];
 		return true;
 	}
 }

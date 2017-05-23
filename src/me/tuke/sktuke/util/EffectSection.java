@@ -2,17 +2,22 @@ package me.tuke.sktuke.util;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
 import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.Node;
 import ch.njol.skript.config.SectionNode;
 import ch.njol.skript.lang.*;
-import ch.njol.skript.log.SkriptLogger;
+import ch.njol.skript.log.*;
 import ch.njol.util.Kleenean;
 import ch.njol.util.StringUtils;
+import com.sun.javafx.event.RedirectedEvent;
 import me.tuke.sktuke.TuSKe;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 
 /**
@@ -61,18 +66,33 @@ public abstract class EffectSection extends Condition {
 	 */
 	public void loadSection(){
 		if (section != null) {
-			trigger = new TriggerSection(section) {
+			//Some how, there is a RetainingLogHandler not logging the errors from a section, it will stop them before.
 
-				@Override
-				public String toString(Event event, boolean b) {
-					return EffectSection.this.toString(event, b);
-				}
 
-				@Override
-				public TriggerItem walk(Event event) {
-					return walk(event, true);
-				}
-			};
+			RetainingLogHandler errors = SkriptLogger.startRetainingLog();
+			try {
+				trigger = new TriggerSection(section) {
+
+					@Override
+					public String toString(Event event, boolean b) {
+						return EffectSection.this.toString(event, b);
+					}
+
+					@Override
+					public TriggerItem walk(Event event) {
+						return walk(event, true);
+					}
+				};
+			} finally {
+				stopLog(errors);
+			//	errors.printLog();
+			//	TuSKe.debug("Logando...");
+			//	SkriptLogger.LOGGER.severe("AAAAAA");
+			//	for(LogEntry log : errors.getLog()) {
+			//		SkriptLogger.logTracked(log.getLevel(), log.getMessage(), ErrorQuality.get(log.getQuality()));
+			//	}
+
+			}
 			//Just to not keep a instance of SectionNode.
 			section = null;
 		}
@@ -151,5 +171,39 @@ public abstract class EffectSection extends Condition {
 	 */
 	public SectionNode getSectionNode() {
 		return section;
+	}
+
+	/**
+	 *
+	 * @param logger
+	 */
+	private void stopLog(RetainingLogHandler logger) {
+
+		logger.stop();
+		HandlerList handler = ReflectionUtils.getField(SkriptLogger.class, null, "handlers");
+		Iterator<LogHandler> it = handler.iterator();
+		LogHandler main = null;
+		TuSKe.debug("Log 1");
+		int x = 0;
+		while (it.hasNext()) {
+			LogHandler log = it.next();
+			//printErrors(log);
+			log.log(new LogEntry(Level.INFO, "EEEEEE: " + x++ + log.getClass()));
+			//TuSKe.debug(log.getClass());
+			if (log instanceof RedirectingLogHandler) {
+				//TuSKe.debug(log, main);
+				main = log;
+				break;
+			} else if (log instanceof RetainingLogHandler || log instanceof ParseLogHandler) {
+				main = log;
+				//TuSKe.debug("else", main);
+			}
+		}
+		TuSKe.debug("Log 2");
+		//TuSKe.debug("Before: " + logger.getLog().size(), (main != null ? main.numErrors() : 0));
+		if (main != null)
+			for (LogEntry log : logger.getLog())
+				main.log(log);
+		//TuSKe.debug("After: " + logger.getLog().size(), (main != null ? main.numErrors() : 0));
 	}
 }

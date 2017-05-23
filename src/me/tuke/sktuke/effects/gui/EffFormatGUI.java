@@ -115,7 +115,7 @@ public class EffFormatGUI extends Effect{
 						Runnable rn = null;
 						switch(Type){
 						case 2: 
-							final CommandSender s = sender != null ? sender.getSingle(e) : (Player)p[y];
+							final CommandSender s = sender != null ? sender.getSingle(e) : p[y];
 							final String pe = perm != null ? perm.getSingle(e) : null;
 							final String c = cmd.getSingle(e);
 							rn = () -> TuSKe.getGUIManager().runCommand(s, c, pe);
@@ -134,7 +134,7 @@ public class EffFormatGUI extends Effect{
 							else
 								gui.toClose(toClose);
 							if (this.inv != null)
-								gui.toOpenInventory(this.inv.getSingle(e));								
+								gui.toOpenInventory(this.inv.getSingle(e));
 							TuSKe.getGUIManager().newGUI(inv, slots[x].intValue(), i.getSingle(e), gui);
 						}
 					}

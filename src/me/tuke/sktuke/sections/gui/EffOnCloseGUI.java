@@ -8,6 +8,7 @@ import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.util.Kleenean;
+import me.tuke.sktuke.effects.gui.EffCreateGUI;
 import me.tuke.sktuke.util.EffectSection;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
@@ -24,13 +25,13 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 @Examples({
 		"create new gui with id \"Backpack.%player%\" with virtual chest:",
 		"\trun when close:",
-		"\t\tsaveInventoryItems(player, event-inventory)",
+		"\t\tsaveInventoryItems(player, gui-inventory)",
 		"open last gui to player"
 })
 @Since("1.7.5")
 public class EffOnCloseGUI extends EffectSection {
 	static {
-		Registry.newEffect(EffOnCloseGUI.class, "run (when|while) clos(e|ing) [gui]");
+		Registry.newEffect(EffOnCloseGUI.class, "run (when|while) clos(e|ing) [[the] gui]");
 	}
 
 	private EffCreateGUI currentSection;

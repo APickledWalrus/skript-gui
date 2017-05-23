@@ -18,7 +18,12 @@ import me.tuke.sktuke.TuSKe;
 
 public class GUIManager {
 
-	private Listener listener = new InventoryCheck(TuSKe.getInstance());
+	private Listener listener;
+	private TuSKe tuske;
+	public GUIManager(TuSKe tuske) {
+		this.tuske = tuske;
+		listener = new InventoryCheck(tuske, this);
+	}
 	private HashMap<Inventory, HashMap<Integer, GUI[]>> invs = new HashMap<>();
 	
 	public boolean isGUI(Inventory inv, int slot){
@@ -43,8 +48,7 @@ public class GUIManager {
 		if (invs.containsKey(inv) && (guislot2 = invs.get(inv)).containsKey(slot)){
 			guislot2.get(slot)[getIndex(gui.getClickType())] = gui;
 		} else {
-			if (invs.size() == 0)
-				Bukkit.getPluginManager().registerEvents(listener, TuSKe.getInstance());
+			registerListener();
 			guis2 = new GUI[ClickType.values().length - 2];
 			guis2[getIndex(gui.getClickType())] = gui;
 			guislot2.put(slot, guis2);
@@ -112,7 +116,7 @@ public class GUIManager {
 
 	private void registerListener() {
 		if (invs.size() == 0)
-			Bukkit.getPluginManager().registerEvents(listener, TuSKe.getInstance());
+			Bukkit.getPluginManager().registerEvents(listener, tuske);
 	}
 	private void unregisterListener() {
 		if (invs.size() == 0)

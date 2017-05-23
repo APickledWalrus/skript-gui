@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -20,7 +21,7 @@ public class GUIInventory {
 
 	private static final Consumer<InventoryClickEvent> nullConsumer = e -> {};
 
-	private String rawShape;
+	private String rawShape, id;
 	private Map<Character, Consumer<InventoryClickEvent>> slots = new HashMap<>();
 	private Map<Character, ItemStack> items = new HashMap<>();
 	private Consumer<InventoryCloseEvent> onClose;
@@ -32,6 +33,10 @@ public class GUIInventory {
 		this.inv = inv;
 	}
 
+	public GUIInventory setID(String id) {
+		this.id = id;
+		return this;
+	}
 	public GUIInventory shape(String... shapes){
 		StringBuilder sb = new StringBuilder();
 		for (String shape : shapes)
@@ -62,18 +67,9 @@ public class GUIInventory {
 		return setItem(slot, item, nullConsumer);
 	}
 	public GUIInventory setItem(Object slot, final ItemStack item, Consumer<InventoryClickEvent> con){
-		char ch = 0;
-		if (slot instanceof Number)
-			ch = convertSlot(((Number) slot).intValue());
-		else if (slot instanceof String && !((String) slot).isEmpty())
-			ch = ((String) slot).charAt(0);
-		else if (slot instanceof Character)
-			ch = (Character) slot;
-		else { // It will get the next free slot
-			ch = nextSlot();
-			if (ch == 0) //Ops, couldn't find any free slots
-				return this;
-		}
+		char ch = convert(slot);
+		if (ch == 0)
+			return this;
 		if (ch == '+' && rawShape.contains("+")) {
 			char ch2 = 'A';
 			while (rawShape.indexOf(ch2) >= 0)
@@ -90,7 +86,7 @@ public class GUIInventory {
 		if (newRawShape != null) {
 			if (shapeMode < 2) {
 				ItemStack[] newItems = copy.clone();
-				int length = newSize == null ? newItems.length : 9 * newSize.intValue();
+				int length = newSize != null && inv.getType() == InventoryType.CHEST ? 9 * newSize : newItems.length;
 				copy = new ItemStack[length];
 				int x = 0;
 				Map<Character, ItemStack> items = new HashMap<>();
@@ -106,24 +102,17 @@ public class GUIInventory {
 					}
 					x++;
 				}
-
 			}
-			if (shapeMode % 2 == 0) {
-				/*Map<Character, Consumer<InventoryClickEvent>> newSlotsAction = new HashMap<>();
-				for (char ch : newRawShape.toCharArray()) {
-					Consumer<InventoryClickEvent> action = slots.get(ch);
-					if (action != null)
-						newSlotsAction.put(ch, action);
-				}
-				slots = newSlotsAction;*/
+			if (shapeMode % 2 == 0)
 				rawShape = newRawShape;
-			}
 		}
 		if (newName != null && newSize != null) {
 			List<HumanEntity> viewers = new ArrayList<>(inv.getViewers());
 			inv = InventoryUtils.newInventory(inv.getType(), newSize, newName);
+			if (inv == null)
+				return this; //Safe check only, it doesn't happen
 			inv.setContents(copy);
-			viewers.stream().forEach(human -> {
+			viewers.forEach(human -> {
 				ItemStack cursor = human.getItemOnCursor();
 				human.setItemOnCursor(null);
 				human.openInventory(inv);
@@ -156,21 +145,27 @@ public class GUIInventory {
 			return slots.get(ch);
 		return null;
 	}
-	public GUIInventory clearSlots(char... chars){
-		for (char ch1 : chars){
-			int x = -1;
-			for (char ch2 : rawShape.toCharArray())	
-				if (++x < inv.getSize() && ch1 == ch2)
-					inv.clear(x);
-			slots.remove(ch1);
+	public GUIInventory clearSlots(Object... chars){
+		if (chars == null || chars.length == 0)
+			clear();
+		else {
+			for (Object ch : chars) {
+				char ch1 = convert(ch);
+				int x = -1;
+				for (char ch2 : rawShape.toCharArray())
+					if (++x < inv.getSize() && ch1 == ch2)
+						setItem(ch, new ItemStack(Material.AIR));
+				slots.remove(ch1);
+			}
 		}
 		return this;
 	}
 	public GUIInventory clear(){
 		int x = -1;
 		for (char ch : rawShape.toCharArray()) {
-			if (++x < inv.getSize() && slots.containsKey(ch))
-				inv.clear(x);
+			if (++x < inv.getSize() && slots.containsKey(ch)) {
+				setItem(ch, new ItemStack(Material.AIR));
+			}
 		}
 		slots.clear();
 		return this;
@@ -217,6 +212,14 @@ public class GUIInventory {
 			return rawShape.charAt(slot);
 		return ' ';
 	}
+	public char nextInvertedSlot() {
+		for (char ch2 : rawShape.toCharArray()) {
+			if (slots.containsKey(ch2)) {
+				return ch2;
+			}
+		}
+		return 0;
+	}
 	public char nextSlot() {
 		for (char ch2 : rawShape.toCharArray()) {
 			if (!slots.containsKey(ch2)) {
@@ -224,5 +227,18 @@ public class GUIInventory {
 			}
 		}
 		return 0;
+	}
+	private char convert(Object slot) {
+		char ch;
+		if (slot instanceof Number)
+			ch = convertSlot(((Number) slot).intValue());
+		else if (slot instanceof String && !((String) slot).isEmpty())
+			ch = ((String) slot).charAt(0);
+		else if (slot instanceof Character)
+			ch = (Character) slot;
+		else { // It will get the next free slot
+			ch = nextSlot();
+		}
+		return ch;
 	}
 }

@@ -50,7 +50,7 @@ public class GUIHandler {
 
 	public void setGUI(String id, GUIInventory gui){
 		if (id != null && !id.isEmpty() && gui != null)
-			list.put("id:" + id, gui);
+			list.put("id:" + id, gui.setID(id));
 	}
 	public GUIInventory getGUI(String id){
 		return id != null && !id.isEmpty() ? list.get("id:" + id) : null;
