@@ -1,5 +1,6 @@
 package me.tuke.sktuke.listeners;
 
+import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.util.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -14,13 +15,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 
-import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.manager.gui.GUI;
 import me.tuke.sktuke.manager.gui.GUIActionEvent;
 import me.tuke.sktuke.manager.gui.GUIManager;
 import me.tuke.sktuke.util.ReflectionUtils;
 
-//TODO Separate all this events into parts and only active them when is used in scripts.
 public class InventoryCheck implements Listener{
 	private TuSKe instance;
 	private GUIManager gm;
@@ -71,8 +70,8 @@ public class InventoryCheck implements Listener{
 	
 	@EventHandler
 	public void onClose(final InventoryCloseEvent e){
-		if (TuSKe.getGUIManager().hasGUI(e.getInventory())){
-			TuSKe.getGUIManager().removeAll(e.getInventory());
+		if (gm.hasGUI(e.getInventory())){
+			gm.removeAll(e.getInventory());
 			Bukkit.getScheduler().runTaskLater(instance, new Runnable(){
 	
 				@Override
@@ -85,7 +84,7 @@ public class InventoryCheck implements Listener{
 	public void onDrag(InventoryDragEvent e){
 		if (e.getInventory() != null && e.getInventorySlots() != null && e.getInventorySlots().size() > 0 && e.getWhoClicked() instanceof Player) {
 			for (Integer slot : e.getInventorySlots())
-				if (slot < e.getInventory().getSize() && TuSKe.getGUIManager().isGUI(e.getInventory(), e.getView().convertSlot(slot))) {
+				if (slot < e.getInventory().getSize() && gm.isGUI(e.getInventory(), e.getView().convertSlot(slot))) {
 					e.setCancelled(true);
 					return;
 				}

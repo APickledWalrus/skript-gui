@@ -3,8 +3,7 @@ package me.tuke.sktuke.manager.gui.v2;
 import java.util.*;
 import java.util.function.Consumer;
 
-import me.tuke.sktuke.TuSKe;
-import me.tuke.sktuke.expressions.gui.ExprVirtualInv;
+import me.tuke.sktuke.listeners.GUIListener;
 import me.tuke.sktuke.util.InventoryUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -26,7 +25,7 @@ public class GUIInventory {
 	private Map<Character, ItemStack> items = new HashMap<>();
 	private Consumer<InventoryCloseEvent> onClose;
 	private Inventory inv;
-	private SkriptGUIEvent event;
+	private GUIListener listener;
 	private boolean isLocked = false;
 
 	public GUIInventory(Inventory inv){
@@ -126,7 +125,7 @@ public class GUIInventory {
 		//If the inventory is a virtual inventory, it will set them later
 		//If it is a inventory from somwhere (like a block) or has someone already viewing it
 		//It will set the slot them.
-		if (event == null && (inv.getHolder() == null || inv.getViewers().size() == 0)) {
+		if (listener == null && (inv.getHolder() == null || inv.getViewers().size() == 0)) {
 			items.put(ch, item);
 			return;
 		}
@@ -182,8 +181,8 @@ public class GUIInventory {
 		return onClose != null;
 	}
 	public Inventory getInventory(){
-		if (event == null) {
-			setListener(new SkriptGUIEvent(this));
+		if (!getListener().isStarted()) {
+			getListener().start();
 			int x = 0;
 			for (char ch : rawShape.toCharArray()) {
 				ItemStack item = items.get(ch);
@@ -197,9 +196,10 @@ public class GUIInventory {
 		}
 		return inv;
 	}
-	public void setListener(SkriptGUIEvent e){
-		if ((event == null && e != null) || (event != null && e == null))
-			event = e; // It starts or stop the listener
+	public GUIListener getListener(){
+		if (listener == null)
+			listener = new GUIListener(this);
+		return listener;
 	}
 
 	public char convertSlot(int slot){

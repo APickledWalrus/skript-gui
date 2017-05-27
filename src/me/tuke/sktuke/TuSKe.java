@@ -109,7 +109,7 @@ public class TuSKe extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		SkriptGUIEvent.unregisterAll();
+		SkriptGUIEvent.getInstance().unregisterAll();
 		if (gui != null)
 			gui.clearAll();
 		HandlerList.unregisterAll(this);
