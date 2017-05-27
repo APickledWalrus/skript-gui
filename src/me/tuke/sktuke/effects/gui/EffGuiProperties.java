@@ -8,6 +8,7 @@ import ch.njol.skript.lang.SkriptParser;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.manager.gui.v2.GUIHandler;
 import me.tuke.sktuke.manager.gui.v2.GUIInventory;
+import me.tuke.sktuke.sections.gui.EffCreateGUI;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 

@@ -1,4 +1,4 @@
-package me.tuke.sktuke.effects.gui;
+package me.tuke.sktuke.sections.gui;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
@@ -11,6 +11,7 @@ import ch.njol.skript.lang.SkriptParser;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.manager.gui.v2.GUIHandler;
 import me.tuke.sktuke.manager.gui.v2.GUIInventory;
+import me.tuke.sktuke.util.EffectSection;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryType;
@@ -25,16 +26,16 @@ import org.bukkit.inventory.Inventory;
 @Examples({
 		"on skript load:",
 		"\tcreate a gui with id \"LobbySelector\" with virtual chest with 4 rows named \"&4Lobby Selector\":",
-		"\tmake gui slot 2 with diamond sword named \"PVP\":",
-		"\t\texecute player command \"/server pvp\"",
-		"\tmake gui slot 4 with grass named \"SkyBlock\":",
-		"\t\texecute player command \"/server skyblock\"",
+		"\t\tmake gui slot 2 with diamond sword named \"PVP\":",
+		"\t\t\texecute player command \"/server pvp\"",
+		"\t\tmake gui slot 4 with grass named \"SkyBlock\":",
+		"\t\t\texecute player command \"/server skyblock\"",
 		" ",
 		"command /lobby:",
 		"\ttrigger:",
 		"\t\topen gui \"LobbySelector\" to player"})
 @Since("1.7.5")
-public class EffCreateGUI extends Effect {
+public class EffCreateGUI extends EffectSection {
 	static {
 		Registry.newEffect(EffCreateGUI.class,
 				"create [a] [new] gui [[with id] %-string%] with %inventory% [and shape %-strings%]",
@@ -60,11 +61,13 @@ public class EffCreateGUI extends Effect {
 				if (id != null && !id.isEmpty())
 					GUIHandler.getInstance().setGUI(id, gui);
 				GUIHandler.getInstance().setGUIEvent(e, gui);
+				runSection(e);
 			}
 		} else { //It will edit one
 			gui = exprGui.getSingle(e);
 			if (gui != null) {
 				GUIHandler.getInstance().setGUIEvent(e, gui);
+				runSection(e);
 			}
 		}
 	}
@@ -77,14 +80,24 @@ public class EffCreateGUI extends Effect {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] arg, int i, Kleenean kleenean, SkriptParser.ParseResult parseResult) {
+		if (checkIfCondition()) {
+			return false;
+		}
 		if (i > 0) {
+			if (!hasSection()) {
+				Skript.error("You can't edit a gui inventory using an empty section, you need to change at least a slot or a property.");
+				return false;
+			}
 			exprGui = (Expression<GUIInventory>) arg[0];
 		} else {
 			id = (Expression<String>) arg[0];
 			inv = (Expression<Inventory>) arg[1];
 			str = (Expression<String>) arg[2];
 		}
+		EffCreateGUI last = lastInstance;
 		lastInstance = this;
+		loadSection();
+		lastInstance = last;
 		return true;
 	}
 }

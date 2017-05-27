@@ -8,7 +8,6 @@ import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.util.Kleenean;
-import me.tuke.sktuke.effects.gui.EffCreateGUI;
 import me.tuke.sktuke.util.EffectSection;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;

@@ -2,11 +2,12 @@ package me.tuke.sktuke;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
-import me.tuke.sktuke.listeners.EnchantCheck;
 import me.tuke.sktuke.listeners.OnlineStatusCheck;
 import me.tuke.sktuke.manager.gui.v2.SkriptGUIEvent;
 import me.tuke.sktuke.hooks.landlord.LandlordRegister;
@@ -38,7 +39,7 @@ public class TuSKe extends JavaPlugin {
 	private static NMS nms;
 	private static TuSKe plugin;
 	private static GUIManager gui;
-	private static RecipeManager recipes = new RecipeManager();;
+	private static RecipeManager recipes;
 	private GitHubUpdater updater;
 
 	public TuSKe() {
@@ -87,7 +88,7 @@ public class TuSKe extends JavaPlugin {
 		SkriptAddon tuske = Skript.registerAddon(this);
 		try {
 			//                 It will return as "me.tuske.sktuke"
-			tuske.loadClasses(this.getClass().getPackage().getName(), "register", "events", "conditions", "effects", "sections", "expressions");
+			tuske.loadClasses(getClass().getPackage().getName(), "register", "events", "conditions", "effects", "sections", "expressions");
 			//TODO remove all dependencies and make them separated?
 			if (hasPlugin("SimpleClans") || hasPlugin("SimpleClansLegacy")) // It is the same plugin, but with different names. I don't know why
 				new SimpleClansRegister(tuske);

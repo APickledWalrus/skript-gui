@@ -7,7 +7,7 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.manager.gui.v2.GUIHandler;
 import me.tuke.sktuke.manager.gui.v2.GUIInventory;
-import me.tuke.sktuke.effects.gui.EffCreateGUI;
+import me.tuke.sktuke.sections.gui.EffCreateGUI;
 import org.bukkit.event.Event;
 
 /**

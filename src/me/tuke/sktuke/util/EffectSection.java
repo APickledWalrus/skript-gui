@@ -66,9 +66,6 @@ public abstract class EffectSection extends Condition {
 	 */
 	public void loadSection(){
 		if (section != null) {
-			//Some how, there is a RetainingLogHandler not logging the errors from a section, it will stop them before.
-
-
 			RetainingLogHandler errors = SkriptLogger.startRetainingLog();
 			try {
 				trigger = new TriggerSection(section) {
@@ -85,13 +82,6 @@ public abstract class EffectSection extends Condition {
 				};
 			} finally {
 				stopLog(errors);
-			//	errors.printLog();
-			//	TuSKe.debug("Logando...");
-			//	SkriptLogger.LOGGER.severe("AAAAAA");
-			//	for(LogEntry log : errors.getLog()) {
-			//		SkriptLogger.logTracked(log.getLevel(), log.getMessage(), ErrorQuality.get(log.getQuality()));
-			//	}
-
 			}
 			//Just to not keep a instance of SectionNode.
 			section = null;
@@ -174,36 +164,31 @@ public abstract class EffectSection extends Condition {
 	}
 
 	/**
-	 *
-	 * @param logger
+	 * A hacky method to fix wrong syntax inside of sections not beeing included in errors.
+	 * Why? Because before parsing the effect itself, Skript starts a ParseLogHandler, then,
+	 * in case the syntax returns true in {@link #init(Expression[], int, Kleenean, SkriptParser.ParseResult)},
+	 * The LogHander will ignore all errors that was sent in this method.
+	 * So to fix that, it stops the lasts ParseLogHandlers to not conflict with.
+	 * @param logger - RetainingLogHandler used to parse the section.
 	 */
 	private void stopLog(RetainingLogHandler logger) {
-
+		//Stop the current one
 		logger.stop();
+		//Using reflection to access the iterator of handlers
 		HandlerList handler = ReflectionUtils.getField(SkriptLogger.class, null, "handlers");
+		if (handler == null)
+			return;
 		Iterator<LogHandler> it = handler.iterator();
-		LogHandler main = null;
-		TuSKe.debug("Log 1");
-		int x = 0;
+		//A list containing the last handlers that will be stoped
+		List<LogHandler> toStop = new ArrayList<>();
 		while (it.hasNext()) {
-			LogHandler log = it.next();
-			//printErrors(log);
-			log.log(new LogEntry(Level.INFO, "EEEEEE: " + x++ + log.getClass()));
-			//TuSKe.debug(log.getClass());
-			if (log instanceof RedirectingLogHandler) {
-				//TuSKe.debug(log, main);
-				main = log;
+			LogHandler l = it.next();
+			if (l instanceof ParseLogHandler)
+				toStop.add(l);
+			else //We can only stop the lasts handler, this prevent in case the last is not what we want.
 				break;
-			} else if (log instanceof RetainingLogHandler || log instanceof ParseLogHandler) {
-				main = log;
-				//TuSKe.debug("else", main);
-			}
 		}
-		TuSKe.debug("Log 2");
-		//TuSKe.debug("Before: " + logger.getLog().size(), (main != null ? main.numErrors() : 0));
-		if (main != null)
-			for (LogEntry log : logger.getLog())
-				main.log(log);
-		//TuSKe.debug("After: " + logger.getLog().size(), (main != null ? main.numErrors() : 0));
+		toStop.forEach(LogHandler::stop); //Stopping them
+		SkriptLogger.logAll(logger.getLog()); //Sending the errors to Skript logger.
 	}
 }

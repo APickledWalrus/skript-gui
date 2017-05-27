@@ -4,7 +4,6 @@ import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.variables.Variables;
-import me.tuke.sktuke.effects.gui.EffCreateGUI;
 import me.tuke.sktuke.manager.gui.v2.GUIHandler;
 import me.tuke.sktuke.manager.gui.v2.GUIInventory;
 import me.tuke.sktuke.util.Registry;
@@ -24,7 +23,7 @@ import java.util.*;
  * @author Tuke_Nuke on 01/04/2017
  */
 @Name("Make GUI")
-@Description("Used to format a gui slot after creating/editing a gui")
+@Description("Used to format a gui slot inside of gui creation/editing section")
 public class EffMakeGUI extends EffectSection {
 	static {
 		Registry.newEffect(EffMakeGUI.class,
@@ -48,10 +47,10 @@ public class EffMakeGUI extends EffectSection {
 		if (checkIfCondition()) {
 			return false;
 		}
-		//if (EffCreateGUI.lastInstance == null) {
-		//	Skript.error("You can't make a gui outside of 'create/edit gui' effect.");
-		//	return false;
-		//}
+		if (EffCreateGUI.lastInstance == null) {
+			Skript.error("You can't make a gui outside of 'create/edit gui' effect.");
+			return false;
+		}
 		type = arg1++;
 		if (arg.length > 0 && arg1 <= 2) {
 			item = (Expression<ItemStack>) arg[arg.length - 1];
