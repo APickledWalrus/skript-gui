@@ -9,16 +9,16 @@ import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.*;
 import ch.njol.skript.log.*;
+import ch.njol.skript.util.ScriptOptions;
 import ch.njol.skript.variables.Variables;
 import ch.njol.util.Kleenean;
 import ch.njol.util.StringUtils;
 import me.tuke.sktuke.TuSKe;
-import me.tuke.sktuke.sections.EffEvaluateSection;
 import me.tuke.sktuke.util.ReflectionUtils;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
-import java.util.Iterator;
+import java.io.File;
 
 /**
  * @author Tuke_Nuke on 16/04/2017
@@ -60,13 +60,14 @@ public class EffEvaluate extends Effect{
 		Registry.newEffect(EffEvaluate.class, "evaluate[ logging [[the] error[s]] in %-objects%]: (%-strings%|<.+?>)");
 	}
 
+	private Config currentScript;
 	private Variable results;
 	private Expression<String> varStr;
 	private String str;
 	@Override
 	protected void execute(Event event) {
 		String code = str != null ? str : StringUtils.join(varStr.getArray(event), "\n");
-		evaluate(code, event, results, str != null);
+		evaluate(code, event, results, str != null, currentScript);
 	}
 
 	@Override
@@ -89,15 +90,15 @@ public class EffEvaluate extends Effect{
 			str = parseResult.regexes.get(0).group(0);
 		else
 			varStr = (Expression<String>) expr[1];
-
-
+		currentScript = ScriptLoader.currentScript;
 		return true;
 	}
-	public static void evaluate(String code, Event e, Variable results, boolean parseString) {
+	public static void evaluate(String code, Event e, Variable results, boolean parseString, Config currentScript) {
 		if (code != null && !code.isEmpty()) {
 			final RetainingLogHandler log = SkriptLogger.startRetainingLog();
 			try {
 				if (parseString) {
+					ScriptLoader.currentScript = currentScript;
 					VariableString vs = VariableString.newInstance(code.replaceAll("\"", "\"\""));
 					if (vs != null)
 						code = vs.getSingle(e);
@@ -106,8 +107,13 @@ public class EffEvaluate extends Effect{
 						.replaceAll("\\\\n", "\n")
 						.replaceAll("\\\\t", "\t")
 						;
-				//code = code.replace("\\n", "\n").replace("\\t", "\t");
 				Config c = new Config(code, "TuSKe/evaluate.sk", true, false, ":");
+				// Using reflection here to not need to write the code to the file to evaluate
+				// but also not let a null instance of file there.
+				// Not needed to create the file, so far Skript do not use it to read.
+				ReflectionUtils.setField(c.getClass(), c, "file", new File("TuSKe/evaluate.sk"));
+				// Setting the current 'script'.
+				ScriptLoader.currentScript = c;
 				ScriptLoader.setCurrentEvent("evaluate effect", e.getClass());
 				TriggerSection ts = new TriggerSection(c.getMainNode()) {
 					@Override
@@ -121,6 +127,7 @@ public class EffEvaluate extends Effect{
 					}
 				};
 				ScriptLoader.deleteCurrentEvent();
+				ScriptLoader.currentScript = null;
 				setVariable(log, e, results);
 				TriggerItem.walk(ts, e);
 

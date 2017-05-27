@@ -1,16 +1,21 @@
 package me.tuke.sktuke.sections;
 
+import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
+import ch.njol.skript.config.Config;
 import ch.njol.skript.config.Node;
 import ch.njol.skript.config.SectionNode;
 import ch.njol.skript.config.SimpleNode;
 import ch.njol.skript.doc.NoDoc;
 import ch.njol.skript.lang.*;
 import ch.njol.util.Kleenean;
+import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.effects.EffEvaluate;
 import me.tuke.sktuke.util.EffectSection;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
+
+import java.util.StringJoiner;
 
 /**
  * The documentation is generated in {@link EffEvaluate}
@@ -22,16 +27,16 @@ public class EffEvaluateSection extends EffectSection{
 		Registry.newEffect(EffEvaluateSection.class, "evaluate [logging [[the] error[s]] in %-objects%]");
 	}
 
+	private Config currentScript;
 	private Variable<?> result;
 
 	@Override
 	public void execute(Event e) {
 		if (hasSection()) {
-			StringBuilder sb = new StringBuilder();
-			readSectionNode(sb, getSectionNode());
-			if (sb.length() > 0) {
-				String code = sb.toString().substring(0, sb.length() - 1);
-				EffEvaluate.evaluate(code, e, result, true);
+			StringJoiner sj = new StringJoiner("\n");
+			readSectionNode(sj, "", getSectionNode());
+			if (sj.length() > 0) {
+				EffEvaluate.evaluate(sj.toString(), e, result, true, currentScript);
 			}
 		}
 	}
@@ -59,21 +64,20 @@ public class EffEvaluateSection extends EffectSection{
 				return false;
 			}
 		}
+		currentScript = ScriptLoader.currentScript;
 		return true;
 	}
 
-	public void readSectionNode(StringBuilder sb, SectionNode node) {
-		if (node != null)
+	public void readSectionNode(StringJoiner sb, String indentation, SectionNode node) {
+		if (node != null && sb != null && indentation != null)
 			for (Node n : node) {
 				if (n instanceof SectionNode) {
-					if (sb.length() > 0)
-						sb.append(node.getKey() + ":");
+					sb.add(indentation + n.getKey() + ":");
+					readSectionNode(sb, indentation + "\t", (SectionNode) n);
 				} else if (n instanceof SimpleNode) {
-					sb.append(n.getKey());
-				} else {
-					continue;
+					sb.add(indentation + n.getKey());
 				}
-				sb.append('\n');
 			}
 	}
+
 }
