@@ -58,10 +58,10 @@ public class InventoryCheck implements Listener{
 								else
 									e.getWhoClicked().closeInventory();
 								if (gui.toRun())
-									gui.getRunnable().run();
+									gui.run(e);
 							}}, 0L);
 					else if (gui.toRun())
-						gui.getRunnable().run();
+						gui.run(e);
 				}
 			}
 			

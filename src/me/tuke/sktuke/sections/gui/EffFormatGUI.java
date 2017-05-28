@@ -88,7 +88,7 @@ public class EffFormatGUI extends EffectSection {
 		case 1: 
 			toClose = true;
 		case 2:
-			ct = arg[4];
+			ct = arg[arg.length -1] != null ? arg[arg.length -1].getConvertedExpression(Object.class) : null;
 		case 0:  break;
 		case 3:
 			sender = (Expression<CommandSender>) arg[4];
@@ -106,7 +106,7 @@ public class EffFormatGUI extends EffectSection {
 				func = new EvalFunction(name, exprs);
 			
 		}
-		if (arg1 > 1 && arg1 != 4){
+		if (arg1 > 2 && arg1 != 4){
 			ct = arg[max - 2] != null ? arg[max - 2].getConvertedExpression(Object.class): null;
 			i2 = arg[max - 1] != null ? (Expression<ItemStack>) arg[max - 1] : null;
 		}
@@ -131,13 +131,13 @@ public class EffFormatGUI extends EffectSection {
 					if (slots[x].intValue() >= 0 && slots[x].intValue() < inv.getSize() && !inv.getType().equals(InventoryType.CRAFTING)) {
 						Object rn = null;
 						switch (Type) {
-							case 2:
+							case 3:
 								final CommandSender s = sender != null ? sender.getSingle(e) : p[y];
 								final String pe = perm != null ? perm.getSingle(e) : null;
 								final String c = cmd.getSingle(e);
 								rn = (Runnable) () -> TuSKe.getGUIManager().runCommand(s, c, pe);
 								break;
-							case 3:
+							case 4:
 								final EvalFunction f = func.getParemetersValues(e);
 								rn = (Runnable) f::run;
 								break;
