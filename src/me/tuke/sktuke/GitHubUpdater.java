@@ -192,24 +192,24 @@ public class GitHubUpdater {
 	}
 	/**
 	 * It will download the latest version of plugin and save in plugin's folder.
-	 * @return True if the download was successful
 	 */
-	public boolean downloadLatest(){
-		HttpURLConnection download = null;
-		try {
-			download = (HttpURLConnection) new URL(UPDATE_DOWNLOAD_URL).openConnection();
-			download.setRequestProperty("User-Agent", "Mozilla/5.0");
-			File f = new File(PLUGIN.getDataFolder(), PLUGIN.getName() + ".jar");
-			if (f.exists())
-				f.delete();
-			FileUtils.copyInputStreamToFile(download.getInputStream(), f); 
-		
-			return true;
-		} catch (Exception e) {
-		} finally {
-			if (download != null)
-				download.disconnect();
-		}
-		return false;
+	public void downloadLatest(){
+		Thread downloadThread = new Thread(() -> {
+			HttpURLConnection download = null;
+			try {
+				download = (HttpURLConnection) new URL(UPDATE_DOWNLOAD_URL).openConnection();
+				download.setRequestProperty("User-Agent", "Mozilla/5.0");
+				File f = new File(PLUGIN.getDataFolder(), PLUGIN.getName() + ".jar");
+				if (f.exists())
+					f.delete();
+				FileUtils.copyInputStreamToFile(download.getInputStream(), f);
+			} catch (Exception e) {
+			} finally {
+				if (download != null)
+					download.disconnect();
+			}
+		});
+		downloadThread.start();
+
 	}
 }

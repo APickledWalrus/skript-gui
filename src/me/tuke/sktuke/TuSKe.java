@@ -138,10 +138,8 @@ public class TuSKe extends JavaPlugin {
 						sender.sendMessage("§e[§cTuSKe§e] §3Already have a downloaded file ready to be updated.");
 					else if (!updater.isLatestVersion()){
 						sender.sendMessage("§e[§cTuSKe§e] §3Downloading the latest version...");
-						if (!updater.downloadLatest())
-							sender.sendMessage("§3A error occured when trying to download latest version. Maybe SkUnity is down?");
-						else
-							sender.sendMessage("§3The latest version was been dowloaded to TuSKe's folder.");
+						updater.downloadLatest();
+						sender.sendMessage("§3The latest version was been dowloaded to TuSKe's folder.");
 					} else
 						sender.sendMessage("§e[§cTuSKe§e] §3The plugin is already running the latest version!");
 				} else if (arg.length > 1 && arg[1].equalsIgnoreCase("plugin")){
@@ -149,10 +147,7 @@ public class TuSKe extends JavaPlugin {
 						sender.sendMessage("§e[§cTuSKe§e] §3The option 'check_for_new_update', in config file, needs to be true to check for updates.");
 					else if (!updater.isLatestVersion() || updater.hasDownloadReady(true)){
 						if (!updater.hasDownloadReady(false))
-							if (!updater.downloadLatest()){
-								sender.sendMessage("§e[§cTuSKe§e] §3A error occurred when trying to download latest version. Maybe SkUnity is down?");
-								return true;
-							}
+							updater.downloadLatest();
 						getConfig().set("updater.auto_update", true);
 						sender.sendMessage("§e[§cTuSKe§e] §3The plugin will update when the server restarts.");
 					} else
@@ -370,10 +365,8 @@ public class TuSKe extends JavaPlugin {
 			if (updater.getLatestVersion() != null)
 				if (!updater.isLatestVersion()){
 					if (getConfig().getBoolean("updater.auto_update")){
-						if (updater.downloadLatest())
-							log("Downloaded the latest version. The plugin will be updated when the server restarts.");
-						else
-							log("A error occurred while checking for new updates.");
+						updater.downloadLatest();
+						log("Downloaded the latest version. The plugin will be updated when the server restarts.");
 					} else{
 						log("New update available: v" + updater.getLatestVersion());
 						log("Check what's new in: " + updater.getDownloadURL());
