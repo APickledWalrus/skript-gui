@@ -1,7 +1,7 @@
 name: TuSKe
 description: A Skript Addon to make your scripts bettter!
 main: me.tuke.sktuke.TuSKe
-version: 1.7.5
+version: 1.7.6
 author: Tuke_Nuke
 site: github.com/Tuke-Nuke/TuSKe
 softdepend: [Skript, SimpleClans, SimpleClansLegacy, Legendchat, Marriage, ProtocolSupport, ViaVersion, Landlord, Umbaska, SkQuery] #Last two dependencies are just to not register ClickType and InventoryType before them

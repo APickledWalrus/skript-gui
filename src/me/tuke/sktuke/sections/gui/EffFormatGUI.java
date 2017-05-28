@@ -106,7 +106,7 @@ public class EffFormatGUI extends EffectSection {
 				func = new EvalFunction(name, exprs);
 			
 		}
-		if (arg1 > 2 && arg1 != 4){
+		if (arg1 > 2 && arg1 != 5){
 			ct = arg[max - 2] != null ? arg[max - 2].getConvertedExpression(Object.class): null;
 			i2 = arg[max - 1] != null ? (Expression<ItemStack>) arg[max - 1] : null;
 		}
