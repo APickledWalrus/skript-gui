@@ -1,5 +1,9 @@
 package me.tuke.sktuke.expressions;
 
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -15,16 +19,18 @@ import ch.njol.skript.util.Date;
 import ch.njol.skript.util.Timespan;
 import ch.njol.util.coll.CollectionUtils;
 import me.tuke.sktuke.listeners.OnlineStatusCheck;
-
+@Name("Online Time")
+@Description("Returns a {{types|Timespan|timespan}} of online time of {{types|Player|player}} or of the server. Only the online time of player can be edited.")
+@Examples({
+		"command /online:",
+		"\ttrigger:",
+		"\t\tsend \"You're online for %online time of player% and the server is online for %online time of server%\""})
+@Since("1.0 (player), 1.5.8 (server)")
 public class ExprOnlineTime extends SimplePropertyExpression<Player, Timespan>{
 	static {
 		Registry.newProperty(ExprOnlineTime.class, "online time", "player");
 	}
 
-
-	public HashMap<Player, Long> players = new HashMap<Player, Long>();
-	
-	
 	@Override
 	public Class<? extends Timespan> getReturnType() {
 		return Timespan.class;
@@ -44,7 +50,7 @@ public class ExprOnlineTime extends SimplePropertyExpression<Player, Timespan>{
 	}
 
 	public void change(Event e, Object[] delta, Changer.ChangeMode mode){
-	    Player p = (Player) getExpr().getArray(e)[0];
+	    Player p = getExpr().getArray(e)[0];
 	    Long t = 0L;
 	    if (!(mode == ChangeMode.DELETE || mode == ChangeMode.RESET) && delta != null)
 	    	t =((Timespan)delta[0]).getMilliSeconds();

@@ -1,5 +1,10 @@
 package me.tuke.sktuke.expressions;
 
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Events;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import me.tuke.sktuke.util.ReflectionUtils;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -15,10 +20,24 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
-
+@Name("Damage Modifier")
+@Description({
+		"Deprecated: It might be removed by Bukkit in 1.12 or higher. See more about it https://www.spigotmc.org/threads/194446",
+		"Returns the {{types|DamageModifier|damage modifier}} from a {{events|OnDamage|damage event}}. You can set, add and remove, clear will be the same as setting it to 0, and reset will set to the original value when this event was called."})
+@Examples({
+		"on damage:",
+		"\tadd 1 to armor damage",
+		"\tremove 1 from armor damage",
+		"\tset armor damage to armor damage + 1",
+		"\tclear armor damage",
+		"\treset armor damage"})
+@Events("")
 public class ExprDamageModifier extends SimpleExpression<Double>{
 	static {
-		Registry.newSimple(ExprDamageModifier.class, "damage [modifier] %damagemodifier%");
+		if (ReflectionUtils.hasClass("org.bukkit.event.entity.EntityDamageEvent.DamageModifier"))
+			Registry.newSimple(ExprDamageModifier.class,
+					"damage [modifier] %damagemodifier%",
+					"%damagemodifier% damage [modifier]");
 	}
 
 	private Expression<DamageModifier> dm;

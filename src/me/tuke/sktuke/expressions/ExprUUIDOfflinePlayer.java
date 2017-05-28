@@ -1,5 +1,9 @@
 package me.tuke.sktuke.expressions;
 
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -14,6 +18,12 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 
+@Name("Offline Player from UUID")
+@Description({
+		"It get a player from a UUID. If you have Bensku's fork dev23+, you can just use {{expressions|Parse|parse expression}} using the uuid.",
+		"Also, the uuid needs to be from a player that already played on your server, else it will return null value."})
+@Examples("set {_player} to offline player from \"4580682b-ad69-41e5-a979-6b1b3b2cf9c1\"")
+@Since("1.7.1")
 public class ExprUUIDOfflinePlayer extends SimpleExpression<OfflinePlayer>{
 	static {
 		Registry.newSimple(ExprUUIDOfflinePlayer.class, "offline player from [uuid] %string%");

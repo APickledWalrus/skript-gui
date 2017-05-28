@@ -1,28 +1,34 @@
 package me.tuke.sktuke.manager.gui;
 
+import org.bukkit.event.Event;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.function.Consumer;
 
 public class GUI {
 	private boolean toClose = false;
 	private boolean toCall = false;
 	private ClickType ct = null;
 	private ItemStack item = null;
-	private Runnable run = null;
+	private Object run = null;
 	private Inventory inv = null;
 	
 	public GUI(){
 		
 	}
-	public GUI(Runnable rn, ItemStack item, ClickType ct){
+	public GUI(Object rn, ItemStack item, ClickType ct){
 		this.item = item;
 		run = rn;
 		this.ct = ct;
 	}
-	
-	public Runnable getRunnable(){
-		return run;
+
+	public void run(Event e) {
+		if (run instanceof Runnable)
+			((Runnable) run).run();
+		else if (run instanceof Consumer)
+			((Consumer) run).accept(e);
 	}
 	public ClickType getClickType(){
 		return ct;

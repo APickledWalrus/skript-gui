@@ -2,6 +2,10 @@ package me.tuke.sktuke.expressions;
 
 import javax.annotation.Nullable;
 
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Rabbit;
@@ -12,6 +16,13 @@ import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.util.coll.CollectionUtils;
 
+@Name("Rabbit Type")
+@Description("Returns the type of rabbit. e.g. `black`, `black and white`, `brown`, `gold`, `salt and pepper`, `the killer bunny` and `white`.")
+@Examples({
+		"on spawn of rabbit:",
+		"\tif rabbit type of event-entity is \"the killer bunny\":",
+		"\t\tbroadcast \"Run, everyone, run! The Killer Bunny was spawned!\""})
+@Since("1.0")
 public class ExprRabbitType extends SimplePropertyExpression<Entity, String>{
 	static {
 		Registry.newProperty(ExprRabbitType.class, "rabbit type", "entity");
@@ -37,7 +48,7 @@ public class ExprRabbitType extends SimplePropertyExpression<Entity, String>{
 	}
 	
 	public void change(Event e, Object[] delta, Changer.ChangeMode mode){
-	    Entity le = (Entity) getExpr().getArray(e)[0];
+	    Entity le = getExpr().getArray(e)[0];
 	    if (le != null){
 		    String s = ((String) delta[0]).toUpperCase().replaceAll(" ", "_");
 			if (le instanceof Rabbit){

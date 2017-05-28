@@ -51,7 +51,7 @@ public abstract class EffectSection extends Condition {
 	 * It is to replicate {@link ch.njol.skript.lang.Effect#execute(Event)}
 	 * @param e - The Event
 	 */
-	public abstract void execute(Event e);
+	protected abstract void execute(Event e);
 	@Override
 	public boolean check(Event e){
 		execute(e);
@@ -123,7 +123,7 @@ public abstract class EffectSection extends Condition {
 	 * event from {@link #execute(Event)}
 	 * @param e - The event
 	 */
-	public void runSection(Event e){
+	protected void runSection(Event e){
 		TriggerItem.walk(trigger, e);
 	}
 

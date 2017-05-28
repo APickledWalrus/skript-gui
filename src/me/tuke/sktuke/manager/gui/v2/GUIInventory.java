@@ -80,12 +80,12 @@ public class GUIInventory {
 		setItem(ch, item);
 		return this;
 	}
-	public GUIInventory changeProperties(String newName, Integer newSize, String newRawShape, int shapeMode){
+	public GUIInventory changeProperties(String newName, int newSize, String newRawShape, int shapeMode){
 		ItemStack[] copy = inv.getContents();
 		if (newRawShape != null) {
 			if (shapeMode < 2) {
 				ItemStack[] newItems = copy.clone();
-				int length = newSize != null && inv.getType() == InventoryType.CHEST ? 9 * newSize : newItems.length;
+				int length = inv.getType() == InventoryType.CHEST ? 9 * newSize : newItems.length;
 				copy = new ItemStack[length];
 				int x = 0;
 				Map<Character, ItemStack> items = new HashMap<>();
@@ -105,8 +105,10 @@ public class GUIInventory {
 			if (shapeMode % 2 == 0)
 				rawShape = newRawShape;
 		}
-		if (newName != null && newSize != null) {
+		if (newName != null && newSize >= 0) {
 			List<HumanEntity> viewers = new ArrayList<>(inv.getViewers());
+			if (newSize == 0)
+				newSize = inv.getSize() / 9;
 			inv = InventoryUtils.newInventory(inv.getType(), newSize, newName);
 			if (inv == null)
 				return this; //Safe check only, it doesn't happen

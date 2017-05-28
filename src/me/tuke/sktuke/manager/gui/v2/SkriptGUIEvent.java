@@ -1,23 +1,16 @@
 package me.tuke.sktuke.manager.gui.v2;
 
-import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptEventHandler;
 import ch.njol.skript.lang.*;
-import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.listeners.GUIListener;
-import me.tuke.sktuke.util.InventoryUtils;
 import me.tuke.sktuke.util.ReflectionUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.*;
-import org.bukkit.inventory.Inventory;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
-
 /**
  * @author Tuke_Nuke on 15/03/2017
  */

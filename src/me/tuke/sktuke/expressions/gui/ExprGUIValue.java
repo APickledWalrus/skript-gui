@@ -8,6 +8,7 @@ import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.util.InventorySlot;
 import ch.njol.skript.util.Slot;
 import me.tuke.sktuke.manager.gui.v2.GUIHandler;
+import me.tuke.sktuke.sections.gui.EffFormatGUI;
 import me.tuke.sktuke.sections.gui.EffMakeGUI;
 import me.tuke.sktuke.manager.gui.v2.GUIInventory;
 import me.tuke.sktuke.util.EffectSection;
@@ -49,10 +50,10 @@ public class ExprGUIValue extends SimpleExpression<Object>{
 				"gui");
 	}
 
-	public EffMakeGUI currentSection = null;
 	private int type = -1;
 	private String toString = "gui-value";
 	private boolean isDelayed = false;
+	private boolean isOldGui = false;
 	
 	@Override
 	public Class<? extends Object> getReturnType() {
@@ -82,9 +83,11 @@ public class ExprGUIValue extends SimpleExpression<Object>{
 
 	@Override
 	public boolean init(Expression<?>[] arg0, int arg1, Kleenean arg2, ParseResult arg3) {
-		if (EffMakeGUI.lastInstance == null) {
-			Skript.error("You can't use '" + arg3.expr + "' outside of a 'make gui' effect.");
+		if (EffMakeGUI.lastInstance == null && EffFormatGUI.lastInstance == null) {
+			Skript.error("You can't use '" + arg3.expr + "' outside of a 'make gui' or 'format gui slot' section.");
 			return false;
+		} else if (EffFormatGUI.lastInstance != null) {
+			isOldGui = true;
 		}
 		isDelayed = arg2.isTrue();
 		type = arg1;
@@ -100,8 +103,10 @@ public class ExprGUIValue extends SimpleExpression<Object>{
 	@Override
 	@Nullable
 	protected Object[] get(Event e) {
-		GUIInventory gui = GUIHandler.getInstance().getGUIEvent(e);
-		if (gui != null && e instanceof InventoryClickEvent){
+		GUIInventory gui = !isOldGui ? GUIHandler.getInstance().getGUIEvent(e) : null;
+		if (e instanceof InventoryClickEvent){
+			if (!isOldGui && gui == null)
+				return null;
 			switch (type){
 				case 0: return new Number[]{((InventoryClickEvent) e).getSlot()};
 				case 1: return new Number[]{((InventoryClickEvent) e).getRawSlot()};
@@ -114,9 +119,16 @@ public class ExprGUIValue extends SimpleExpression<Object>{
 				case 8: return new SlotType[]{((InventoryClickEvent) e).getSlotType()};
 				case 9:	return new Player[]{(Player)((InventoryClickEvent) e).getWhoClicked()};
 				case 10: return ((InventoryClickEvent) e).getViewers().toArray();
-				case 11: return new String[]{InventoryUtils.getClickedInventory(((InventoryClickEvent) e)).getName()};
-				case 12: return new String[]{"" + gui.convertSlot(((InventoryClickEvent) e).getSlot())};
-				case 13: return new GUIInventory[]{gui};
+				case 11:
+					Inventory c = InventoryUtils.getClickedInventory(((InventoryClickEvent) e));
+					if (c != null)
+						return new String[]{c.getName()};
+				case 12:
+					if (gui != null)
+						return new String[]{"" + gui.convertSlot(((InventoryClickEvent) e).getSlot())};
+				case 13:
+					if (gui != null)
+						return new GUIInventory[]{gui};
 			}
 		}
 		return null;
@@ -128,7 +140,13 @@ public class ExprGUIValue extends SimpleExpression<Object>{
 		if (e instanceof InventoryClickEvent) {
 			if (type == 7)
 				changer.change(new Slot[]{new InventorySlot(((InventoryClickEvent) e).getInventory(), ((InventoryClickEvent) e).getSlot())}, delta, mode);
-			else {
+			else if (type == 11) {
+				GUIInventory gui = GUIHandler.getInstance().getGUIEvent(e);
+				String newName = delta != null && delta.length > 0 ? (String) delta[0] : null;
+				if (newName != null && gui != null) {
+					gui.changeProperties(newName, 0, null, 0);
+				}
+			} else {
 				Slot cursor = new Slot() {
 					@Override
 					public ItemStack getItem() {
@@ -159,6 +177,8 @@ public class ExprGUIValue extends SimpleExpression<Object>{
 				return changer.acceptChange(mode);
 			}
 			Skript.error("You can't set the " + toString + " when the event is already passed.");
+		} else if (type == 1) {
+			return new Class[]{String.class};
 		}
 		return null;
 

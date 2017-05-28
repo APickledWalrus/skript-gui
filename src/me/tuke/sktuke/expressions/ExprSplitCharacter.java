@@ -1,5 +1,9 @@
 package me.tuke.sktuke.expressions;
 
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import org.bukkit.util.ChatPaginator;
@@ -10,7 +14,10 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
-
+@Name("Split Characters")
+@Description("Split a text with {{types|Number|number}} amount of characters. It is used to split the message in chat (the default is 60) and to item's lore.")
+@Examples("set {_s::*} to split \"Hi, this text will be splitted in 3 lines\" by 10 characters")
+@Since("1.6.8")
 public class ExprSplitCharacter extends SimpleExpression<String>{
 	static {
 		Registry.newSimple(ExprSplitCharacter.class, "split %string% (with|by|using) %number% [char[acter][s]]", "%string% [split] (with|by|using) %number% [char[acter][s]]");

@@ -1,5 +1,9 @@
 package me.tuke.sktuke.expressions;
 
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -17,6 +21,18 @@ import ch.njol.skript.util.Color;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 
+@Name("RGB Color")
+@Description({
+		"Returns the rgb color of {{types|ItemStack|item stack}} or {{types|Color|color}}. You can set these values only for item stacks, in this case, leather armors.",
+		"The RGB color returns a list with 3 numbers and the other expressions returns which one separated."})
+@Examples({
+		"set {_PlayerEquipaments::*} to player's helmet, player's chestplate, player's leggings and player's boots #Must be leather armor",
+		" ",
+		"set rgb color of {_PlayerEquipaments::*} to rgb of color red",
+		"add 1 to red color of {_PlayerEquipaments::*}",
+		"remove 1 from green color of {_PlayerEquipaments::*}",
+		"set blue color of {_PlayerEquipaments::*} to 30"})
+@Since("1.5.3 (single value of items), 1.6 (list values of items and color)")
 public class ExprRGBColor extends SimpleExpression<Integer>{
 	static {
 		Registry.newProperty(ExprRGBColor.class, "R[ed, ]G[reen and ]B[blue] [colo[u]r[s]]", "-itemstacks/colors");

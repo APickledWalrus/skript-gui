@@ -8,6 +8,7 @@ import me.tuke.sktuke.manager.gui.v2.GUIHandler;
 import me.tuke.sktuke.manager.gui.v2.GUIInventory;
 import me.tuke.sktuke.util.Registry;
 import me.tuke.sktuke.util.ReflectionUtils;
+import me.tuke.sktuke.util.VariableUtil;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -33,7 +34,6 @@ public class EffMakeGUI extends EffectSection {
 				"(un(make|format)|remove) gui [slot] %strings/numbers%",
 				"(un(make|format)|remove) all gui [slot]");
 	}
-	public static WeakHashMap<Event, Object> map = ReflectionUtils.getField(Variables.class, null, "localVariables");
 	public static EffMakeGUI lastInstance = null;
 
 	private EffCreateGUI currentSection = null;
@@ -83,9 +83,9 @@ public class EffMakeGUI extends EffectSection {
 		Object[] slot = this.slot != null ? this.slot.getArray(e) : new Object[]{gui.nextSlot()};
 		for (Object s : slot) {
 			if (hasSection()) {
-				final Object variables = copyVariables(e);
+				final Object variables = VariableUtil.getInstance().copyVariables(e);
 				gui.setItem(s, item, event -> {
-					pasteVariables(event, variables);
+					VariableUtil.getInstance().pasteVariables(event, variables);
 					GUIHandler.getInstance().setGUIEvent(event, gui);
 					runSection(event);
 				});
@@ -99,32 +99,5 @@ public class EffMakeGUI extends EffectSection {
 		if (type > 1)
 			return "unmake gui slot";
 		return "make " + (slot != null ? " a gui slot "+ slot.toString(arg0, arg1) : "next gui slot") + " of gui with " + item.toString(arg0, arg1);
-	}
-	//
-	// Some hacking methods to copy variables from one event, and paste
-	// to another. It allows to run the section using the same variables
-	// when was making the gui
-	//
-	@SuppressWarnings("unchecked")
-	public Object copyVariables(Event from){
-		if (from != null && map.containsKey(from)) {
-			Object variablesMap = map.get(from);
-			if (variablesMap == null)
-				return null;
-			Object newVariablesMap = ReflectionUtils.newInstance(variablesMap.getClass());
-			//TuSKe.debug(newVariablesMap, variablesMap);
-			if (newVariablesMap == null)
-				return null;
-			HashMap<String, Object> single = ReflectionUtils.getField(newVariablesMap.getClass(), newVariablesMap, "hashMap");
-			TreeMap<String, Object> list = ReflectionUtils.getField(newVariablesMap.getClass(), newVariablesMap, "treeMap");
-			single.putAll(ReflectionUtils.getField(variablesMap.getClass(), variablesMap, "hashMap"));
-			list.putAll(ReflectionUtils.getField(variablesMap.getClass(), variablesMap, "treeMap"));
-			return newVariablesMap;
-		}
-		return null;
-	}
-	public void pasteVariables(Event to, Object variables){
-		if (to != null)
-			map.put(to, variables);
 	}
 }

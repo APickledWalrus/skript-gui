@@ -10,7 +10,7 @@ import ch.njol.skript.lang.ParseContext;
 import ch.njol.skript.registrations.Classes;
 import me.tuke.sktuke.TuSKe;
 
-public abstract class SimpleType<T> implements Changer<T>{
+public abstract class SimpleType<T> extends ClassInfo<T> implements Changer<T>{
 	
 	private String variableName;
 	private String name;
@@ -23,6 +23,7 @@ public abstract class SimpleType<T> implements Changer<T>{
 		this(clz, name, pattern, ".+");
 	}
 	public SimpleType(Class<T> clz, String name, String pattern, String variableName){
+		super(clz, name.toLowerCase().replaceAll("\\s+", ""));
 		this.clz = clz;
 		this.name = name;
 		this.pattern = pattern;
@@ -51,42 +52,37 @@ public abstract class SimpleType<T> implements Changer<T>{
 	}
 	private void register(){
 		try {
-			Classes.registerClass(new ClassInfo<T>(clz, name.toLowerCase().replaceAll("\\s+", ""))
-					.user(pattern)
-					.name(name)
+			Classes.registerClass(user(pattern)
 					.defaultExpression(new EventValueExpression<>(clz))
 					.parser(new Parser<T>() {
+						@Override
+						public String getVariableNamePattern() {
+							return variableName;
+						}
 
-				@Override
-				public String getVariableNamePattern() {
-					return variableName;
-				}
+						@Override
+						public boolean canParse(ParseContext context) {
+							return SimpleType.this.canParse(context);
+						}
 
-				@Override
-				public boolean canParse(ParseContext context) {
-					return SimpleType.this.canParse(context);
-				}
+						@Override
+						@Nullable
+						public T parse(String arg0, ParseContext arg1) {
+							return SimpleType.this.parse(arg0, arg1);
+						}
 
-				@Override
-				@Nullable
-				public T parse(String arg0, ParseContext arg1) {
-					return SimpleType.this.parse(arg0, arg1);
-				}
+						@Override
+						public String toString(T arg0, int arg1) {
+							return SimpleType.this.toString(arg0, arg1);
+						}
 
-				@Override
-				public String toString(T arg0, int arg1) {
-					return SimpleType.this.toString(arg0, arg1);
-				}
-
-				@Override
-				public String toVariableNameString(T arg0) {
-					return SimpleType.this.toVariableNameString(arg0);
-				}
+						@Override
+						public String toVariableNameString(T arg0) {
+							return SimpleType.this.toVariableNameString(arg0);
+						}
 			}));
 		} catch (Exception e) {
-			if (TuSKe.debug()) {
-				TuSKe.debug("Couldn't register the type '" + name + "'. Due to: " + (e.getMessage() != null && !e.getMessage().isEmpty() ? e.getMessage() : "unknown"));
-			}
+			TuSKe.debug("Couldn't register the type '" + name + "'. Due to: " + (e.getMessage() != null && !e.getMessage().isEmpty() ? e.getMessage() : "unknown"));
 		}
 		
 	}

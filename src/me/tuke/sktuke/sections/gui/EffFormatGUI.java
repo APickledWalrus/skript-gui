@@ -1,22 +1,22 @@
-package me.tuke.sktuke.effects.gui;
+package me.tuke.sktuke.sections.gui;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.registrations.Classes;
 import me.tuke.sktuke.manager.gui.GUI;
-import me.tuke.sktuke.manager.gui.v2.GUIHandler;
-import me.tuke.sktuke.manager.gui.v2.GUIInventory;
-import me.tuke.sktuke.sections.gui.EffMakeGUI;
+import me.tuke.sktuke.util.EffectSection;
 import me.tuke.sktuke.util.Registry;
+import me.tuke.sktuke.util.VariableUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nullable;
 
-import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.function.Function;
@@ -25,21 +25,22 @@ import ch.njol.util.Kleenean;
 import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.util.EvalFunction;
 
-/**
- * @deprecated It was moved to {@link EffMakeGUI}
- */
-public class EffFormatGUI extends Effect{
+import java.util.function.Consumer;
+
+public class EffFormatGUI extends EffectSection {
 	static {
 		String cr = "string/" + Classes.getExactClassInfo(ClickType.class).getCodeName();
 		Registry.newEffect(EffFormatGUI.class,
 				"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% [to [do] nothing]",
 				"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to (1¦close|2¦open %-inventory%) [(using|with) %-" + cr + "% [(button|click|action)]]",
+				"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to (run|exe[cute]) [(using|with) %-" + cr + "% [(button|click|action)]]",
 				"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to [(1¦close|2¦open %-inventory%) then] (run|exe[cute]) %commandsender% command %string% [(using|with) perm[ission] %-string%][[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
 				"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to [(1¦close|2¦open %-inventory%) then] (run|exe[cute]) function <(.+)>\\([<.*?>]\\)[[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
 				//"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to [(1¦close|2¦open %-inventoy%) then] (run|exe[cute]) function <(.+)>\\([%-objects%[, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%]]\\)[[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
 				"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to (run|exe[cute]) [gui [click]] event");
 	}
 
+	public static EffFormatGUI lastInstance = null;
 	private int Type;
 	private boolean toClose;
 	private EvalFunction func;
@@ -57,6 +58,21 @@ public class EffFormatGUI extends Effect{
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
+		if (checkIfCondition())
+			return false;
+		EffFormatGUI last = lastInstance;
+		if (hasSection()) {
+			if ((arg1 == 0 || arg1 == 5)) {
+				Skript.error("You can't execute a code in this effect. Use 'format gui slot .... to run:' instead.");
+				return false;
+			}
+			lastInstance = this;
+			loadSection("format gui effect", InventoryClickEvent.class);
+		} else if (!hasSection() && arg1 == 2) {
+			Skript.error("You can't execute a blank code in this effect. In case you want to format a unstealable item, use 'format gui slot ... to do nothing' instead.");
+			return false;
+		}
+		lastInstance = last;
 		int max = arg.length;
 		s = (Expression<Number>) arg[0];
 		p = (Expression<Player>) arg[1];
@@ -66,19 +82,20 @@ public class EffFormatGUI extends Effect{
 		if (arg3.mark == 2)
 			inv = (Expression<Inventory>) arg[3];
 		switch (arg1){
-		case 4: 
+		case 5:
 			runEvent = true;
 			break;
 		case 1: 
 			toClose = true;
+		case 2:
 			ct = arg[4];
 		case 0:  break;
-		case 2: 
+		case 3:
 			sender = (Expression<CommandSender>) arg[4];
 			cmd = (Expression<String>) arg[5];
 			perm =  arg[6] != null ? (Expression<String>) arg[6] : null;
 			break;
-		case 3:
+		case 4:
 			String name = arg3.regexes.get(0).group(0).replaceAll(" ","");
 			String exprs = arg3.regexes.size() > 1 ? arg3.regexes.get(1).group(0) : "";
 			Function<?> f = Functions.getFunction(name);
@@ -108,35 +125,41 @@ public class EffFormatGUI extends Effect{
 			Number[] slots = this.s.getArray(e);
 			for (int x = 0; x < slots.length; x++)
 				for(int y = 0; y < p.length; y++){
-					if (p[y] == null)
+					if (p[y] == null || slots[x] == null)
 						continue;
 					Inventory inv = p[y].getOpenInventory().getTopInventory();
-					if (slots[x] != null && slots[x].intValue() >= 0 && slots[x].intValue() < inv.getSize()){
-						Runnable rn = null;
-						switch(Type){
-						case 2: 
-							final CommandSender s = sender != null ? sender.getSingle(e) : p[y];
-							final String pe = perm != null ? perm.getSingle(e) : null;
-							final String c = cmd.getSingle(e);
-							rn = () -> TuSKe.getGUIManager().runCommand(s, c, pe);
-							break;
-						case 3:
-							final EvalFunction f = func.getParemetersValues(e);
-							rn = f::run;
-							break;
+					if (slots[x].intValue() >= 0 && slots[x].intValue() < inv.getSize() && !inv.getType().equals(InventoryType.CRAFTING)) {
+						Object rn = null;
+						switch (Type) {
+							case 2:
+								final CommandSender s = sender != null ? sender.getSingle(e) : p[y];
+								final String pe = perm != null ? perm.getSingle(e) : null;
+								final String c = cmd.getSingle(e);
+								rn = (Runnable) () -> TuSKe.getGUIManager().runCommand(s, c, pe);
+								break;
+							case 3:
+								final EvalFunction f = func.getParemetersValues(e);
+								rn = (Runnable) f::run;
+								break;
+						}
+						if (hasSection()) {
+							Object copy = rn;
+							Object variablesMap = VariableUtil.getInstance().copyVariables(e);
+							rn = (Consumer<Event>) event -> {
+								if (copy != null)
+									((Runnable) copy).run();
+								VariableUtil.getInstance().pasteVariables(event, variablesMap);
+								runSection(event);
+							};
 						}
 						GUI gui = new GUI(rn, (i2 != null && i2.getSingle(e) != null ? i2.getSingle(e) : null), (ct != null ? getFromObject(ct.getSingle(e)) : null));
-						
-						if (slots[x] != null && slots[x].intValue() >= 0 && slots[x].intValue() < inv.getSize() /*&& !inv.getType().equals(InventoryType.PLAYER)*/ && !inv.getType().equals(InventoryType.CRAFTING)){
-							
-							if (runEvent)
-								gui.toCallEvent(runEvent);
-							else
-								gui.toClose(toClose);
-							if (this.inv != null)
-								gui.toOpenInventory(this.inv.getSingle(e));
-							TuSKe.getGUIManager().newGUI(inv, slots[x].intValue(), i.getSingle(e), gui);
-						}
+						if (runEvent)
+							gui.toCallEvent(runEvent);
+						else
+							gui.toClose(toClose);
+						if (this.inv != null)
+							gui.toOpenInventory(this.inv.getSingle(e));
+						TuSKe.getGUIManager().newGUI(inv, slots[x].intValue(), i.getSingle(e), gui);
 					}
 				}
 		}

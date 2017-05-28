@@ -1,5 +1,9 @@
 package me.tuke.sktuke.expressions;
 
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -7,6 +11,13 @@ import javax.annotation.Nullable;
 
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 
+@Name("Minecraft Version")
+@Description("Returns the minecraft version of {{types|Player|player}}.")
+@Examples({
+		"on join:",
+		"if minecraft version of player is \"1.9\":",
+		"send \"You're joining with version %mc version of player%!\""})
+@Since("1.0 (ProtocolSupport), 1.0.5 (ViaVersion)")
 public class ExprPlayerVersion extends SimplePropertyExpression<Player, String>{
 	private static final boolean isViaversion = Bukkit.getServer().getPluginManager().isPluginEnabled("ViaVersion");
 	private static final boolean isProtocolSupport = Bukkit.getServer().getPluginManager().isPluginEnabled("ProtocolSupport");
