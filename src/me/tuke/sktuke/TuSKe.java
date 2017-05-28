@@ -85,7 +85,7 @@ public class TuSKe extends JavaPlugin {
 		}
 		// ----------------------------------------------------------
 		// ------------- Start to register all syntaxes -------------
-		SkriptAddon tuske = Skript.registerAddon(this);
+		SkriptAddon tuske = Skript.registerAddon(this).setLanguageFileDirectory("lang");
 		try {
 			//                 It will return as "me.tuske.sktuke"
 			tuske.loadClasses(getClass().getPackage().getName(), "register", "events", "conditions", "effects", "sections", "expressions");

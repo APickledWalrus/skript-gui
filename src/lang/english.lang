@@ -1,4 +1,4 @@
-# -- Inventory Click Types --
+# Inventory Click Types
 # From Bensku's fork
 click actions:
 	left: left mouse button, left mouse, LMB
@@ -15,7 +15,7 @@ click actions:
 	creative: creative action
 	unknown: unknown, unsupported, custom
 
-# -- Inventory Actions --
+# Inventory Actions
 # From Bensku's fork
 inventory actions:
 	nothing: nothing, do nothing
@@ -37,3 +37,37 @@ inventory actions:
 	clone_stack: clone stack
 	collect_to_cursor: collect to cursor, collect items to cursor
 	unknown: unknown, unsupported, custom
+
+# Inventory Types
+inventory type:
+	chest: chest
+	dispenser: dispenser
+	dropper: dropper
+	furnace: furnace
+	workbench: workbench
+	crafting: crafting
+	enchanting: enchanting
+	brewing: brewing
+	player: player
+	creative: creative
+	merchant: merchant
+	ender_chest: ender chest
+	anvil: anvil
+	beacon: beacon
+	hopper: hopper
+
+# Slot type
+slot type:
+	result: result slot
+	crafting: crafting slot
+	armor: armor slot
+	container: container slot, chest slot, inventory slot
+	quickbar: quickbar slot, hotbar slot
+	outside: outside slot, empty slot, none
+	fuel: fuel slot
+#types
+types:
+	inventorytype: inventory type¦s @an
+	inventoryaction: inventory action¦s @an
+	clicktype: click type¦s @a
+	slottype: slot type¦s @a

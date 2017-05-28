@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  */
 public class TuSKeTypes {
 	static {
-		new EnumType(InventoryType.class, "inventorytype", "inventory ?types?")
+		new EnumType(InventoryType.class, "inventorytype", "inventory ?types?", "inventory type")
 				.name("Inventory Type")
 				.description("Represents the type of an inventory. {{effects|MakeGUI|TuSKe}} and {{expressions|BlankInventory|SkQuery}} uses in their expressions.")
 				.examples(
@@ -34,7 +34,7 @@ public class TuSKeTypes {
 						"#TuSKe",
 						"open virtual hopper named \"Tittle\" to player")
 				.since("1.6.9.7");
-		new EnumType(ClickType.class, "clicktype", "click ?(actions|types)", "click actions")
+		new EnumType(ClickType.class, "clicktype", "click ?(actions?|types?)", "click actions")
 				.name("Click Type/Action")
 				.description("Represents a click type of a inventory click event.")
 				.examples(
@@ -68,7 +68,7 @@ public class TuSKeTypes {
 						"\t\tsend \"You can't take that item!\"",
 						"\t\tcancel event")
 				.since("1.7.5");
-		new EnumType(InventoryType.SlotType.class, "slottype", "slot ?types?")
+		new EnumType(InventoryType.SlotType.class, "slottype", "slot ?types?", "slot type")
 				.name("Slot Type")
 				.description("It represents a type of a inventory slot")
 				.examples(
@@ -217,6 +217,7 @@ public class TuSKeTypes {
 						"\t\tcreate new gui with virtual chest named \"Hub\" with 3 rows: #Create a new gui based in a inventory",
 						"\t\t\tmake gui slot 13 with cake named \"&e&lLobby\": #Format slot with a given item",
 						"\t\t\t\tmake player execute command \"server Lobby\" #Code to be executed when the player clicks on gui",
-						"\t\topen last gui to player #Open the last created gui to the player");
+						"\t\topen last gui to player #Open the last created gui to the player")
+				.since("1.7.5");
 	}
 }
