@@ -52,6 +52,9 @@ public class GUIHandler {
 		if (id != null && !id.isEmpty() && gui != null)
 			list.put("id:" + id, gui.setID(id));
 	}
+	public GUIInventory removeGUI(String id) {
+		return list.remove(id);
+	}
 	public GUIInventory getGUI(String id){
 		return id != null && !id.isEmpty() ? list.get("id:" + id) : null;
 	}

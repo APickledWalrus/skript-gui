@@ -1,5 +1,6 @@
 package me.tuke.sktuke.expressions.gui;
 
+import ch.njol.skript.classes.Changer;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
@@ -64,5 +65,20 @@ public class ExprGUI extends SimpleExpression<GUIInventory> {
 		if (i > 0)
 			id = (Expression<String>) arg[0];
 		return true;
+	}
+
+	@Override
+	public void change(final Event e, Object[] delta, Changer.ChangeMode mode){
+		String id = this.id.getSingle(e);
+		if (id != null) {
+			GUIInventory gui = GUIHandler.getInstance().removeGUI(id);
+			if (gui != null)
+				gui.clear();
+		}
+	}
+	public Class<?>[] acceptChange(final Changer.ChangeMode mode) {
+		if (mode == Changer.ChangeMode.DELETE)
+			return new Class[]{Object.class};
+		return null;
 	}
 }
