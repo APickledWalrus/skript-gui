@@ -1,3 +1,5 @@
+version: 1.7.6
+
 # Inventory Click Types
 # From Bensku's fork
 click actions:
@@ -49,9 +51,9 @@ inventory type:
 	enchanting: enchanting
 	brewing: brewing
 	player: player
-	creative: creative
-	merchant: merchant
-	ender_chest: ender chest
+	creative: creative inventory
+	merchant: merchant inventory
+	ender_chest: ender chest inventory
 	anvil: anvil
 	beacon: beacon
 	hopper: hopper

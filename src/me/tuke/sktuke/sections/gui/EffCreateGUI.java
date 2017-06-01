@@ -42,8 +42,8 @@ public class EffCreateGUI extends EffectSection {
 				"(change|edit) %guiinventory%");
 	}
 
-	public static EffCreateGUI lastInstance = null;
-	public GUIInventory gui = null;
+	//public static EffCreateGUI lastInstance = null;
+	//public GUIInventory gui = null;
 	private Expression<GUIInventory> exprGui;
 	private Expression<Inventory> inv;
 	private Expression<String> str, id;
@@ -52,7 +52,7 @@ public class EffCreateGUI extends EffectSection {
 		if (exprGui == null) { //It will create a new one
 			Inventory inv = this.inv.getSingle(e);
 			if (inv != null && inv.getType() != InventoryType.PLAYER && inv.getType() != InventoryType.CRAFTING) {
-				gui = new GUIInventory(inv);
+				GUIInventory gui = new GUIInventory(inv);
 				if (str != null)
 					gui.shape(str.getArray(e));
 				else
@@ -64,7 +64,7 @@ public class EffCreateGUI extends EffectSection {
 				runSection(e);
 			}
 		} else { //It will edit one
-			gui = exprGui.getSingle(e);
+			GUIInventory gui = exprGui.getSingle(e);
 			if (gui != null) {
 				GUIHandler.getInstance().setGUIEvent(e, gui);
 				runSection(e);
@@ -94,10 +94,7 @@ public class EffCreateGUI extends EffectSection {
 			inv = (Expression<Inventory>) arg[1];
 			str = (Expression<String>) arg[2];
 		}
-		EffCreateGUI last = lastInstance;
-		lastInstance = this;
 		loadSection();
-		lastInstance = last;
 		return true;
 	}
 }

@@ -33,9 +33,9 @@ public class EnumType extends ClassInfo{
 					.defaultExpression(new EventValueExpression<>(c))
 					.parser(parser));
 		} catch (Exception e) {
-			if (!TuSKe.getInstance().getConfig().isSet("cancel_override_type." + code)) {
-				ReflectionUtils.setField(ClassInfo.class, Classes.getExactClassInfo(c), "parser", parser);
-			} else
+			//if (!TuSKe.getInstance().getConfig().isSet("cancel_override_type." + code)) {
+			//	ReflectionUtils.setField(ClassInfo.class, Classes.getExactClassInfo(c), "parser", parser);
+			//} else
 				TuSKe.debug("Couldn't register the type '" + code + "'. Due to: " + (e.getMessage() != null && !e.getMessage().isEmpty() ? e.getMessage() : "unknown"));
 		}
 

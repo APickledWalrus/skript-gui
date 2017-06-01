@@ -71,7 +71,6 @@ public class EffMakeGUI extends EffectSection {
 	@Override
 	public void execute(Event e) {
 		GUIInventory gui = currentSection.gui;
-		//TuSKe.debug("isNull? ", gui == null);
 		if (gui == null)
 			return;
 		if (type > 1) {

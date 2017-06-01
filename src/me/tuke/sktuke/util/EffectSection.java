@@ -1,10 +1,7 @@
 package me.tuke.sktuke.util;
 
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 
 import ch.njol.skript.ScriptLoader;
@@ -28,6 +25,7 @@ public abstract class EffectSection extends Condition {
 	private SectionNode section = null;
 	private TriggerSection trigger = null;
 	private boolean hasIfOrElseIf = false;
+	private static HashMap<Class<? extends EffectSection>, EffectSection> map = new HashMap<>();
 
 	public EffectSection(){
 		Node n = SkriptLogger.getNode(); //Skript sets the node before parsing this 'effect'
@@ -67,6 +65,7 @@ public abstract class EffectSection extends Condition {
 	public void loadSection(){
 		if (section != null) {
 			RetainingLogHandler errors = SkriptLogger.startRetainingLog();
+			EffectSection previous = map.put(getClass(), this);
 			try {
 				trigger = new TriggerSection(section) {
 
@@ -83,6 +82,7 @@ public abstract class EffectSection extends Condition {
 			} finally {
 				stopLog(errors);
 			}
+			map.put(getClass(), previous);
 			//Just to not keep a instance of SectionNode.
 			section = null;
 		}
@@ -190,5 +190,9 @@ public abstract class EffectSection extends Condition {
 		}
 		toStop.forEach(LogHandler::stop); //Stopping them
 		SkriptLogger.logAll(logger.getLog()); //Sending the errors to Skript logger.
+	}
+	@SuppressWarnings("unchecked")
+	public static <T extends EffectSection> T getCurrentSection(Class<T> clz) {
+		return (T) map.get(clz);
 	}
 }

@@ -17,7 +17,7 @@ import me.tuke.sktuke.TuSKe;
 
 public class EffMakeDrop extends Effect{
 	static {
-		Registry.newEffect(EffMakeDrop.class, "(make|force) %player% drop[s] %itemstack% [from (%slot%|his inventory)]");
+		Registry.newEffect(EffMakeDrop.class, "(make|force) %player% drop[s] %itemstack% [from (%-slot%|his inventory)]");
 	}
 
 	private Expression<Player> p;

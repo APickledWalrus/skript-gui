@@ -33,7 +33,8 @@ public class TuSKeTypes {
 						"open inventory of hopper to player",
 						"#TuSKe",
 						"open virtual hopper named \"Tittle\" to player")
-				.since("1.6.9.7");
+				.since("1.6.9.7")
+				.after("gamemode", "itemtype", "itemstack");
 		new EnumType(ClickType.class, "clicktype", "click ?(actions?|types?)", "click actions")
 				.name("Click Type/Action")
 				.description("Represents a click type of a inventory click event.")
