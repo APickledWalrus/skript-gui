@@ -192,7 +192,16 @@ public abstract class EffectSection extends Condition {
 		SkriptLogger.logAll(logger.getLog()); //Sending the errors to Skript logger.
 	}
 	@SuppressWarnings("unchecked")
-	public static <T extends EffectSection> T getCurrentSection(Class<T> clz) {
-		return (T) map.get(clz);
+	public static boolean isCurrentSection(Class<? extends EffectSection>... classes) {
+		return getCurrentSection(classes) != null;
+	}
+	@SuppressWarnings("unchecked")
+	public static <T extends EffectSection> T getCurrentSection(Class<? extends EffectSection>... classes) {
+		for (Class<? extends EffectSection> clz : classes) {
+			T result = (T) map.get(clz);
+			if (result != null)
+				return result;
+		}
+		return null;
 	}
 }

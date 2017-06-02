@@ -2,6 +2,7 @@ package me.tuke.sktuke.expressions.gui;
 
 import javax.annotation.Nullable;
 
+import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.registrations.Classes;
@@ -11,6 +12,7 @@ import me.tuke.sktuke.manager.gui.v2.GUIHandler;
 import me.tuke.sktuke.sections.gui.EffFormatGUI;
 import me.tuke.sktuke.sections.gui.EffMakeGUI;
 import me.tuke.sktuke.manager.gui.v2.GUIInventory;
+import me.tuke.sktuke.sections.gui.EffOnCloseGUI;
 import me.tuke.sktuke.util.EffectSection;
 import me.tuke.sktuke.util.Registry;
 import me.tuke.sktuke.util.InventoryUtils;
@@ -19,6 +21,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -83,10 +86,10 @@ public class ExprGUIValue extends SimpleExpression<Object>{
 
 	@Override
 	public boolean init(Expression<?>[] arg0, int arg1, Kleenean arg2, ParseResult arg3) {
-		if (EffMakeGUI.lastInstance == null && EffFormatGUI.lastInstance == null) {
-			Skript.error("You can't use '" + arg3.expr + "' outside of a 'make gui' or 'format gui slot' section.");
+		if (EffectSection.isCurrentSection(EffMakeGUI.class, EffFormatGUI.class, EffOnCloseGUI.class)) {
+			Skript.error("You can't use '" + arg3.expr + "' outside of a 'make gui', 'format gui slot' or 'run when close' section.");
 			return false;
-		} else if (EffFormatGUI.lastInstance != null) {
+		} else if (EffectSection.isCurrentSection(EffFormatGUI.class)) {
 			isOldGui = true;
 		}
 		isDelayed = arg2.isTrue();
@@ -123,12 +126,27 @@ public class ExprGUIValue extends SimpleExpression<Object>{
 					Inventory c = InventoryUtils.getClickedInventory(((InventoryClickEvent) e));
 					if (c != null)
 						return new String[]{c.getName()};
+					break;
 				case 12:
 					if (gui != null)
 						return new String[]{"" + gui.convertSlot(((InventoryClickEvent) e).getSlot())};
+					break;
 				case 13:
 					if (gui != null)
 						return new GUIInventory[]{gui};
+					break;
+			}
+		} else if (e instanceof InventoryCloseEvent && gui != null) {
+			switch (type) {
+				case 3: return new Inventory[]{((InventoryCloseEvent) e).getInventory()};
+				case 9: return new Player[]{(Player)((InventoryCloseEvent) e).getPlayer()};
+				case 10: return ((InventoryCloseEvent)e).getViewers().toArray();
+				case 11:
+					if (((InventoryCloseEvent) e).getInventory() != null)
+						return new String[]{((InventoryCloseEvent) e).getInventory().getName()};
+					break;
+				case 13:
+					return new GUIInventory[]{gui};
 			}
 		}
 		return null;
@@ -170,6 +188,8 @@ public class ExprGUIValue extends SimpleExpression<Object>{
 
 	@SuppressWarnings("unchecked")
 	public Class<?>[] acceptChange(final Changer.ChangeMode mode) {
+		if (ScriptLoader.isCurrentEvent(InventoryCloseEvent.class))
+			return null;
 		if (type == 6 || type == 7) {
 			if (!isDelayed) {
 				if (changer == null)

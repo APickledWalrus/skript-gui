@@ -22,12 +22,12 @@ import org.bukkit.inventory.Inventory;
  */
 @Name("Create a GUI")
 @Description({"It creates a new gui with a given id (optional), using a base inventory, and a shape (optional)",
-"For more info, read the tutorial <link>"}) //TODO Set the link tutorial
+"For more info, read the [here](https://github.com/Tuke-Nuke/TuSKe/wiki/GUI-Manager)"}) //TODO Set the link tutorial
 @Examples({
 		"on skript load:",
 		"\tcreate a gui with id \"LobbySelector\" with virtual chest with 4 rows named \"&4Lobby Selector\":",
 		"\t\tmake gui slot 2 with diamond sword named \"PVP\":",
-		"\t\t\texecute player command \"/server pvp\"",
+		"\t\t\texecute player command \"/server pvp\" #'on skript load' event doesn't have a 'player', but it will recognize it as it does have.",
 		"\t\tmake gui slot 4 with grass named \"SkyBlock\":",
 		"\t\t\texecute player command \"/server skyblock\"",
 		" ",

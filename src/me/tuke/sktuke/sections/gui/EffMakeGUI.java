@@ -47,7 +47,7 @@ public class EffMakeGUI extends EffectSection {
 		if (checkIfCondition()) {
 			return false;
 		}
-		if (EffCreateGUI.lastInstance == null) {
+		if (getCurrentSection(EffCreateGUI.class) == null) {
 			Skript.error("You can't make a gui outside of 'create/edit gui' effect.");
 			return false;
 		}
@@ -58,19 +58,15 @@ public class EffMakeGUI extends EffectSection {
 		if (arg1 % 2 == 0) {
 			slot = arg[0].getConvertedExpression(Object.class);
 		}
-		currentSection = EffCreateGUI.lastInstance;
 		if (hasSection()) {
-			EffMakeGUI last = lastInstance;
-			lastInstance = this;
 			loadSection("gui effect", InventoryClickEvent.class);
-			lastInstance = last;
 		}
 		return true;
 	}
 
 	@Override
 	public void execute(Event e) {
-		GUIInventory gui = currentSection.gui;
+		GUIInventory gui = GUIHandler.getInstance().getGUIEvent(e);
 		if (gui == null)
 			return;
 		if (type > 1) {

@@ -60,19 +60,16 @@ public class EffFormatGUI extends EffectSection {
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
 		if (checkIfCondition())
 			return false;
-		EffFormatGUI last = lastInstance;
 		if (hasSection()) {
 			if ((arg1 == 0 || arg1 == 5)) {
 				Skript.error("You can't execute a code in this effect. Use 'format gui slot .... to run:' instead.");
 				return false;
 			}
-			lastInstance = this;
 			loadSection("format gui effect", InventoryClickEvent.class);
 		} else if (!hasSection() && arg1 == 2) {
 			Skript.error("You can't execute a blank code in this effect. In case you want to format a unstealable item, use 'format gui slot ... to do nothing' instead.");
 			return false;
 		}
-		lastInstance = last;
 		int max = arg.length;
 		s = (Expression<Number>) arg[0];
 		p = (Expression<Player>) arg[1];

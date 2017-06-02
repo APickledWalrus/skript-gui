@@ -43,10 +43,10 @@ public class ExprGUIShape extends SimpleExpression<String> {
 
 	@Override
 	public boolean init(Expression<?>[] expressions, int i, Kleenean kleenean, SkriptParser.ParseResult parseResult) {
-		if (EffCreateGUI.lastInstance == null) {
-			Skript.info("You can't use '" + parseResult.expr + "' outside of gui create section");
-			return false;
-		}
+		//if (EffCreateGUI.lastInstance == null) {
+		//	Skript.info("You can't use '" + parseResult.expr + "' outside of gui create section");
+		//	return false;
+		//}
 		return true;
 	}
 }

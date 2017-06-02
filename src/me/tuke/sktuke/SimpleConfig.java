@@ -9,7 +9,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class SimpleConfig{
 
-	private Object str = "Whatever";
 	private JavaPlugin pl;
 	private HashMap<String, String> map = new HashMap<>();
 	public SimpleConfig(JavaPlugin plugin){

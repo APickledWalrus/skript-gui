@@ -8,6 +8,8 @@ import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.util.Kleenean;
+import me.tuke.sktuke.manager.gui.v2.GUIHandler;
+import me.tuke.sktuke.manager.gui.v2.GUIInventory;
 import me.tuke.sktuke.util.EffectSection;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
@@ -33,11 +35,13 @@ public class EffOnCloseGUI extends EffectSection {
 		Registry.newEffect(EffOnCloseGUI.class, "run (when|while) clos(e|ing) [[the] gui]");
 	}
 
-	private EffCreateGUI currentSection;
 	@Override
 	public void execute(Event e) {
-		if (hasSection())
-			currentSection.gui.onClose(this::runSection);
+		if (hasSection()) {
+			GUIInventory gui = GUIHandler.getInstance().getGUIEvent(e);
+			if (gui != null)
+				gui.onClose(this::runSection);
+		}
 	}
 
 	@Override
@@ -50,7 +54,7 @@ public class EffOnCloseGUI extends EffectSection {
 		if (checkIfCondition()) {
 			return false;
 		}
-		if (EffCreateGUI.lastInstance == null) {
+		if (getCurrentSection(EffCreateGUI.class) == null) {
 			Skript.error("You can't make a gui close action outside of 'create/edit gui' effect.");
 			return false;
 		}
@@ -58,7 +62,6 @@ public class EffOnCloseGUI extends EffectSection {
 			Skript.error("An empty action can't be executed when the gui is closing.");
 			return false;
 		}
-		currentSection = EffCreateGUI.lastInstance;
 		loadSection("gui close", InventoryCloseEvent.class);
 		return true;
 	}
