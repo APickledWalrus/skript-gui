@@ -8,6 +8,7 @@ import ch.njol.skript.classes.Changer;
 import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.util.InventorySlot;
 import ch.njol.skript.util.Slot;
+import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.manager.gui.v2.GUIHandler;
 import me.tuke.sktuke.sections.gui.EffFormatGUI;
 import me.tuke.sktuke.sections.gui.EffMakeGUI;
@@ -86,7 +87,7 @@ public class ExprGUIValue extends SimpleExpression<Object>{
 
 	@Override
 	public boolean init(Expression<?>[] arg0, int arg1, Kleenean arg2, ParseResult arg3) {
-		if (EffectSection.isCurrentSection(EffMakeGUI.class, EffFormatGUI.class, EffOnCloseGUI.class)) {
+		if (!EffectSection.isCurrentSection(EffMakeGUI.class, EffFormatGUI.class, EffOnCloseGUI.class)) {
 			Skript.error("You can't use '" + arg3.expr + "' outside of a 'make gui', 'format gui slot' or 'run when close' section.");
 			return false;
 		} else if (EffectSection.isCurrentSection(EffFormatGUI.class)) {

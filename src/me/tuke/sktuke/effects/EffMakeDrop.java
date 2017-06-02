@@ -1,8 +1,10 @@
 package me.tuke.sktuke.effects;
 
 import ch.njol.skript.classes.Changer;
+import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.util.Slot;
 import me.tuke.sktuke.util.Registry;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -15,11 +17,14 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.TuSKe;
 
+import java.util.Map;
+
 public class EffMakeDrop extends Effect{
 	static {
 		Registry.newEffect(EffMakeDrop.class, "(make|force) %player% drop[s] %itemstack% [from (%-slot%|his inventory)]");
 	}
 
+	private static final Changer<? super Slot> changeSlot = Classes.getExactClassInfo(Slot.class).getChanger();
 	private Expression<Player> p;
 	private Expression<ItemStack> i;
 	private Expression<Slot> f;
@@ -45,13 +50,15 @@ public class EffMakeDrop extends Effect{
 	protected void execute(Event e) {
 		Player p = this.p.getSingle(e);
 		ItemStack i = this.i.getSingle(e);
+		if (p == null || i == null || i.getType() == Material.AIR)
+			return;
 		if (remove){
-			if (p.getInventory().contains(i)){
-				p.getInventory().removeItem(i);
-			} else
-				return;
+			int before = i.getAmount();
+			p.getInventory().removeItem(i);
+			if (before != i.getAmount())
+				i.setAmount(before - i.getAmount());
 		} else if (f != null) {
-			f.change(e, this.i.getArray(e), Changer.ChangeMode.REMOVE);
+			changeSlot.change(f.getAll(e), new ItemStack[]{i}, Changer.ChangeMode.REMOVE);
 		}
 		TuSKe.getNMS().makeDrop(p, i);
 	}

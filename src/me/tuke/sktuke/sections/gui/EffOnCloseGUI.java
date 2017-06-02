@@ -54,7 +54,7 @@ public class EffOnCloseGUI extends EffectSection {
 		if (checkIfCondition()) {
 			return false;
 		}
-		if (getCurrentSection(EffCreateGUI.class) == null) {
+		if (!isCurrentSection(EffCreateGUI.class)) {
 			Skript.error("You can't make a gui close action outside of 'create/edit gui' effect.");
 			return false;
 		}

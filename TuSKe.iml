@@ -143,5 +143,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Spigot.v1_8_3" level="project" />
+    <orderEntry type="library" name="Landlord" level="project" />
   </component>
 </module>

@@ -9,6 +9,7 @@ import ch.njol.util.Kleenean;
 import me.tuke.sktuke.manager.gui.v2.GUIHandler;
 import me.tuke.sktuke.manager.gui.v2.GUIInventory;
 import me.tuke.sktuke.sections.gui.EffCreateGUI;
+import me.tuke.sktuke.util.EffectSection;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
@@ -46,7 +47,7 @@ public class EffGuiProperties extends Effect {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] arg, int i, Kleenean kleenean, SkriptParser.ParseResult parseResult) {
-		if (EffCreateGUI.lastInstance == null) {
+		if (!EffectSection.isCurrentSection(EffCreateGUI.class)) {
 			Skript.error("You can't change the gui properties outside of 'create/edit gui' effect.");
 			return false;
 		}

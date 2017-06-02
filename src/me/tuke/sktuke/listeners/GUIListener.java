@@ -2,6 +2,7 @@ package me.tuke.sktuke.listeners;
 
 import ch.njol.skript.Skript;
 import me.tuke.sktuke.TuSKe;
+import me.tuke.sktuke.manager.gui.v2.GUIHandler;
 import me.tuke.sktuke.manager.gui.v2.GUIInventory;
 import me.tuke.sktuke.manager.gui.v2.SkriptGUIEvent;
 import me.tuke.sktuke.util.InventoryUtils;
@@ -68,6 +69,8 @@ public class GUIListener {
 				if (e.getViewers().size() == 1) //Only clear when the last one close.
 					Bukkit.getScheduler().runTask(TuSKe.getInstance(), this::stop);
 				if (gui.hasOnClose()){
+
+					GUIHandler.getInstance().setGUIEvent(event, gui);
 					try {
 						gui.getOnClose().accept(e);
 					} catch (Exception ex){

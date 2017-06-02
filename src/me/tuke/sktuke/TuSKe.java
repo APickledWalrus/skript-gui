@@ -342,7 +342,8 @@ public class TuSKe extends JavaPlugin {
 	public static void debug(Object... objects){
 		if (!debug())
 			return;
-		log("[Debug] " + StringUtils.join(objects, " || "));
+		StackTraceElement caller = new Exception().getStackTrace()[1];
+		log(String.format("[Debug] [%s, line %S] %s", caller.getFileName(), caller.getLineNumber(), StringUtils.join(objects, " || ")));
 	}
 	public static NMS getNMS(){		
 		if (nms == null){
