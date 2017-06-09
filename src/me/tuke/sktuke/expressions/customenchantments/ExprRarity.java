@@ -14,7 +14,7 @@ import me.tuke.sktuke.manager.customenchantment.EnchantConfig;
 
 public class ExprRarity extends SimplePropertyExpression<CEnchant, Number>{
 	static {
-		Registry.newProperty(ExprMaxLevel.class, "max level", "customenchantment");
+		Registry.newProperty(ExprRarity.class, "rarity", "customenchantment");
 	}
 
 	@Override
