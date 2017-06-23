@@ -2,9 +2,12 @@ package me.tuke.sktuke.manager.recipe;
 
 import java.util.*;
 
+import ch.njol.skript.Skript;
 import javafx.util.Pair;
 import org.bukkit.Bukkit;
+import org.bukkit.Keyed;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -22,6 +25,9 @@ import me.tuke.sktuke.TuSKe;
 public class RecipeManager implements Listener{
 
 	private Set<Recipe> recipes = new HashSet<>();
+	//Since Bukkit doesn't provide any converter fro NamespacedKey -> Recipe, I made on my own
+	//For 1.12+ only
+	private Map<Object, Recipe> keys = Skript.isRunningMinecraft(1,12) ? new HashMap<>() : null;
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPrepare(PrepareItemCraftEvent e){
@@ -46,6 +52,8 @@ public class RecipeManager implements Listener{
 		} else {
 			Bukkit.addRecipe(rec);
 		}
+		if (keys != null && keys.size() > 0 && rec instanceof Keyed)
+			keys.put(((Keyed) rec).getKey(), rec);
 	}
 
 	/**
@@ -92,23 +100,20 @@ public class RecipeManager implements Listener{
 		Iterator<Recipe> it = Bukkit.recipeIterator();
 		while(it.hasNext()) {
 			Recipe r = it.next();
-			int nulls = 0;
 			for (int x = 0; x < recipes.length; x++) {
-				if (recipes[x] == null) {
-					nulls++;
-					continue;
-				}
 				if (r.getResult().equals(recipes[x].getResult())) {
 					ItemStack[] ingredients = getIngredients(recipes[x]);
 					if (equalsRecipe(r, ingredients) == 1) {
 						removeCustomRecipe(r);
 						it.remove();
 						recipes[x] = null;
+						if (keys != null && r instanceof Keyed) //the keys will be always null in 1.11 and lower
+							keys.remove(((Keyed) r).getKey());
+						if (x == recipes.length)
+							break;
 					}
 				}
 			}
-			if (nulls == recipes.length)
-				return;
 		}
 	}
 	
@@ -131,7 +136,7 @@ public class RecipeManager implements Listener{
 	public int equalsRecipe(Recipe rec, ItemStack[] items){
 		if (rec == null || items == null || items.length == 0)
 			return -1;
-		if (rec instanceof ShapedRecipe){
+		if (rec instanceof ShapedRecipe) {
 			Map<Character, ItemStack> map = rec instanceof CustomShapedRecipe ? ((CustomShapedRecipe) rec).getIngredientsMap() : ((ShapedRecipe) rec).getIngredientMap();
 			int length = ((ShapedRecipe) rec).getShape()[0].length();
 			boolean is2x2 = items.length < 9;
@@ -268,5 +273,40 @@ public class RecipeManager implements Listener{
 	public void clearRecipes(){
 		HandlerList.unregisterAll(this);
 		recipes.clear();
+		if (keys != null)
+			keys.clear();
+	}
+	public CustomShapedRecipe newShapedRecipe(ItemStack result, ItemStack[] items, String... shapes) {
+		if (keys == null) // null = 1.11 and lower
+			return new CustomShapedRecipe(result, items, UUID.randomUUID().toString(), shapes);
+		else
+			return new CustomShapedRecipe(result, items, shapes);
+	}
+	public CustomShapelessRecipe newShapelessRecipe(ItemStack result, ItemStack[] items) {
+		if (keys == null) // null = 1.11 and lower
+			return new CustomShapelessRecipe(result, items, UUID.randomUUID().toString());
+		else
+			return new CustomShapelessRecipe(result, items);
+	}
+	public Recipe getRecipeFromKey(Object key) {
+		if (keys != null && key != null) {
+			Recipe result = keys.get(key);
+			if (result == null) { // Only happens in first usage or when a new recipe was registered by another plugin
+				//So let's update that list
+				Iterator<Recipe> recipes = Bukkit.recipeIterator();
+				keys.clear();
+				while (recipes.hasNext()) {
+					Recipe r = recipes.next();
+					if (r instanceof Keyed) {
+						keys.put(((Keyed) r).getKey(), r);
+						// while we are updating, let's save time and check the recipe
+						if (((Keyed) r).getKey().equals(key))
+							result = r;
+					}
+				}
+			}
+			return result;
+		}
+		return null;
 	}
 }

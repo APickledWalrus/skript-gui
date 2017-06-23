@@ -1,5 +1,6 @@
 package me.tuke.sktuke.effects;
 
+import me.tuke.sktuke.manager.recipe.RecipeManager;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -12,8 +13,6 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.manager.recipe.CustomFurnaceRecipe;
-import me.tuke.sktuke.manager.recipe.CustomShapedRecipe;
-import me.tuke.sktuke.manager.recipe.CustomShapelessRecipe;
 
 public class EffRegisterRecipe extends Effect{
 	static {
@@ -60,18 +59,19 @@ public class EffRegisterRecipe extends Effect{
 			for (ItemStack item : ingredients)
 				if (item == null)
 					return;
+			RecipeManager rm = TuSKe.getRecipeManager();
 			switch (type){
-			case 0:
-				String[] shapes = shape != null && shape.getArray(e).length <= 3 ? shape.getArray(e) : new String[]{"abc", "def", "ghi"};
-				TuSKe.getRecipeManager().registerRecipe(new CustomShapedRecipe(result.getSingle(e), ingredients, shapes), isCustom);
-				break;
-			case 1:
-				TuSKe.getRecipeManager().registerRecipe(new CustomShapelessRecipe(result.getSingle(e), ingredients), isCustom);
-				break;
-			case 2:
-				float n = exp != null && exp.getSingle(e).floatValue() > 0 ? exp.getSingle(e).floatValue() : 0F;
-				TuSKe.getRecipeManager().registerRecipe(new CustomFurnaceRecipe(result.getSingle(e), ingredients[0], n), isCustom);
-				break;
+				case 0:
+					String[] shapes = shape != null && shape.getArray(e).length <= 3 ? shape.getArray(e) : new String[]{"abc", "def", "ghi"};
+					rm.registerRecipe(rm.newShapedRecipe(result.getSingle(e), ingredients, shapes), isCustom);
+					break;
+				case 1:
+					rm.registerRecipe(rm.newShapelessRecipe(result.getSingle(e), ingredients), isCustom);
+					break;
+				case 2:
+					float n = exp != null && exp.getSingle(e).floatValue() > 0 ? exp.getSingle(e).floatValue() : 0F;
+					rm.registerRecipe(new CustomFurnaceRecipe(result.getSingle(e), ingredients[0], n), isCustom);
+					break;
 			}
 		}
 		

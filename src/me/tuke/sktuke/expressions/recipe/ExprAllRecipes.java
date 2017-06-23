@@ -81,7 +81,7 @@ public class ExprAllRecipes extends SimpleExpression<Recipe>{
 			 rec = Lists.newArrayList(Bukkit.recipeIterator());
 		} else {
 			final Iterator<Recipe> it = Bukkit.recipeIterator();
-			rec = new ArrayList<Recipe>();
+			rec = new ArrayList<>();
 			while (it.hasNext()){
 				Recipe r = it.next();
 				if ((type == 1 && r instanceof ShapedRecipe) || (type == 2 && r instanceof ShapelessRecipe) || (type == 3 && r instanceof FurnaceRecipe)){

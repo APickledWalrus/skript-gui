@@ -1,6 +1,8 @@
 package me.tuke.sktuke.expressions.recipe;
 
 import me.tuke.sktuke.util.Registry;
+import org.bukkit.Keyed;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -48,11 +50,12 @@ public class ExprItemsOfRecipe extends SimpleExpression<ItemStack>{
 	protected ItemStack[] get(Event e) {
 		Recipe r = recipe.getSingle(e);
 		if (r != null){
+			if (r instanceof Keyed)
+				TuSKe.debug(((Keyed) r).getKey().getKey(), ((Keyed) r).getKey().getNamespace());
 			RecipeManager rm = TuSKe.getRecipeManager();
 			Recipe r2 = rm.getIfContainsCustomRecipe(r.getResult(), rm.getIngredients(r));
 			if (r2 != null)
 				r = r2;
-			TuSKe.debug("is Shaped? " + (r instanceof ShapedRecipe));
 			return r instanceof ShapedRecipe ? rm.getShapedIngredients((ShapedRecipe) r) : rm.fixIngredients(rm.getIngredients(r));
 		}
 		return null;

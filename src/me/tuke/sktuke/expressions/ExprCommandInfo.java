@@ -94,7 +94,7 @@ public class ExprCommandInfo extends SimpleExpression<String>{
 								return new String[]{"Bukkit"};
 							if (c.getClass().getPackage().getName().startsWith("org.spigot")) //a spigot command
 								return new String[]{"Spigot"};
-							if (c instanceof VanillaCommand) //Deprecated "/
+							if (c.getPermission().startsWith("minecraft"))
 								return new String[]{"Minecraft"};
 							//TODO Check for other jars if they have some extra commands.
 							break;
