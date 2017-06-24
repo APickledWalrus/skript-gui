@@ -12,6 +12,7 @@ import me.tuke.sktuke.manager.gui.v2.GUIHandler;
 import me.tuke.sktuke.manager.gui.v2.GUIInventory;
 import me.tuke.sktuke.util.EffectSection;
 import me.tuke.sktuke.util.Registry;
+import me.tuke.sktuke.util.VariableUtil;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
@@ -39,8 +40,14 @@ public class EffOnCloseGUI extends EffectSection {
 	public void execute(Event e) {
 		if (hasSection()) {
 			GUIInventory gui = GUIHandler.getInstance().getGUIEvent(e);
-			if (gui != null)
-				gui.onClose(this::runSection);
+			if (gui != null) {
+				VariableUtil var = VariableUtil.getInstance();
+				Object vars = var.copyVariables(e);
+				gui.onClose(event -> {
+					var.pasteVariables(event, vars);
+					runSection(event);
+				});
+			}
 		}
 	}
 
