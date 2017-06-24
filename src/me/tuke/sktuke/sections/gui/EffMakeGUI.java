@@ -59,7 +59,7 @@ public class EffMakeGUI extends EffectSection {
 			slot = arg[0].getConvertedExpression(Object.class);
 		}
 		if (hasSection()) {
-			loadSection("gui effect", InventoryClickEvent.class);
+			loadSection("gui effect", false, InventoryClickEvent.class);
 		}
 		return true;
 	}

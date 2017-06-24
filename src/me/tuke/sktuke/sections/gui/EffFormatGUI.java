@@ -65,7 +65,7 @@ public class EffFormatGUI extends EffectSection {
 				Skript.error("You can't execute a code in this effect. Use 'format gui slot .... to run:' instead.");
 				return false;
 			}
-			loadSection("format gui effect", InventoryClickEvent.class);
+			loadSection("format gui effect", false, InventoryClickEvent.class);
 		} else if (!hasSection() && arg1 == 2) {
 			Skript.error("You can't execute a blank code in this effect. In case you want to format a unstealable item, use 'format gui slot ... to do nothing' instead.");
 			return false;

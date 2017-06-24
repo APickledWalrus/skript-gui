@@ -9,7 +9,6 @@ import ch.njol.skript.config.SimpleNode;
 import ch.njol.skript.doc.NoDoc;
 import ch.njol.skript.lang.*;
 import ch.njol.util.Kleenean;
-import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.effects.EffEvaluate;
 import me.tuke.sktuke.util.EffectSection;
 import me.tuke.sktuke.util.Registry;

@@ -61,8 +61,9 @@ public abstract class EffectSection extends Condition {
 
 	/**
 	 * It will load the section of this if any. It must be used before {@link #runSection(Event)}.
+	 * @param setNext - Set the next trigger of this loading section, to actual next of this effect.
 	 */
-	public void loadSection(){
+	public void loadSection(boolean setNext){
 		if (section != null) {
 			RetainingLogHandler errors = SkriptLogger.startRetainingLog();
 			EffectSection previous = map.put(getClass(), this);
@@ -79,6 +80,8 @@ public abstract class EffectSection extends Condition {
 						return walk(event, true);
 					}
 				};
+				if (setNext)
+					trigger.setNext(getNext());
 			} finally {
 				stopLog(errors);
 			}
@@ -95,15 +98,16 @@ public abstract class EffectSection extends Condition {
 	 * Useful to load a code from event X and parse as Y, allowing to use syntaxes that work on it.
 	 *
 	 * @param name - The name of event (It can be anything)
+	 * @param setNext - Set the next trigger of this loading section, to actual next of this effect.
 	 * @param events - The classes that extends {@link Event}.
 	 */
-	public void loadSection(String name, Class<? extends Event>... events){
+	public void loadSection(String name, boolean setNext, Class<? extends Event>... events){
 		if (section != null && name != null && events != null && events.length > 0) {
 			String previousName = ScriptLoader.getCurrentEventName();
 			Class<? extends Event>[] previousEvents = ScriptLoader.getCurrentEvents();
 			Kleenean previousDelay = ScriptLoader.hasDelayBefore;
 			ScriptLoader.setCurrentEvent(name, events);
-			loadSection();
+			loadSection(setNext);
 			ScriptLoader.setCurrentEvent(previousName, previousEvents);
 			ScriptLoader.hasDelayBefore = previousDelay;
 		}
@@ -119,7 +123,7 @@ public abstract class EffectSection extends Condition {
 
 	/**
 	 * Run the section.
-	 * <b>Note</b>: You must {@link #loadSection()} first and you should run it with same
+	 * <b>Note</b>: You must {@link #loadSection(boolean)} first and you should run it with same
 	 * event from {@link #execute(Event)}
 	 * @param e - The event
 	 */
@@ -155,7 +159,7 @@ public abstract class EffectSection extends Condition {
 
 	/**
 	 * The section node of {@link EffectSection}.
-	 * It can return null if it was used after {@link #loadSection()} or
+	 * It can return null if it was used after {@link #loadSection(boolean)} or
 	 * if this doesn't have any section.
 	 * @return The SectionNode
 	 */

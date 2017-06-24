@@ -94,7 +94,7 @@ public class EffCreateGUI extends EffectSection {
 			inv = (Expression<Inventory>) arg[1];
 			str = (Expression<String>) arg[2];
 		}
-		loadSection();
+		loadSection(true);
 		return true;
 	}
 }

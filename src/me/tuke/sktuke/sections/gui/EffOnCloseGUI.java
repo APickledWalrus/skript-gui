@@ -69,7 +69,7 @@ public class EffOnCloseGUI extends EffectSection {
 			Skript.error("An empty action can't be executed when the gui is closing.");
 			return false;
 		}
-		loadSection("gui close", InventoryCloseEvent.class);
+		loadSection("gui close", false, InventoryCloseEvent.class);
 		return true;
 	}
 }
