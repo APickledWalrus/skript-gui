@@ -230,8 +230,9 @@ public class RecipeManager implements Listener{
 	}
 	public ItemStack[] getShapedIngredients(ShapedRecipe sr) {
 		Map<Character, ItemStack> map = sr.getIngredientMap();
+		ItemStack[] items;
 		if (map.size() < 9) {
-			ItemStack[] items = new ItemStack[9];
+			items = new ItemStack[9];
 			String[] shape = sr.getShape();
 			int x = 0;
 			for (String str : shape) {
@@ -240,9 +241,9 @@ public class RecipeManager implements Listener{
 				}
 				x += 3 - str.length();
 			}
-			return fixIngredients(items);
 		} else
-			return map.values().toArray(new ItemStack[map.size()]);
+			items = map.values().toArray(new ItemStack[map.size()]);
+		return fixIngredients(items);
 	}
 	public ItemStack[] fixIngredients(ItemStack[] items){
 		for (int x = 0; x < items.length; x++) {
@@ -253,10 +254,9 @@ public class RecipeManager implements Listener{
 	}
 	private ItemStack fixItem(ItemStack item) {
 		if (item == null)
-			return new ItemStack(Material.AIR, 0);
-		if (item.getDurability() == (short) 32767){
+			return new ItemStack(Material.AIR);
+		if (item.getDurability() == (short) 32767)
 			item.setDurability((short)0);
-		}
 		if (item.getAmount() <= 0)
 			item.setAmount(1);
 		return item;
