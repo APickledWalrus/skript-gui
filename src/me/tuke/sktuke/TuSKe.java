@@ -14,6 +14,7 @@ import me.tuke.sktuke.hooks.landlord.LandlordRegister;
 import me.tuke.sktuke.hooks.legendchat.LegendchatRegister;
 import me.tuke.sktuke.hooks.marriage.MarriageRegister;
 import me.tuke.sktuke.hooks.simpleclans.SimpleClansRegister;
+import me.tuke.sktuke.util.Evaluate;
 import me.tuke.sktuke.util.Registry;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -307,11 +308,10 @@ public class TuSKe extends JavaPlugin {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		sc.save(f);		
+		Evaluate.getInstance().parseConfig(getConfig());
+		new Thread(() ->sc.save(f)).start();
 	}
 	private void sendDownloadRaw(CommandSender s){
-
-		//String jsonString = json.toString().replaceAll("(?i)(?:§|&)()","\\u00a7");
 		if (s instanceof Player)
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw "+ s.getName() +" [{\"text\":\"\\u00a73Click \"},{\"text\":\"\\u00a7chere\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"\\u00a73Link to\n\\u00a77Git\u00a78Hub\"},\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://"+updater.getDownloadURL()+"\"}},{\"text\":\" \\u00a73to \\u00a73see \\u00a73what's \\u00a73new, \\u00a73click \"}, {\"text\":\"\\u00a7chere\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"\\u00a73Link to download\"},\"clickEvent\":{\"action\":\"open_url\",\"value\":\""+updater.getDownloadURL()+"\"}},{\"text\":\" \\u00a73to \\u00a73download \\u00a73or \\u00a73use \\u00a73the \\u00a73command \"},{\"text\":\"\\u00a7c/tuske \\u00a7cupdate \\u00a7cdownload\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"/tuske update download\"}},{\"text\":\" \\u00a73to \\u00a73download \\u00a73directly \\u00a73to \\u00a73TuSKe's \\u00a73folder. \\u00a73And \\u00a73you \\u00a73can \\u00a73use \"},{\"text\":\"\\u00a7c/tuske \\u00a7cupdate \\u00a7cplugin\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"/tuske update plugin\"}}]");
 	}

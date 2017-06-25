@@ -2,6 +2,7 @@ package me.tuke.sktuke;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -72,6 +73,14 @@ public class SimpleConfig{
 				"#for all addons");
 		setDefault("documentation.enabled", true,
 			"#Should documentation be generated?");
+		setDefault("evaluate_filter",
+				new String[]{"op %player%", "stop server"},
+				"#Filter some effects/conditions/expressions from being used in evaluate effects.",
+				"#First, go to /TuSKe/documentation and get every syntax you don't want to be used in",
+				"#eval effect. Reload the config with /tuske reload config.",
+				"#Note: You need include with safety in your evaluate effect. Ex",
+				"#\tevaluate with safety: stop server",
+				"#Note 2: If you have SkQuery, you might need to disallow its evaluate effect as well.");
 		
 		//replace the config with the old values.
 		String str = "use-metrics";
@@ -81,20 +90,19 @@ public class SimpleConfig{
 		}
 		for (String var : new String[]{"check-for-new-update", "auto-update"}){
 			if (pl.getConfig().isBoolean(var)){
-				pl.getConfig().set("updater." + var.replaceAll("\\-", "_"), pl.getConfig().getBoolean(var));
+				pl.getConfig().set("updater." + var.replaceAll("-", "_"), pl.getConfig().getBoolean(var));
 				pl.getConfig().set(var, null);
 			}
 			
 		}
 	}
 	private boolean setDefault(String path, Object value, String... comments){
-		if (!map.containsKey(path) ){
-			if (comments.length > 0)
-				addComentsAbove(path, comments);
-			if (!pl.getConfig().isSet(path)){
-				pl.getConfig().set(path, value);
-				return true;
-			}
+		if (comments.length > 0)
+			addComentsAbove(path, comments);
+		Object obj = pl.getConfig().get(path);
+		if (obj == null || (!obj.getClass().equals(value.getClass()) && !value.getClass().isArray())) {
+			pl.getConfig().set(path, value);
+			return true;
 		}
 		return false;
 		
@@ -108,9 +116,11 @@ public class SimpleConfig{
 		return false;
 	}
 	public void save(File file){
-		try {			
-			BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+		try {
 			String str = saveToString();
+			if (str == null)
+				return;
+			BufferedWriter bw = new BufferedWriter(new FileWriter(file));
 			bw.write(str);
 			bw.flush();
 			bw.close();
@@ -119,10 +129,13 @@ public class SimpleConfig{
 		}
 	}
 	private String saveToString(){
+		if (map.size() == 0)
+			return null;
 		String toFile = pl.getConfig().saveToString();
-		for (String key : map.keySet()){
+		for (Map.Entry<String, String> entry : map.entrySet()){
+			String key = entry.getKey();
+			String comment = entry.getValue();
 			int last = key.split("\\.").length -1;
-			String comment = map.get(key);
 			String space = "";//updater:(.+)update:
 			for (int x = 0; x < last; x++){
 				space = space + "  ";

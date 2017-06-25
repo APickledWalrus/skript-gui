@@ -2,6 +2,8 @@ package me.tuke.sktuke.sections;
 
 import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
+import ch.njol.skript.command.Argument;
+import ch.njol.skript.command.Commands;
 import ch.njol.skript.config.Config;
 import ch.njol.skript.config.Node;
 import ch.njol.skript.config.SectionNode;
@@ -11,9 +13,11 @@ import ch.njol.skript.lang.*;
 import ch.njol.util.Kleenean;
 import me.tuke.sktuke.effects.EffEvaluate;
 import me.tuke.sktuke.util.EffectSection;
+import me.tuke.sktuke.util.Evaluate;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
+import java.util.List;
 import java.util.StringJoiner;
 
 /**
@@ -23,11 +27,13 @@ import java.util.StringJoiner;
 @NoDoc
 public class EffEvaluateSection extends EffectSection{
 	static {
-		Registry.newEffect(EffEvaluateSection.class, "evaluate [logging [[the] error[s]] in %-objects%]");
+		Registry.newEffect(EffEvaluateSection.class, "eval[uate] [logging [[the] error[s]] in %-objects%] [with safety]");
 	}
 
 	private Config currentScript;
+	private List<Argument<?>> args;
 	private Variable<?> result;
+	private boolean withSafety = false;
 
 	@Override
 	public void execute(Event e) {
@@ -35,7 +41,7 @@ public class EffEvaluateSection extends EffectSection{
 			StringJoiner sj = new StringJoiner("\n");
 			readSectionNode(sj, "", getSectionNode());
 			if (sj.length() > 0) {
-				EffEvaluate.evaluate(sj.toString(), e, result, true, currentScript);
+				Evaluate.getInstance().evaluate(sj.toString(), e, result, true, currentScript, args, this, withSafety);
 			}
 		}
 	}
@@ -63,6 +69,8 @@ public class EffEvaluateSection extends EffectSection{
 				return false;
 			}
 		}
+		args = Commands.currentArguments;
+		withSafety = parseResult.expr.contains("with safety");
 		currentScript = ScriptLoader.currentScript;
 		return true;
 	}

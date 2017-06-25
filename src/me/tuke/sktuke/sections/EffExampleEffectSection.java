@@ -41,12 +41,12 @@ public class EffExampleEffectSection extends EffectSection {
 		}
 
 		//In case there isn't any section, it won't load them
-		loadSection();
+		loadSection(true);
 
 		//In case you want to parse a section with different event
 		//(For example, to parse the section in event X but execute it in event Y)
 		//You can use this instead of method above
-		loadSection("A event name", Event.class); //Use the event class that you want
+		loadSection("A event name", false, Event.class); //Use the event class that you want
 
 		//If you don't want to parse the section with Skript, you can get the SectionNode
 		//And parse the raw text at your own way.

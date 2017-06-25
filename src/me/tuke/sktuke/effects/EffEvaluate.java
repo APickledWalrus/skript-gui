@@ -2,6 +2,8 @@ package me.tuke.sktuke.effects;
 
 import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
+import ch.njol.skript.command.Argument;
+import ch.njol.skript.command.Commands;
 import ch.njol.skript.config.Config;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
@@ -14,11 +16,13 @@ import ch.njol.skript.variables.Variables;
 import ch.njol.util.Kleenean;
 import ch.njol.util.StringUtils;
 import me.tuke.sktuke.TuSKe;
+import me.tuke.sktuke.util.Evaluate;
 import me.tuke.sktuke.util.ReflectionUtils;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * @author Tuke_Nuke on 16/04/2017
@@ -30,7 +34,9 @@ import java.io.File;
 		"It can evaluate a long amount of code and see them easily instead of beeing in one line. " +
 		"\n" +
 		"For example, you can run a effect from a string, from a piece of code (without beeing quoted) or " +
-		"the entiry section of code.")
+		"the entiry section of code." +
+		"\n" +
+		"Starting from 1.8, you can disallow some syntaxes when evaluating. Read more about it at config file (`TuSKe/config.yml`).")
 @Examples({
 		"set {_effect} to \"send\"",
 		"evaluate:",
@@ -54,20 +60,22 @@ import java.io.File;
 		"<Error message>: <wrong expression> (TuSKe/evaluate.sk, line <line of code>, '<whole line>')",
 		"'TuSKe/evaluate.sk' is a fictitious file, it doesn't exist."
 })
-@Since("1.7.5")
+@Since("1.7.5, 1.8 (filtering syntaxes)")
 public class EffEvaluate extends Effect{
 	static {
-		Registry.newEffect(EffEvaluate.class, "evaluate[ logging [[the] error[s]] in %-objects%]: (%-strings%|<.+?>)");
+		Registry.newEffect(EffEvaluate.class, "eval[uate][ logging [[the] error[s]] in %-objects%][ with safety]: (%-strings%|<.+?>)");
 	}
 
 	private Config currentScript;
+	private List<Argument<?>> args;
 	private Variable results;
 	private Expression<String> varStr;
 	private String str;
+	private boolean withSafety = false;
 	@Override
 	protected void execute(Event event) {
 		String code = str != null ? str : StringUtils.join(varStr.getArray(event), "\n");
-		evaluate(code, event, results, str != null, currentScript);
+		Evaluate.getInstance().evaluate(code, event, results, str != null, currentScript, args, this, withSafety);
 	}
 
 	@Override
@@ -90,62 +98,9 @@ public class EffEvaluate extends Effect{
 			str = parseResult.regexes.get(0).group(0);
 		else
 			varStr = (Expression<String>) expr[1];
+		withSafety = parseResult.expr.contains("with safety:");
+		args = Commands.currentArguments;
 		currentScript = ScriptLoader.currentScript;
 		return true;
-	}
-	public static void evaluate(String code, Event e, Variable results, boolean parseString, Config currentScript) {
-		if (code != null && !code.isEmpty()) {
-			final RetainingLogHandler log = SkriptLogger.startRetainingLog();
-			try {
-				if (parseString) {
-					ScriptLoader.currentScript = currentScript;
-					VariableString vs = VariableString.newInstance(code.replaceAll("\"", "\"\""));
-					if (vs != null)
-						code = vs.getSingle(e);
-				}
-				code = code
-						.replaceAll("\\\\n", "\n")
-						.replaceAll("\\\\t", "\t")
-						;
-				Config c = new Config(code, "TuSKe/evaluate.sk", true, false, ":");
-				// Using reflection here to not need to write the code to the file to evaluate
-				// but also not let a null instance of file there.
-				// Not needed to create the file, so far Skript do not use it to read.
-				ReflectionUtils.setField(c.getClass(), c, "file", new File("TuSKe/evaluate.sk"));
-				// Setting the current 'script'.
-				ScriptLoader.currentScript = c;
-				ScriptLoader.setCurrentEvent("evaluate effect", e.getClass());
-				TriggerSection ts = new TriggerSection(c.getMainNode()) {
-					@Override
-					protected TriggerItem walk(Event event) {
-						return walk(event, true);
-					}
-
-					@Override
-					public String toString(Event event, boolean b) {
-						return "evaluate effect";
-					}
-				};
-				ScriptLoader.deleteCurrentEvent();
-				ScriptLoader.currentScript = null;
-				setVariable(log, e, results);
-				TriggerItem.walk(ts, e);
-
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			} finally {
-				log.stop();
-			}
-		}
-	}
-	public static void setVariable(RetainingLogHandler log, Event e, Variable results) {
-		if (results != null) {
-			int x = 1;
-			String name = ((VariableString) ReflectionUtils.getField(Variable.class, results, "name")).getSingle(e).toLowerCase();
-			String varName = name.substring(0, name.length() - 1); // Removes the "*" from a list var.
-			for (LogEntry lg : log.getErrors()) {
-				Variables.setVariable(varName + x++, lg.getMessage(), e, results.isLocal());
-			}
-		}
 	}
 }

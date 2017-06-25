@@ -25,25 +25,28 @@ public abstract class EffectSection extends Condition {
 	private SectionNode section = null;
 	private TriggerSection trigger = null;
 	private boolean hasIfOrElseIf = false;
+	private boolean executeNext = true;
 	private static HashMap<Class<? extends EffectSection>, EffectSection> map = new HashMap<>();
 
 	public EffectSection(){
+		if (this instanceof LazyEffectSection) //This one doesn't parse its section separated from Skript one.
+			return;
 		Node n = SkriptLogger.getNode(); //Skript sets the node before parsing this 'effect'
-		if (n!= null && n instanceof SectionNode) { //Check in case it wasn't loaded as inline condition
-			//True if it was used as condition
-			hasIfOrElseIf = StringUtils.startsWithIgnoreCase(n.getKey(), "if ") || StringUtils.startsWithIgnoreCase(n.getKey(), "else if ");
-			//The comment value of a note is protected, so it is needed but not really necessary tho.
-			//It doesn't make difference, it's just to make a exactly copy.
-			String comment = ReflectionUtils.getField(Node.class, n, "comment");
-			if (comment == null)
-				comment = "";
-			//Creating a copy of current node.
-			section = new SectionNode(n.getKey(), comment, n.getParent(), n.getLine());
-			//It will copy the "ArrayList<Node> nodes" field too as it is protected.
-			ReflectionUtils.setField(SectionNode.class, section, "nodes", ReflectionUtils.getField(SectionNode.class, n, "nodes"));
-			//Then it will clear the nodes from the current node, so Skript won't parse it (you need to parse then later).
-			ReflectionUtils.setField(SectionNode.class, n, "nodes", new ArrayList<Node>());
-		}
+		if (n == null || !(n instanceof SectionNode)) //Check in case it wasn't loaded as inline condition
+			return;
+		//True if it was used as condition
+		hasIfOrElseIf = StringUtils.startsWithIgnoreCase(n.getKey(), "if ") || StringUtils.startsWithIgnoreCase(n.getKey(), "else if ");
+		//The comment value of a note is protected, so it is needed but not really necessary tho.
+		//It doesn't make difference, it's just to make a exactly copy.
+		String comment = ReflectionUtils.getField(Node.class, n, "comment");
+		if (comment == null)
+			comment = "";
+		//Creating a copy of current node.
+		section = new SectionNode(n.getKey(), comment, n.getParent(), n.getLine());
+		//It will copy the "ArrayList<Node> nodes" field too as it is protected.
+		ReflectionUtils.setField(SectionNode.class, section, "nodes", ReflectionUtils.getField(SectionNode.class, n, "nodes"));
+		//Then it will clear the nodes from the current node, so Skript won't parse it (you need to parse then later).
+		ReflectionUtils.setField(SectionNode.class, n, "nodes", new ArrayList<Node>());
 	}
 	/**
 	 * It is to replicate {@link ch.njol.skript.lang.Effect#execute(Event)}
@@ -53,6 +56,8 @@ public abstract class EffectSection extends Condition {
 	@Override
 	public boolean check(Event e){
 		execute(e);
+		if (executeNext && trigger != null)
+			setNext(trigger.getNext());
 		//It needs to return false to not enter inside the section
 		//And return true in case it is inline condition, so the code
 		//can continue.
@@ -80,8 +85,10 @@ public abstract class EffectSection extends Condition {
 						return walk(event, true);
 					}
 				};
-				if (setNext)
+				if (setNext) {
 					trigger.setNext(getNext());
+					setNext(null);
+				}
 			} finally {
 				stopLog(errors);
 			}
@@ -128,6 +135,7 @@ public abstract class EffectSection extends Condition {
 	 * @param e - The event
 	 */
 	protected void runSection(Event e){
+		executeNext = false;
 		TriggerItem.walk(trigger, e);
 	}
 
