@@ -3,12 +3,15 @@ package me.tuke.sktuke.manager.gui.v2;
 import java.util.*;
 import java.util.function.Consumer;
 
+import ch.njol.skript.Skript;
+import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.listeners.GUIListener;
 import me.tuke.sktuke.util.InventoryUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -200,7 +203,35 @@ public class GUIInventory {
 	}
 	public GUIListener getListener(){
 		if (listener == null)
-			listener = new GUIListener(this);
+			listener = new GUIListener(inv){
+				@Override
+				public void onClick(InventoryClickEvent e, int slot) {
+					Consumer<InventoryClickEvent> run = getSlot(slot);
+					e.setCancelled(run != null || isSlotsLocked());
+					if (run != null && slot == e.getSlot() && inv.equals(InventoryUtils.getClickedInventory(e))) {
+						run.accept(e);
+					}
+				}
+
+				@Override
+				public void onClose(InventoryCloseEvent e) {
+					if (hasOnClose()){
+						GUIHandler.getInstance().setGUIEvent(e, GUIInventory.this);
+						try {
+							getOnClose().accept(e);
+						} catch (Exception ex){
+							if (TuSKe.debug())
+								Skript.exception(ex, "A error occurred while closing a Gui");
+						}
+					}
+				}
+
+				@Override
+				public void onDrag(InventoryDragEvent e, int slot) {
+					if (getSlot(slot) != null)
+						e.setCancelled(true);
+				}
+			};
 		return listener;
 	}
 

@@ -56,15 +56,7 @@ public class Evaluate {
 		}
 	}
 
-	public void evaluate(String code,
-						 Event e,
-						 Variable results,
-						 boolean parseString,
-						 Config currentScript,
-						 List<Argument<?>> args,
-						 TriggerItem source,
-						 boolean runWithSafety) {
-
+	public void evaluate(String code, Event e, Variable results, boolean parseString, Config currentScript, List<Argument<?>> args, TriggerItem source, boolean runWithSafety) {
 		if (code != null && !code.isEmpty()) {
 			final RetainingLogHandler log = SkriptLogger.startRetainingLog();
 			try {
@@ -76,8 +68,8 @@ public class Evaluate {
 						code = vs.getSingle(e);
 				}
 				code = code
-						.replaceAll("(?!.+?\\\")\\\\n(?!.+?\\\")", "\n")
-						.replaceAll("(?!.+?\\\")\\\\t(?!.+?\\\")", "\t")
+						.replaceAll("(?!.+?\")\\\\n(?!.+?\")", "\n")
+						.replaceAll("(?!.+?\")\\\\t(?!.+?\")", "\t")
 				;
 				Config c = new Config(code, "TuSKe/evaluate.sk", true, false, ":");
 				// Using reflection here to not need to write the code to the file to evaluate

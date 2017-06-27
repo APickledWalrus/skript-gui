@@ -2,6 +2,7 @@ package me.tuke.sktuke.manager.gui;
 
 import java.util.HashMap;
 
+import me.tuke.sktuke.listeners.GUIListener;
 import me.tuke.sktuke.listeners.InventoryCheck;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -10,6 +11,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -18,11 +22,9 @@ import me.tuke.sktuke.TuSKe;
 
 public class GUIManager {
 
-	private Listener listener;
 	private TuSKe tuske;
 	public GUIManager(TuSKe tuske) {
 		this.tuske = tuske;
-		listener = new InventoryCheck(tuske, this);
 	}
 	private HashMap<Inventory, HashMap<Integer, GUI[]>> invs = new HashMap<>();
 	
@@ -48,7 +50,7 @@ public class GUIManager {
 		if (invs.containsKey(inv) && (guislot2 = invs.get(inv)).containsKey(slot)){
 			guislot2.get(slot)[getIndex(gui.getClickType())] = gui;
 		} else {
-			registerListener();
+			registerListener(inv);
 			guis2 = new GUI[ClickType.values().length - 2];
 			guis2[getIndex(gui.getClickType())] = gui;
 			guislot2.put(slot, guis2);
@@ -65,13 +67,11 @@ public class GUIManager {
 			invs.put(inv, map);
 		else
 			invs.remove(inv);
-		unregisterListener();
 	}
 	public void removeAll(Inventory inv){
 		for (int slot : invs.get(inv).keySet())
 			inv.setItem(slot, new ItemStack(Material.AIR));
 		invs.remove(inv);
-		unregisterListener();
 		
 	}
 	public void clearAll(){
@@ -114,12 +114,46 @@ public class GUIManager {
 		return index;
 	}
 
-	private void registerListener() {
-		if (invs.size() == 0)
-			Bukkit.getPluginManager().registerEvents(listener, tuske);
-	}
-	private void unregisterListener() {
-		if (invs.size() == 0)
-			HandlerList.unregisterAll(listener);
+	private void registerListener(Inventory inv) {
+		TuSKe.debug("New listener to: " + inv);
+		new GUIListener(inv) {
+			@Override
+			public void onClick(InventoryClickEvent e, int slot) {
+				if (isGUI(inv, slot)){
+					e.setCancelled(true);
+					final GUI gui = getGUI(inv, e.getSlot(), e.getClick());
+					if (gui != null && e.getInventory().getItem(e.getSlot()) != null && gui.runOnlyWith(e.getCursor())){
+						if (gui.toCallEvent()){
+							GUIActionEvent guie = new GUIActionEvent(e);
+							Bukkit.getPluginManager().callEvent(guie);
+							e.setCancelled(!guie.isCancelled());
+						} else if(gui.toClose())
+							Bukkit.getScheduler().scheduleSyncDelayedTask(tuske, () -> {
+								//gm.removeAll(click);
+								if (gui.getInventory() != null)
+									e.getWhoClicked().openInventory(gui.getInventory());
+								else
+									e.getWhoClicked().closeInventory();
+								if (gui.toRun())
+									gui.run(e);
+							}, 0L);
+						else if (gui.toRun())
+							gui.run(e);
+					}
+				}
+			}
+
+			@Override
+			public void onClose(InventoryCloseEvent e) {
+				removeAll(e.getInventory());
+				Bukkit.getScheduler().runTaskLater(tuske, () -> ((Player)e.getPlayer()).updateInventory(), 0L);
+			}
+
+			@Override
+			public void onDrag(InventoryDragEvent e, int slot) {
+				if (isGUI(e.getInventory(), slot))
+					e.setCancelled(true);
+			}
+		}.start();
 	}
 }

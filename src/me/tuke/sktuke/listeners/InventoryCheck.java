@@ -39,31 +39,7 @@ public class InventoryCheck implements Listener{
 				ItemStack i = (e.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) ? e.getCursor() : click.getItem(e.getSlot()) ; 
 				slot = InventoryUtils.getSlotTo(inv, i);
 			}
-			if (gm.isGUI(inv, slot)){
-				e.setCancelled(true);
-				final GUI gui = gm.getGUI(click, e.getSlot(), e.getClick());
-				if (gui != null && e.getInventory().getItem(e.getSlot()) != null && gui.runOnlyWith(e.getCursor())){
-					if (gui.toCallEvent()){
-						GUIActionEvent guie = new GUIActionEvent(e);
-						Bukkit.getPluginManager().callEvent(guie);
-						e.setCancelled(!guie.isCancelled());
-					} else if(gui.toClose())
-						Bukkit.getScheduler().scheduleSyncDelayedTask(instance, new Runnable(){
-	
-							@Override
-							public void run() {
-								//gm.removeAll(click);
-								if (gui.getInventory() != null)
-									e.getWhoClicked().openInventory(gui.getInventory());
-								else
-									e.getWhoClicked().closeInventory();
-								if (gui.toRun())
-									gui.run(e);
-							}}, 0L);
-					else if (gui.toRun())
-						gui.run(e);
-				}
-			}
+
 			
 		}
 	}

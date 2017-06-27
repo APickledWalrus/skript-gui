@@ -16,13 +16,17 @@ import java.util.function.Consumer;
 /**
  * @author Tuke_Nuke on 27/05/2017
  */
-public class GUIListener {
-	private GUIInventory gui;
+public abstract class GUIListener {
+	private Inventory gui;
 	private boolean isStarted = false;
 
-	public GUIListener(GUIInventory gui) {
+	public GUIListener(Inventory gui) {
 		this.gui = gui;
 	}
+
+	public abstract void onClick(InventoryClickEvent e, int slot);
+	public abstract void onClose(InventoryCloseEvent e);
+	public abstract void onDrag(InventoryDragEvent e, int slot);
 
 	public void onEvent(Event event) {
 		if (event instanceof InventoryClickEvent && !((InventoryClickEvent) event).isCancelled()) {
@@ -31,66 +35,51 @@ public class GUIListener {
 				Inventory click = InventoryUtils.getClickedInventory(e);
 				if (click != null) {
 					Inventory op = InventoryUtils.getOpositiveInventory(e.getView(), click);
-					if (op == null || !click.equals(gui.getInventory()) && !op.equals(gui.getInventory()))
+					if (op == null || !click.equals(gui) && !op.equals(gui))
 						return;
 					int slot = e.getSlot();
 					switch (e.getAction()) {
 						case MOVE_TO_OTHER_INVENTORY:
-							if (gui.getInventory().equals(op)) {
+							if (gui.equals(op)) {
 								click = op;
 								slot = InventoryUtils.getSlotTo(op, e.getCurrentItem());
 							}
 							break;
 						case COLLECT_TO_CURSOR:
-							click = gui.getInventory();
+							click = gui;
 							slot = InventoryUtils.getSlotTo(click, e.getCursor());
 							break;
 						case HOTBAR_SWAP:
 						case HOTBAR_MOVE_AND_READD:
-							if (gui.getInventory().getType().equals(InventoryType.PLAYER)) {
+							if (gui.getType().equals(InventoryType.PLAYER)) {
 								slot = e.getHotbarButton();
-								click = gui.getInventory();
+								click = gui;
 							}
 							break;
 
 					}
-					if (click.equals(gui.getInventory())) {
-						Consumer<InventoryClickEvent> run = gui.getSlot(slot);
-						e.setCancelled(run != null || gui.isSlotsLocked());
-						if (run != null && slot == e.getSlot() && click.equals(InventoryUtils.getClickedInventory(e))) {
-							run.accept(e);
-						}
+					if (click.equals(gui)) {
+						onClick(e, slot);
 					}
 				}
 			}
 		} else if (event instanceof InventoryCloseEvent) {
 			InventoryCloseEvent e = (InventoryCloseEvent) event;
-			if (e.getInventory().equals(gui.getInventory())){
-				if (e.getViewers().size() == 1) //Only clear when the last one close.
+			if (e.getInventory().equals(gui)){
+				if (e.getViewers().size() == 1) //Only stop listener when the last one close.
 					Bukkit.getScheduler().runTask(TuSKe.getInstance(), this::stop);
-				if (gui.hasOnClose()){
-
-					GUIHandler.getInstance().setGUIEvent(event, gui);
-					try {
-						gui.getOnClose().accept(e);
-					} catch (Exception ex){
-						if (TuSKe.debug())
-							Skript.exception(ex, "A error occurred while closing a Gui");
-					}
-				}
+				onClose(e);
 				//	gui.clear();
 			}
 
 		} else if (event instanceof InventoryDragEvent) {
-			//event.getRawSlot() < event.getView().getTopInventory().getSize()
-			if (((InventoryDragEvent) event).getInventory().equals(gui.getInventory()))
-				for (Integer slot : ((InventoryDragEvent) event).getRawSlots())
+			if (((InventoryDragEvent) event).getInventory().equals(gui))
+				for (int slot : ((InventoryDragEvent) event).getRawSlots())
 					if (slot < ((InventoryDragEvent) event).getInventory().getSize()) {
 						slot = ((InventoryDragEvent) event).getView().convertSlot(slot);
-						if (gui.getSlot(slot) != null) {
-							((InventoryDragEvent) event).setCancelled(true);
+						onDrag((InventoryDragEvent) event, slot);
+						if (((InventoryDragEvent) event).isCancelled())
 							break;
-						}
 					}
 		}
 	}

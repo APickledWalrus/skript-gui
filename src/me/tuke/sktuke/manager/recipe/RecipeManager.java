@@ -44,7 +44,7 @@ public class RecipeManager implements Listener{
 	}
 	public void registerRecipe(Recipe rec, boolean uniqueIngredients){
 		if (uniqueIngredients && (rec instanceof CustomShapedRecipe || rec instanceof CustomShapelessRecipe || rec instanceof CustomFurnaceRecipe)){
-			if (getIfContainsCustomRecipe(rec.getResult(), getIngredients(rec)) != null || !Bukkit.addRecipe(rec))
+			if (getIfContainsCustomRecipe(rec.getResult(), getIngredients(rec)) != null || !Bukkit.addRecipe(rec) || rec instanceof CustomFurnaceRecipe)
 				return;
 			recipes.add(rec);
 			if (recipes.size() == 1)
