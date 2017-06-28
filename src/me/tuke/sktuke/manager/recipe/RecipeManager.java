@@ -169,22 +169,32 @@ public class RecipeManager implements Listener{
 				}
 			}
 			return map.size() == (int)ch - 'a' ? count : -1;
-		} else if (rec instanceof ShapelessRecipe){ //need to improve this
-			int itemsFound = 0;
+		} else if (rec instanceof ShapelessRecipe) {
 			List<ItemStack> ingredients = ((ShapelessRecipe)rec).getIngredientList();
 			int count = 1;
-			label1: for (ItemStack item1 : ingredients)
-				for (ItemStack item2 : items)
-					if (!isAir(item1) && !isAir(item2)) {
-						int y = areEqual(item1, item2);
-						if (y < count)
-							count = 0;
-						if (y >= 0) {
-							itemsFound++;
-							break label1;
+			for (ItemStack item1 : ingredients) {
+				int match = -1;
+				int y = -1;
+				for (int x = 0; x < items.length; x++) {
+					if (isAir(items[x]))
+						continue;
+					y = areEqual(item1, items[x]);
+					if (y >= 0) {
+						match = x;
+						if (y == 1) {
+							break;
 						}
 					}
-			return itemsFound == ingredients.size() ? count : -1;
+				}
+				if (match >= 0) {
+					items[match] = null; //Already found this item, so removing from the list.
+					if (y < count)
+						count = y;
+					break;
+				}
+				return -1; //If reach here it means it didn't find a matching ingredient
+			}
+			return count;
 		}
 		return -1;
 	}
