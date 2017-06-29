@@ -73,14 +73,20 @@ public class SimpleConfig{
 				"#for all addons");
 		setDefault("documentation.enabled", true,
 			"#Should documentation be generated?");
-		setDefault("evaluate_filter",
-				new String[]{"op %player%", "stop server"},
+		addComentsAbove("evaluate_filter",
 				"#Filter some effects/conditions/expressions from being used in evaluate effects.",
-				"#First, go to /TuSKe/documentation and get every syntax you don't want to be used in",
-				"#eval effect. Reload the config with /tuske reload config.",
-				"#Note: You need include with safety in your evaluate effect. Ex",
-				"#\tevaluate with safety: stop server",
-				"#Note 2: If you have SkQuery, you might need to disallow its evaluate effect as well.");
+				"#First, go to '/TuSKe/documentation' and get every syntax you don't want to be used in",
+				"#eval effect. Add them in list below and reload the config with '/tuske reload config'.",
+				"#Notes:",
+				"#  - You need to include 'with safety' in your evaluate effect. Ex",
+				"#    \tevaluate with safety: stop server",
+				"#  - If you have SkQuery, you might need to disallow its evaluate effect as well.",
+				"#  - The performance may be decreased depending of amount of syntaxes. Use it only for public reasons.");
+		setDefault("evaluate_filter.mode", "blacklist",
+				"#Mode to filter syntaxes: whitelist or blacklist");
+		setDefault("evaluate_filter.syntaxes",
+				new String[]{"op %player%", "stop server"},
+				"#A list of syntaxes to add to whitelist/blacklist");
 		
 		//replace the config with the old values.
 		String str = "use-metrics";

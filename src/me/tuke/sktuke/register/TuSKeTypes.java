@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  */
 public class TuSKeTypes {
 	static {
-		new EnumType(InventoryType.class, "inventorytype", "inventory ?types?", "inventory type")
+		new EnumType(InventoryType.class, "inventorytype", "inventory ?types?")
 				.name("Inventory Type")
 				.description("Represents the type of an inventory. {{effects|MakeGUI|TuSKe}} and {{expressions|BlankInventory|SkQuery}} uses in their expressions.")
 				.examples(

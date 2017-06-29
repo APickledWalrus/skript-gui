@@ -106,7 +106,7 @@ public class Documentation implements Runnable{
 					addonFile.createNewFile();
 				BufferedWriter bf = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(addonFile), "UTF-8"));
 				String toWrite = "";
-				if (entry.getKey().equals("TuSKeTypes"))
+				if (entry.getKey().equals("Types"))
 					toWrite += "#All Skript and Addons types.\n"
 							+ "#Each type has an pattern of how it should\n"
 							+ "#Be used in command arguments or 'parsed as %type%'.\n"

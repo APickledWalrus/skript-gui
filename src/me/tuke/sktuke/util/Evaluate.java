@@ -1,6 +1,7 @@
 package me.tuke.sktuke.util;
 
 import ch.njol.skript.ScriptLoader;
+import ch.njol.skript.classes.Comparator;
 import ch.njol.skript.command.Argument;
 import ch.njol.skript.command.Commands;
 import ch.njol.skript.config.Config;
@@ -23,6 +24,7 @@ import sun.swing.SwingUtilities2;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiPredicate;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
@@ -37,19 +39,22 @@ public class Evaluate {
 	}
 
 	private Pattern[] filterSyntaxes = null;
+	private BiPredicate<Pattern, String> comparator = null;
 	private Evaluate() {
 	}
 
 	public void parseConfig(FileConfiguration config) {
-		List<String> syntaxes = config.getStringList("evaluate_filter");
+		List<String> syntaxes = config.getStringList("evaluate_filter.syntaxes");
 		if (syntaxes == null || syntaxes.size() == 0)
 			return;
+		comparator = config.getString("evaluate_filter.mode").equalsIgnoreCase("whitelist") ?
+				(pattern, s) -> !pattern.matcher(s).find() : (pattern, s) -> pattern.matcher(s).find();
 		filterSyntaxes = new Pattern[syntaxes.size()];
 		int index = 0;
 		for (String str : syntaxes) {
 			str = "(?i).*" + str
 					.replaceAll("%.+?%", ".+?") //replace all %player% with .+? to match everything
-					.replaceAll("\\[(.+?)\\]", "($1)?") //convert skript optional [], to ()?
+					.replaceAll("\\[(.+?)]", "($1)?") //convert skript optional [], to ()?
 					.replaceAll("\\s+", "\\\\s+") +//trims all spaces to \\s+
 					".*"; //This way it can find expressions too
 			filterSyntaxes[index++] = Pattern.compile(str);
@@ -68,8 +73,8 @@ public class Evaluate {
 						code = vs.getSingle(e);
 				}
 				code = code
-						.replaceAll("(?!.+?\")\\\\n(?!.+?\")", "\n")
-						.replaceAll("(?!.+?\")\\\\t(?!.+?\")", "\t")
+						.replaceAll("(?!\".*)\\\\n(?!.*\")", "\n")
+						.replaceAll("(?!\".*)\\\\t(?!.*\")", "\t")
 				;
 				Config c = new Config(code, "TuSKe/evaluate.sk", true, false, ":");
 				// Using reflection here to not need to write the code to the file to evaluate
@@ -82,7 +87,7 @@ public class Evaluate {
 					List<Node> toRemove = new ArrayList<>();
 					for (Node n : node)
 						for (Pattern p : filterSyntaxes)
-							if (p.matcher(n.getKey()).find()) {
+							if (comparator.test(p, n.getKey())) {
 								log.log(new LogEntry(Level.SEVERE,"You don't have permission to use: " + n.toString()));
 								toRemove.add(n);
 							}
@@ -121,7 +126,9 @@ public class Evaluate {
 			int x = 1;
 			String name = ((VariableString) ReflectionUtils.getField(Variable.class, results, "name")).getSingle(e).toLowerCase();
 			String varName = name.substring(0, name.length() - 1); // Removes the "*" from a list var.
+			TuSKe.debug(name, varName);
 			for (LogEntry lg : log.getErrors()) {
+				TuSKe.debug(lg);
 				Variables.setVariable(varName + x++, lg.getMessage(), e, results.isLocal());
 			}
 		}

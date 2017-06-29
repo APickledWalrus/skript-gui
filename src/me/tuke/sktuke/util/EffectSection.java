@@ -22,15 +22,16 @@ import org.bukkit.event.Event;
  * @author Tuke_Nuke on 29/03/2017
  */
 public abstract class EffectSection extends Condition {
-	private SectionNode section = null;
+	protected SectionNode section = null;
 	private TriggerSection trigger = null;
 	private boolean hasIfOrElseIf = false;
 	private boolean executeNext = true;
-	private static HashMap<Class<? extends EffectSection>, EffectSection> map = new HashMap<>();
+	protected static HashMap<Class<? extends EffectSection>, EffectSection> map = new HashMap<>();
 
 	public EffectSection(){
-		if (this instanceof LazyEffectSection) //This one doesn't parse its section separated from Skript one.
+		if (this instanceof LazyEffectSection) //This one doesn't need to load the section separated.
 			return;
+		TuSKe.debug(getClass());
 		Node n = SkriptLogger.getNode(); //Skript sets the node before parsing this 'effect'
 		if (n == null || !(n instanceof SectionNode)) //Check in case it wasn't loaded as inline condition
 			return;

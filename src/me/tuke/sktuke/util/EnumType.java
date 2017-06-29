@@ -2,6 +2,7 @@ package me.tuke.sktuke.util;
 
 import javax.annotation.Nullable;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.classes.ClassInfo;
 import ch.njol.skript.classes.Parser;
 import ch.njol.skript.expressions.base.EventValueExpression;
@@ -17,12 +18,12 @@ import java.util.StringJoiner;
 public class EnumType extends ClassInfo{
 
 	public <T extends Enum<T>> EnumType(final Class<T> c, String code, String regexUser) {
-		this(c, code, regexUser, code);
+		this(c, code, regexUser, null);
 	}
 	public <T extends Enum<T>> EnumType(final Class<T> c, String code, String regexUser, String languageNode) {
 		super(c, code);
-		EnumUtils<T> enumUtils = new EnumUtils<>(c, languageNode);
-		String names = enumUtils.getAllNames();
+		EnumUtils<T> enumUtils = languageNode != null ? new EnumUtils<>(c, languageNode) : null;
+		String names = enumUtils != null ? enumUtils.getAllNames() : null;
 		if (names != null && !names.isEmpty())
 			usage(enumUtils.getAllNames());
 		else
@@ -33,27 +34,31 @@ public class EnumType extends ClassInfo{
 					.defaultExpression(new EventValueExpression<>(c))
 					.parser(parser));
 		} catch (Exception e) {
-			//if (!TuSKe.getInstance().getConfig().isSet("cancel_override_type." + code)) {
-			//	ReflectionUtils.setField(ClassInfo.class, Classes.getExactClassInfo(c), "parser", parser);
-			//} else
+			if (!TuSKe.getInstance().getConfig().isSet("cancel_override_type." + code) && enumUtils != null) {
+				ClassInfo<T> ci = Classes.getExactClassInfo(c);
+				if (ci.getParser() != null && !ci.getParser().getClass().getPackage().getName().startsWith(Skript.class.getPackage().getName()))
+					ReflectionUtils.setField(ClassInfo.class, ci, "parser", parser);
+			} else
 				TuSKe.debug("Couldn't register the type '" + code + "'. Due to: " + (e.getMessage() != null && !e.getMessage().isEmpty() ? e.getMessage() : "unknown"));
 		}
 
 	}
 	private <T extends Enum<T>> Parser<T> getParser(Class<T> c, EnumUtils<T> enumUtils) {
-		if (!TuSKe.getInstance().getConfig().getBoolean("use_only_enum_names")){//It will parse the enum types as '<Enum name>' and ''<Enum type>.<Enum name>'
+		if (!TuSKe.getInstance().getConfig().getBoolean("use_only_enum_names")){//It will parse the enum types as '<Enum name>' and '<Enum type>.<Enum name>'
 			return new Parser<T>() {
 				@Override
 				@Nullable
 				public T parse(String name, ParseContext arg1) {
-					name = fromString(name);
+					name = name.replaceAll("_", " ");
 					if (name.startsWith(c.getSimpleName().toUpperCase() + "."))
 						name = name.split("\\.")[1];
-					T result = enumUtils.parse(name);
+					T result = enumUtils != null ? enumUtils.parse(name) : null;
 					if (result != null)
 						return result;
+					if (enumUtils != null) //If it is using values from language file, so it will return null for values not equal to the file.
+						return null;
 					try {
-						return Enum.valueOf(c, name);
+						return Enum.valueOf(c, fromString(name));
 					} catch(Exception e) {
 
 					}
@@ -80,14 +85,14 @@ public class EnumType extends ClassInfo{
 				@Override
 				@Nullable
 				public T parse(String name, ParseContext arg1) {
-					name = fromString(name);
+					name = name.replaceAll("_", " ");
 					if (name.startsWith(c.getSimpleName().toUpperCase() + ".")) {
 						name = name.split("\\.")[1];
-						T result = enumUtils.parse(name);
+						T result = enumUtils != null ? enumUtils.parse(name) : null;
 						if (result != null)
 							return result;
 						try {
-							return Enum.valueOf(c, name);
+							return Enum.valueOf(c, fromString(name));
 						} catch (Exception e) {
 
 						}
@@ -97,7 +102,7 @@ public class EnumType extends ClassInfo{
 
 				@Override
 				public String toString(T e, int arg1) {
-					return EnumType.toString(e);
+					return e.getDeclaringClass().getSimpleName() + "." + EnumType.toString(e);
 				}
 
 				@Override

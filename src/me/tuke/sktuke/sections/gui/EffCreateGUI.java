@@ -5,13 +5,13 @@ import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
-import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.util.Kleenean;
+import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.manager.gui.v2.GUIHandler;
 import me.tuke.sktuke.manager.gui.v2.GUIInventory;
-import me.tuke.sktuke.util.EffectSection;
+import me.tuke.sktuke.util.LazyEffectSection;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryType;
@@ -35,7 +35,7 @@ import org.bukkit.inventory.Inventory;
 		"\ttrigger:",
 		"\t\topen gui \"LobbySelector\" to player"})
 @Since("1.7.5")
-public class EffCreateGUI extends EffectSection {
+public class EffCreateGUI extends LazyEffectSection {
 	static {
 		Registry.newEffect(EffCreateGUI.class,
 				"create [a] [new] gui [[with id] %-string%] with %inventory% [and shape %-strings%]",
@@ -49,6 +49,7 @@ public class EffCreateGUI extends EffectSection {
 	private Expression<String> str, id;
 	@Override
 	public void execute(Event e) {
+		GUIHandler.getInstance().setGUIEvent(e, null);
 		if (exprGui == null) { //It will create a new one
 			Inventory inv = this.inv.getSingle(e);
 			if (inv != null && inv.getType() != InventoryType.PLAYER && inv.getType() != InventoryType.CRAFTING) {
@@ -61,13 +62,11 @@ public class EffCreateGUI extends EffectSection {
 				if (id != null && !id.isEmpty())
 					GUIHandler.getInstance().setGUI(id, gui);
 				GUIHandler.getInstance().setGUIEvent(e, gui);
-				runSection(e);
 			}
 		} else { //It will edit one
 			GUIInventory gui = exprGui.getSingle(e);
 			if (gui != null) {
 				GUIHandler.getInstance().setGUIEvent(e, gui);
-				runSection(e);
 			}
 		}
 	}
@@ -94,7 +93,6 @@ public class EffCreateGUI extends EffectSection {
 			inv = (Expression<Inventory>) arg[1];
 			str = (Expression<String>) arg[2];
 		}
-		loadSection(true);
 		return true;
 	}
 }

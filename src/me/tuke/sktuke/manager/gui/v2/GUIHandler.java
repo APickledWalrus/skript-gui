@@ -1,14 +1,11 @@
 package me.tuke.sktuke.manager.gui.v2;
 
-import me.tuke.sktuke.TuSKe;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryType;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.WeakHashMap;
 
 /**
@@ -32,9 +29,10 @@ public class GUIHandler {
 		return e != null ? eventGuis.get(e) : null;
 	}
 	public void setGUIEvent(Event e, GUIInventory gui) {
-		if (e != null && gui != null && !eventGuis.containsKey(e)) {
+		if (e != null && gui != null)
 			eventGuis.put(e, gui);
-		}
+		else if (e != null)
+			eventGuis.remove(e);
 	}
 	public GUIInventory getGUI(Player p) {
 		if (p != null) {
