@@ -13,11 +13,11 @@ import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 
 /**
- * Used for LazyEffectSection to know the end of a section
+ * Used for {@link LazyEffectSection} to know the end of a section
  * @author Tuke_Nuke on 28/06/2017
  */
 @NoDoc
-@Name("Internal usage only, please don't be curious")
+@Name("Internal usage only, please don't be curious unless your are @Snow-Pyon")
 public class EffEndSection extends Effect {
 	static {
 		Registry.newEffect(EffEndSection.class, "$ end section");
@@ -35,9 +35,7 @@ public class EffEndSection extends Effect {
 
 	@Override
 	public boolean init(Expression<?>[] expressions, int i, Kleenean kleenean, SkriptParser.ParseResult parseResult) {
-		TuSKe.debug(EffectSection.getCurrentSection(EffCreateGUI.class));
 		LazyEffectSection.removeCurrentSection();
-		TuSKe.debug(EffectSection.getCurrentSection(EffCreateGUI.class));
 		return true;
 	}
 }

@@ -86,7 +86,9 @@ public class SimpleConfig{
 				"#Mode to filter syntaxes: whitelist or blacklist");
 		setDefault("evaluate_filter.syntaxes",
 				new String[]{"op %player%", "stop server"},
-				"#A list of syntaxes to add to whitelist/blacklist");
+				"#A list of syntaxes to add to whitelist/blacklist.",
+				"#Use quotes to properly use the yaml file, example:",
+				"#- \"kill %player%\"");
 		
 		//replace the config with the old values.
 		String str = "use-metrics";

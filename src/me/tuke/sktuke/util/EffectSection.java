@@ -31,7 +31,6 @@ public abstract class EffectSection extends Condition {
 	public EffectSection(){
 		if (this instanceof LazyEffectSection) //This one doesn't need to load the section separated.
 			return;
-		TuSKe.debug(getClass());
 		Node n = SkriptLogger.getNode(); //Skript sets the node before parsing this 'effect'
 		if (n == null || !(n instanceof SectionNode)) //Check in case it wasn't loaded as inline condition
 			return;

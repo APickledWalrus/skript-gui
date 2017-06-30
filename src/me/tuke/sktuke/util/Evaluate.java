@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
@@ -39,7 +40,7 @@ public class Evaluate {
 	}
 
 	private Pattern[] filterSyntaxes = null;
-	private BiPredicate<Pattern, String> comparator = null;
+	private Predicate<String> comparator = null;
 	private Evaluate() {
 	}
 
@@ -48,7 +49,17 @@ public class Evaluate {
 		if (syntaxes == null || syntaxes.size() == 0)
 			return;
 		comparator = config.getString("evaluate_filter.mode").equalsIgnoreCase("whitelist") ?
-				(pattern, s) -> !pattern.matcher(s).find() : (pattern, s) -> pattern.matcher(s).find();
+				s ->{
+					for (Pattern p : filterSyntaxes)
+						if (p.matcher(s).find())
+							return true;
+					return false;
+				} : s -> {
+					for (Pattern p : filterSyntaxes)
+						if (p.matcher(s).find())
+							return false;
+					return true;
+		};
 		filterSyntaxes = new Pattern[syntaxes.size()];
 		int index = 0;
 		for (String str : syntaxes) {
@@ -73,8 +84,8 @@ public class Evaluate {
 						code = vs.getSingle(e);
 				}
 				code = code
-						.replaceAll("(?!\".*)\\\\n(?!.*\")", "\n")
-						.replaceAll("(?!\".*)\\\\t(?!.*\")", "\t")
+						.replaceAll("\\\\n(?=[^\"]*(?:\"[^\"]*\"[^\"]*)*$)", "\n")
+						.replaceAll("\\\\t(?=[^\"]*(?:\"[^\"]*\"[^\"]*)*$)", "\t")
 				;
 				Config c = new Config(code, "TuSKe/evaluate.sk", true, false, ":");
 				// Using reflection here to not need to write the code to the file to evaluate
@@ -85,12 +96,12 @@ public class Evaluate {
 				SectionNode node = c.getMainNode();
 				if (runWithSafety && filterSyntaxes != null) {
 					List<Node> toRemove = new ArrayList<>();
-					for (Node n : node)
-						for (Pattern p : filterSyntaxes)
-							if (comparator.test(p, n.getKey())) {
-								log.log(new LogEntry(Level.SEVERE,"You don't have permission to use: " + n.toString()));
-								toRemove.add(n);
-							}
+					for (Node n : node) {
+						if (comparator.test(n.getKey()))
+							continue;
+						log.log(new LogEntry(Level.SEVERE, "You don't have permission to use: " + n.getKey()));
+						toRemove.add(n);
+					}
 					toRemove.forEach(Node::remove);
 				}
 				ScriptLoader.currentScript = c;
@@ -125,12 +136,9 @@ public class Evaluate {
 		if (results != null) {
 			int x = 1;
 			String name = ((VariableString) ReflectionUtils.getField(Variable.class, results, "name")).getSingle(e).toLowerCase();
-			String varName = name.substring(0, name.length() - 1); // Removes the "*" from a list var.
-			TuSKe.debug(name, varName);
-			for (LogEntry lg : log.getErrors()) {
-				TuSKe.debug(lg);
+			String varName = name.substring(0, name.length() - 1); // Removes the "*" from a list var
+			for (LogEntry lg : log.getErrors())
 				Variables.setVariable(varName + x++, lg.getMessage(), e, results.isLocal());
-			}
 		}
 	}
 
