@@ -92,6 +92,8 @@ public class GitHubUpdater {
 							if ((((JsonObject) release).get("prerelease").getAsBoolean()) && !DOWNLOAD_BETA)
 								continue; //Found a beta release but the option is false
 							UPDATE_VERSION = ((JsonObject) release).get("tag_name").getAsString();
+							if (UPDATE_VERSION.startsWith("v"))
+								UPDATE_VERSION = UPDATE_VERSION.substring(1);
 							UPDATE_TITLE = ((JsonObject) release).get("name").getAsString();
 							UPDATE_URL = ((JsonObject) release).get("html_url").getAsString();
 							JsonArray assets = ((JsonObject) release).get("assets").getAsJsonArray();

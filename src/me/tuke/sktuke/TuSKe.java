@@ -370,7 +370,7 @@ public class TuSKe extends JavaPlugin {
 						log("Downloaded the latest version. The plugin will be updated when the server restarts.");
 					} else{
 						log("New update available: v" + updater.getLatestVersion());
-						log("Check what's new in: " + updater.getDownloadURL());
+						log("Check what's new in: " + updater.getURL());
 						log("You can download and update it with /tuske update.");
 					}
 				} else
