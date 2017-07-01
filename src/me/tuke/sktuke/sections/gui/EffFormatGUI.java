@@ -31,13 +31,13 @@ public class EffFormatGUI extends EffectSection {
 	static {
 		String cr = "string/" + Classes.getExactClassInfo(ClickType.class).getCodeName();
 		Registry.newEffect(EffFormatGUI.class,
-				"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% [to [do] nothing]",
-				"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to (1¦close|2¦open %-inventory%) [(using|with) %-" + cr + "% [(button|click|action)]]",
-				"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to (run|exe[cute]) [(using|with) %-" + cr + "% [(button|click|action)]]",
-				"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to [(1¦close|2¦open %-inventory%) then] (run|exe[cute]) %commandsender% command %string% [(using|with) perm[ission] %-string%][[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
-				"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to [(1¦close|2¦open %-inventory%) then] (run|exe[cute]) function <(.+)>\\([<.*?>]\\)[[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
+				"(format|create|make) [a] gui slot [%-numbers%] of %players% with %itemstack% [to [do] nothing]",
+				"(format|create|make) [a] gui slot [%-numbers%] of %players% with %itemstack% to (1¦close|2¦open %-inventory%) [(using|with) %-" + cr + "% [(button|click|action)]]",
+				"(format|create|make) [a] gui slot [%-numbers%] of %players% with %itemstack% to (run|exe[cute]) [(using|with) %-" + cr + "% [(button|click|action)]]",
+				"(format|create|make) [a] gui slot [%-numbers%] of %players% with %itemstack% to [(1¦close|2¦open %-inventory%) then] (run|exe[cute]) %commandsender% command %string% [(using|with) perm[ission] %-string%][[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
+				"(format|create|make) [a] gui slot [%-numbers%] of %players% with %itemstack% to [(1¦close|2¦open %-inventory%) then] (run|exe[cute]) function <(.+)>\\([<.*?>]\\)[[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
 				//"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to [(1¦close|2¦open %-inventoy%) then] (run|exe[cute]) function <(.+)>\\([%-objects%[, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%]]\\)[[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
-				"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to (run|exe[cute]) [gui [click]] event");
+				"(format|create|make) [a] gui slot [%-numbers%] of %players% with %itemstack% to (run|exe[cute]) [gui [click]] event");
 	}
 
 	public static EffFormatGUI lastInstance = null;
@@ -112,20 +112,20 @@ public class EffFormatGUI extends EffectSection {
 
 	@Override
 	public String toString(@Nullable Event e, boolean arg1) {		
-		return "format a gui slot " +s.toString(e, arg1) + " of " + p.toString(e, arg1) + " with " + i.toString(e, arg1);
+		return "format a gui slot " + (s != null ? s.toString(e, arg1) : -1) + " of " + p.toString(e, arg1) + " with " + i.toString(e, arg1);
 	}
 
 	@Override
 	protected void execute(Event e) {
-		if (this.p.getArray(e) != null && this.s.getArray(e) != null && this.i.getSingle(e) != null){
+		if (this.p.getArray(e) != null && this.i.getSingle(e) != null){
 			Player[] p = this.p.getArray(e);
-			Number[] slots = this.s.getArray(e);
+			Number[] slots = s != null ? s.getArray(e) : new Number[]{-2};
 			for (int x = 0; x < slots.length; x++)
 				for(int y = 0; y < p.length; y++){
 					if (p[y] == null || slots[x] == null)
 						continue;
 					Inventory inv = p[y].getOpenInventory().getTopInventory();
-					if (slots[x].intValue() >= 0 && slots[x].intValue() < inv.getSize() && !inv.getType().equals(InventoryType.CRAFTING)) {
+					if (slots[x].intValue() >= -2 && slots[x].intValue() < inv.getSize() && !inv.getType().equals(InventoryType.CRAFTING)) {
 						Object rn = null;
 						switch (Type) {
 							case 3:

@@ -27,7 +27,8 @@ public class GUIManager {
 	public GUIManager(TuSKe tuske) {
 		this.tuske = tuske;
 	}
-	private HashMap<Inventory, HashMap<Integer, GUI[]>> invs = new HashMap<>();
+	private Map<Inventory, HashMap<Integer, GUI[]>> invs = new HashMap<>();
+	private Map<Inventory, Integer> lastSlots = new HashMap<>();
 	
 	public boolean isGUI(Inventory inv, int slot){
 		return invs.containsKey(inv) && invs.get(inv).containsKey(slot);
@@ -48,6 +49,22 @@ public class GUIManager {
 	private void addToListener(Inventory inv, int slot, ItemStack item, GUI gui){
 		GUI[] guis2 = null;
 		HashMap<Integer,GUI[]> guislot2 = new HashMap<>();
+		if (slot == -1) {
+			Integer s = lastSlots.get(inv);
+			if (s != null)
+				slot = s + 1;
+			else
+				slot = 0;
+		} else if (slot == -2) {
+			slot = 0;
+			for (int x = 0; x < inv.getSize(); x++)
+				if (!guislot2.containsKey(x)) {
+					slot = x;
+					break;
+				}
+		}
+		if (slot >= inv.getSize())
+			return;
 		boolean firstSlot = invs.containsKey(inv);
 		if (firstSlot && (guislot2 = invs.get(inv)).containsKey(slot)){
 			guislot2.get(slot)[getIndex(gui.getClickType())] = gui;
@@ -59,6 +76,7 @@ public class GUIManager {
 			guislot2.put(slot, guis2);
 		}
 		invs.put(inv, guislot2);
+		lastSlots.put(inv, slot);
 		inv.setItem(slot, item);
 	}
 	public void remove(Inventory inv, int slot){
@@ -67,8 +85,10 @@ public class GUIManager {
 		map.remove(slot);
 		if (map.size() > 0)
 			invs.put(inv, map);
-		else
+		else {
 			invs.remove(inv);
+			lastSlots.remove(inv);
+		}
 	}
 	public void removeAll(Inventory inv){
 		Map<Integer, GUI[]> map = invs.get(inv);
@@ -76,6 +96,7 @@ public class GUIManager {
 			for (int slot : map.keySet())
 				inv.setItem(slot, new ItemStack(Material.AIR));
 			invs.remove(inv);
+			lastSlots.remove(inv);
 		}
 		
 	}
@@ -84,6 +105,7 @@ public class GUIManager {
 			for (Integer slot : invs.get(inv).keySet())
 				inv.setItem(slot, new ItemStack(Material.AIR));
 		invs.clear();
+		lastSlots.clear();
 	}
 	public boolean isAllowedType(ClickType ct){
 		if (ct != null)
