@@ -50,8 +50,6 @@ public class ExprItemsOfRecipe extends SimpleExpression<ItemStack>{
 	protected ItemStack[] get(Event e) {
 		Recipe r = recipe.getSingle(e);
 		if (r != null){
-			if (r instanceof Keyed)
-				TuSKe.debug(((Keyed) r).getKey().getKey(), ((Keyed) r).getKey().getNamespace());
 			RecipeManager rm = TuSKe.getRecipeManager();
 			Recipe r2 = rm.getIfContainsCustomRecipe(r.getResult(), rm.getIngredients(r));
 			if (r2 != null)

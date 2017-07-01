@@ -1,6 +1,7 @@
 package me.tuke.sktuke.manager.gui;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import me.tuke.sktuke.listeners.GUIListener;
 import me.tuke.sktuke.listeners.InventoryCheck;
@@ -47,14 +48,15 @@ public class GUIManager {
 	private void addToListener(Inventory inv, int slot, ItemStack item, GUI gui){
 		GUI[] guis2 = null;
 		HashMap<Integer,GUI[]> guislot2 = new HashMap<>();
-		if (invs.containsKey(inv) && (guislot2 = invs.get(inv)).containsKey(slot)){
+		boolean firstSlot = invs.containsKey(inv);
+		if (firstSlot && (guislot2 = invs.get(inv)).containsKey(slot)){
 			guislot2.get(slot)[getIndex(gui.getClickType())] = gui;
 		} else {
-			registerListener(inv);
+			if (!firstSlot)
+				registerListener(inv);
 			guis2 = new GUI[ClickType.values().length - 2];
 			guis2[getIndex(gui.getClickType())] = gui;
 			guislot2.put(slot, guis2);
-			
 		}
 		invs.put(inv, guislot2);
 		inv.setItem(slot, item);
@@ -69,17 +71,18 @@ public class GUIManager {
 			invs.remove(inv);
 	}
 	public void removeAll(Inventory inv){
-		for (int slot : invs.get(inv).keySet())
-			inv.setItem(slot, new ItemStack(Material.AIR));
-		invs.remove(inv);
+		Map<Integer, GUI[]> map = invs.get(inv);
+		if (map != null) {
+			for (int slot : map.keySet())
+				inv.setItem(slot, new ItemStack(Material.AIR));
+			invs.remove(inv);
+		}
 		
 	}
 	public void clearAll(){
 		for (Inventory inv : invs.keySet())
 			for (Integer slot : invs.get(inv).keySet())
 				inv.setItem(slot, new ItemStack(Material.AIR));
-		
-				
 		invs.clear();
 	}
 	public boolean isAllowedType(ClickType ct){
@@ -115,7 +118,6 @@ public class GUIManager {
 	}
 
 	private void registerListener(Inventory inv) {
-		TuSKe.debug("New listener to: " + inv);
 		new GUIListener(inv) {
 			@Override
 			public void onClick(InventoryClickEvent e, int slot) {
@@ -145,8 +147,9 @@ public class GUIManager {
 
 			@Override
 			public void onClose(InventoryCloseEvent e) {
-				removeAll(e.getInventory());
-				Bukkit.getScheduler().runTaskLater(tuske, () -> ((Player)e.getPlayer()).updateInventory(), 0L);
+				Bukkit.getScheduler().runTaskLater(tuske, () -> {
+					removeAll(e.getInventory());
+					((Player)e.getPlayer()).updateInventory();}, 0L);
 			}
 
 			@Override

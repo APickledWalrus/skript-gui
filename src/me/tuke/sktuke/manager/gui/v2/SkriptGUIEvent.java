@@ -2,8 +2,10 @@ package me.tuke.sktuke.manager.gui.v2;
 
 import ch.njol.skript.SkriptEventHandler;
 import ch.njol.skript.lang.*;
+import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.listeners.GUIListener;
 import me.tuke.sktuke.util.ReflectionUtils;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.*;
 
@@ -44,6 +46,12 @@ public class SkriptGUIEvent extends SkriptEvent {
 	public boolean check(Event event) {
 		List<GUIListener> current = new ArrayList<>(listeners);
 		current.forEach(gui -> gui.onEvent(event));
+		for (GUIListener gui : current) {
+			gui.onEvent(event);
+			if (event instanceof Cancellable && ((Cancellable) event).isCancelled())
+				break;
+		}
+
 		return false; // It needs to be false to not call Trigger#execute(e).
 	}
 	public void register(GUIListener gui) {

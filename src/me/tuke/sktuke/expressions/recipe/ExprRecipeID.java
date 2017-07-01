@@ -15,7 +15,8 @@ import org.bukkit.inventory.Recipe;
 @Name("Recipe ID")
 @Description("Starting from minecraft 1.18, the recipes now has a unique id. Recipes registered by minecraft will have " +
 		"a id `minecraft:%the result item's name%`, an old recipe plugin will be `bukkit:%random uuid%`, while TuSKe " +
-		"will have its id as `tuske:%last recipe id + 1%`. Other plugins may have a different format, but always following `<plugin>:<key>`.")
+		"will have its id as `tuske:%last recipe id + 1%`. Other plugins may have a different format, but always following `<plugin>:<key>`." +
+		"**Only for Shaped and Shapeless recipes**")
 @Examples({
 		"loop recipes of held item:",
 		"\tadd \"{recipeBook:{recipes:[\"%recipe id of loop-recipe%\"]}}\" to player's nbt"})

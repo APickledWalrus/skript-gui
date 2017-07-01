@@ -78,8 +78,8 @@ public class SimpleConfig{
 				"#First, go to '/TuSKe/documentation' and get every syntax you don't want to be used in",
 				"#eval effect. Add them in list below and reload the config with '/tuske reload config'.",
 				"#Notes:",
-				"#  - You need to include 'with safety' in your evaluate effect. Ex",
-				"#    \tevaluate with safety: stop server",
+				"#  - You need to include 'with safety' in your evaluate effect. i.e.",
+				"#    \tevaluate with safety: stop server #It will actually check if 'stop server' is allowed or not",
 				"#  - If you have SkQuery, you might need to disallow its evaluate effect as well.",
 				"#  - The performance may be decreased depending of amount of syntaxes. Use it only for public reasons.");
 		setDefault("evaluate_filter.mode", "blacklist",

@@ -18,7 +18,7 @@ import org.bukkit.plugin.Plugin;
 @Name("Recipe Owner")
 @Description("Starting from minecraft 1.12, recipes have now the register plugin. If it is a minecraft recipe, " +
 		"it will return as `Minecraft`, if it is an old recipe plugin, it will return as `Bukkit` and everything else " +
-		"will return the plugin's name.")
+		"will return the plugin's name. **Only for Shaped and Shapeless recipes**")
 @Examples({
 		"loop recipes of held item:",
 		"\tif recipe owner of loop-recipe is \"Minecraft\":",
