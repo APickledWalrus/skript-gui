@@ -24,8 +24,9 @@ import me.tuke.sktuke.TuSKe;
 
 public class RecipeManager implements Listener{
 
+	public int recipeId = 0;
 	private Set<Recipe> recipes = new HashSet<>();
-	//Since Bukkit doesn't provide any converter fro NamespacedKey -> Recipe, I made on my own
+	//Since Bukkit doesn't provide any converter for NamespacedKey -> Recipe, I made on my own
 	//For 1.12+ only
 	private Map<Object, Recipe> keys = Skript.isRunningMinecraft(1,12) ? new HashMap<>() : null;
 
@@ -212,11 +213,6 @@ public class RecipeManager implements Listener{
 		if (item1.getType().equals(item2.getType()) && item1.getDurability() == item2.getDurability() && item1.getAmount() <= item2.getAmount()){
 			if ((!item1.hasItemMeta() && !item2.hasItemMeta()) || (item1.hasItemMeta() && item2.hasItemMeta() && Bukkit.getItemFactory().equals(item1.getItemMeta(), item2.getItemMeta())))
 				return 1;
-			/*else if (item1.hasItemMeta() && item1.getItemMeta() instanceof SkullMeta) {
-				SkullMeta meta1 = (SkullMeta) item1.getItemMeta();
-				SkullMeta meta2 = (SkullMeta) item1.getItemMeta();
-				if (meta)
-			}*/
 			return 0;
 		}
 		return -1;
@@ -287,14 +283,16 @@ public class RecipeManager implements Listener{
 			keys.clear();
 	}
 	public CustomShapedRecipe newShapedRecipe(ItemStack result, ItemStack[] items, String... shapes) {
-		if (keys == null) // null = 1.11 and lower
-			return new CustomShapedRecipe(result, items, UUID.randomUUID().toString(), shapes);
+		recipeId++;
+		if (keys != null) // null = 1.11 and lower
+			return new CustomShapedRecipe(result, items, "" + recipeId, shapes);
 		else
 			return new CustomShapedRecipe(result, items, shapes);
 	}
 	public CustomShapelessRecipe newShapelessRecipe(ItemStack result, ItemStack[] items) {
-		if (keys == null) // null = 1.11 and lower
-			return new CustomShapelessRecipe(result, items, UUID.randomUUID().toString());
+		recipeId++;
+		if (keys != null) // null = 1.11 and lower
+			return new CustomShapelessRecipe(result, items, "" + recipeId);
 		else
 			return new CustomShapelessRecipe(result, items);
 	}

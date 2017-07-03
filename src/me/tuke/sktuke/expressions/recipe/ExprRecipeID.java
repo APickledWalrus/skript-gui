@@ -13,7 +13,7 @@ import org.bukkit.inventory.Recipe;
  * @author Tuke_Nuke on 30/06/2017
  */
 @Name("Recipe ID")
-@Description("Starting from minecraft 1.18, the recipes now has a unique id. Recipes registered by minecraft will have " +
+@Description("Starting from minecraft 1.12, the recipes now has a unique id. Recipes registered by minecraft will have " +
 		"a id `minecraft:%the result item's name%`, an old recipe plugin will be `bukkit:%random uuid%`, while TuSKe " +
 		"will have its id as `tuske:%last recipe id + 1%`. Other plugins may have a different format, but always following `<plugin>:<key>`." +
 		"**Only for Shaped and Shapeless recipes**")
