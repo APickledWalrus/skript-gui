@@ -94,6 +94,7 @@ public class Evaluate {
 				ReflectionUtils.setField(c.getClass(), c, "file", new File("TuSKe/evaluate.sk"));
 				// Setting the current 'script'.
 				SectionNode node = c.getMainNode();
+				TuSKe.debug(runWithSafety);
 				if (runWithSafety && filterSyntaxes != null) {
 					List<Node> toRemove = new ArrayList<>();
 					for (Node n : node) {
@@ -121,8 +122,6 @@ public class Evaluate {
 				ScriptLoader.currentScript = null;
 				Commands.currentArguments = null;
 				setVariable(log, e, results);
-				ts.setNext(source.getNext());
-				source.setNext(null);
 				TriggerItem.walk(ts, e);
 
 			} catch (Exception ex) {
