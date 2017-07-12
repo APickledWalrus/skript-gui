@@ -169,7 +169,7 @@ public class RecipeManager implements Listener{
 					return -1;
 				}
 			}
-			return map.size() == (int)ch - 'a' ? count : -1;
+			return map.size() == ch - 'a' ? count : -1;
 		} else if (rec instanceof ShapelessRecipe) {
 			List<ItemStack> ingredients = ((ShapelessRecipe)rec).getIngredientList();
 			int count = 1;
@@ -182,19 +182,23 @@ public class RecipeManager implements Listener{
 					y = areEqual(item1, items[x]);
 					if (y >= 0) {
 						match = x;
-						if (y == 1) {
+						if (y == 1)
 							break;
-						}
 					}
 				}
 				if (match >= 0) {
 					items[match] = null; //Already found this item, so removing from the list.
 					if (y < count)
 						count = y;
-					break;
+					continue;
 				}
 				return -1; //If reach here it means it didn't find a matching ingredient
 			}
+			//It will check if there isn't any not null or air item
+			//It usually happen when it contains all ingredients, but there is extra ingredients
+			for (ItemStack i : items)
+				if (!isAir(i))
+					return -1;
 			return count;
 		}
 		return -1;
@@ -218,20 +222,16 @@ public class RecipeManager implements Listener{
 		return -1;
 	}
 	public ItemStack[] getIngredients(Recipe rec){
-		if (rec instanceof CustomShapedRecipe)
-			return ((CustomShapedRecipe) rec).getIngredients();
-		else if (rec instanceof CustomShapelessRecipe)
-			return ((CustomShapelessRecipe) rec).getIngredients();
-		else if (rec instanceof CustomFurnaceRecipe)
-			return new ItemStack[]{((CustomFurnaceRecipe) rec).getSource()};
+		if (rec instanceof CustomRecipe)
+			return ((CustomRecipe) rec).getIngredients();
 		else if (rec instanceof ShapedRecipe){
 			Map<Character, ItemStack> map = ((ShapedRecipe) rec).getIngredientMap();
 			return map.values().toArray(new ItemStack[map.size()]);
 			//return getShapedIngredients((ShapedRecipe) rec);
-		}else if (rec instanceof ShapelessRecipe){
+		} else if (rec instanceof ShapelessRecipe){
 			List<ItemStack> items = ((ShapelessRecipe) rec).getIngredientList();
 			return items.toArray(new ItemStack[items.size()]);
-		}else
+		} else
 			return new ItemStack[]{((FurnaceRecipe)rec).getInput()};
 	}
 	public ItemStack[] getShapedIngredients(ShapedRecipe sr) {

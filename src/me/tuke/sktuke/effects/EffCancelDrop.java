@@ -1,7 +1,12 @@
 package me.tuke.sktuke.effects;
 
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import javax.annotation.Nullable;
@@ -13,24 +18,39 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.log.ErrorQuality;
 import ch.njol.util.Kleenean;
-
+@Name("Cancel Drops")
+@Description("Cancels the drops of items, experiences or both in death events, where it won't drop the **player** items (like gamerule KeepInventory), " +
+		"or cancel the item drop of break block event (for minecraft 1.12+ only).")
+@Examples({
+		"on death of player:",
+		"\tcancel the drops #It won't drop the experience and items.",
+		" ",
+		"on break of diamond ore:",
+		"\tcancel the drops of items #It won't drop the items only."})
+@Since("1.0, 1.8.1 (block break event)")
 public class EffCancelDrop extends Effect{
+	public static final boolean canCancelBreakDrops = Skript.isRunningMinecraft(1, 12);
 	static {
-		Registry.newEffect(EffCancelDrop.class, "cancel [the] drops [of (inventory|[e]xp[periences])]");
+		Registry.newEffect(EffCancelDrop.class,
+				"cancel [the] drops",
+				"cancel [the] drops of [e]xp[perience][s]",
+				"cancel [the] drops of (inventory|items)");
 	}
 	
-	private int Cancel = 1;
+	private int cancel = 1;
 
 	@Override
 	public boolean init(Expression<?>[] arg0, int arg1, Kleenean arg2, ParseResult arg3) {
-		if (!ScriptLoader.isCurrentEvent(PlayerDeathEvent.class)){
-			Skript.error("Cannot use '" + arg3.expr + "' outside of death event", ErrorQuality.SEMANTIC_ERROR);
+		if ((canCancelBreakDrops && !ScriptLoader.isCurrentEvent(PlayerDeathEvent.class, BlockBreakEvent.class) ||
+				!ScriptLoader.isCurrentEvent(PlayerDeathEvent.class))){
+			Skript.error("Can't use '" + arg3.expr + "' outside of death" + (canCancelBreakDrops ? " or break" : "") + " event");
 			return false;
 		}
-		if (arg3.expr.toLowerCase().contains("xp"))
-			Cancel--;
-		else if (arg3.expr.toLowerCase().contains("inventory"))
-			Cancel++;
+		if (arg2.isTrue()) {
+			Skript.error("Can't " +arg3.expr+" anymore after the event has already passed. It should be used before any wait effect.");
+			return false;
+		}
+		cancel = arg1;
 		return true;
 	}
 
@@ -43,12 +63,17 @@ public class EffCancelDrop extends Effect{
 	protected void execute(Event e) {
 		if (e instanceof PlayerDeathEvent){
 			PlayerDeathEvent pde = (PlayerDeathEvent)e;
-			if (!pde.getKeepLevel() && Cancel <= 1){
+			if (!pde.getKeepLevel() && cancel <= 1){
 				pde.setKeepLevel(true);
 				pde.setDroppedExp(0);
 			}
-			if (!pde.getKeepInventory() && Cancel >= 1)
+			if (cancel != 1)
 				pde.setKeepInventory(true);		
+		} else if (canCancelBreakDrops && e instanceof BlockBreakEvent) {
+			if (cancel <= 1)
+				((BlockBreakEvent) e).setExpToDrop(0);
+			if (cancel != 1)
+				((BlockBreakEvent) e).setDropItems(false);
 		}
 	}
 }

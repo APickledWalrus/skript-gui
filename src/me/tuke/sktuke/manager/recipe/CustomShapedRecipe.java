@@ -10,7 +10,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 
-public class CustomShapedRecipe extends ShapedRecipe{
+public class CustomShapedRecipe extends ShapedRecipe implements CustomRecipe {
 
 	private Map<Character, ItemStack> map = new HashMap<>();
 	
@@ -25,6 +25,7 @@ public class CustomShapedRecipe extends ShapedRecipe{
 	public Map<Character, ItemStack> getIngredientsMap(){
 		return map.size() == 0 ? super.getIngredientMap() : map;
 	}
+	@Override
 	public ItemStack[] getIngredients(){
 		return map.values().toArray(new ItemStack[map.size()]);
 	}
@@ -53,7 +54,7 @@ public class CustomShapedRecipe extends ShapedRecipe{
 		for (String shape : shapes)
 			for (char ch2 : shape.toCharArray()) {
 				if (ch2 - 'a' < items.length) {
-					ItemStack item = items[ch2 - 'a'];
+					ItemStack item = ch2 - 'a' >= 0 ?items[ch2 - 'a'] : null;
 					if (item != null)
 						map.put(ch1, item);
 					else

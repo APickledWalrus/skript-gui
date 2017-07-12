@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapelessRecipe;
 
 
-public class CustomShapelessRecipe extends ShapelessRecipe {
+public class CustomShapelessRecipe extends ShapelessRecipe implements CustomRecipe {
 	
 	private ItemStack[] items = null;
 	
@@ -36,6 +36,7 @@ public class CustomShapelessRecipe extends ShapelessRecipe {
 	public List<ItemStack> getIngredientList(){
 		return Arrays.asList(items);
 	}
+	@Override
 	public ItemStack[] getIngredients(){
 		return items;
 	}

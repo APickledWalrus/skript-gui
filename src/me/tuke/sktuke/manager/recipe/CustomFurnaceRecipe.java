@@ -3,7 +3,7 @@ package me.tuke.sktuke.manager.recipe;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 
-public class CustomFurnaceRecipe extends FurnaceRecipe{
+public class CustomFurnaceRecipe extends FurnaceRecipe implements CustomRecipe {
 
 	private ItemStack source = null;
 	
@@ -16,8 +16,9 @@ public class CustomFurnaceRecipe extends FurnaceRecipe{
 	public ItemStack getSource(){
 		return source != null ? source : getInput();
 	}
-	public ItemStack getCustomSource(){
-		return source;
-	}
 
+	@Override
+	public ItemStack[] getIngredients() {
+		return new ItemStack[] {getSource()};
+	}
 }
