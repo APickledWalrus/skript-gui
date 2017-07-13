@@ -45,13 +45,11 @@ public class SkriptGUIEvent extends SkriptEvent {
 	@Override
 	public boolean check(Event event) {
 		List<GUIListener> current = new ArrayList<>(listeners);
-		current.forEach(gui -> gui.onEvent(event));
 		for (GUIListener gui : current) {
 			gui.onEvent(event);
 			if (event instanceof Cancellable && ((Cancellable) event).isCancelled())
-				break;
+				break; //A matching gui was already found, so let's stop it
 		}
-
 		return false; // It needs to be false to not call Trigger#execute(e).
 	}
 	public void register(GUIListener gui) {

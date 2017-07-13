@@ -141,11 +141,11 @@ public class GUIInventory {
 				inv.setItem(x, item);
 		}
 	}
-	public Consumer<InventoryClickEvent> getSlot(Integer slot){
-		return slot != null ? getSlot(convertSlot(slot)) : null;
+	public Consumer<InventoryClickEvent> getSlot(int slot){
+		return slot >= 0 ? getSlot(convertSlot(slot)) : null;
 	}
-	public Consumer<InventoryClickEvent> getSlot(Character ch){
-		if (ch !=  null)
+	public Consumer<InventoryClickEvent> getSlot(char ch){
+		if (ch > 0)
 			return slots.get(ch);
 		return null;
 	}
@@ -188,16 +188,18 @@ public class GUIInventory {
 	public Inventory getInventory(){
 		if (!getListener().isStarted()) {
 			getListener().start();
-			int x = 0;
-			for (char ch : rawShape.toCharArray()) {
-				ItemStack item = items.get(ch);
-				if (item != null && item.getType() != Material.AIR) {
-					inv.setItem(x, item);
+			if (items.size() > 0) {
+				int x = 0;
+				for (char ch : rawShape.toCharArray()) {
+					ItemStack item = items.get(ch);
+					if (item != null && item.getType() != Material.AIR) {
+						inv.setItem(x, item);
+					}
+					x++;
 				}
-				x++;
+				//It won't be necessary anymore, so just cleaning it
+				items.clear();
 			}
-			//It won't be necessary anymore, so just cleaning it
-			items.clear();
 		}
 		return inv;
 	}

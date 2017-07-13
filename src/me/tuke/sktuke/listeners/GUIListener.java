@@ -1,17 +1,12 @@
 package me.tuke.sktuke.listeners;
 
-import ch.njol.skript.Skript;
 import me.tuke.sktuke.TuSKe;
-import me.tuke.sktuke.manager.gui.v2.GUIHandler;
-import me.tuke.sktuke.manager.gui.v2.GUIInventory;
 import me.tuke.sktuke.manager.gui.v2.SkriptGUIEvent;
 import me.tuke.sktuke.util.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
-
-import java.util.function.Consumer;
 
 /**
  * @author Tuke_Nuke on 27/05/2017
@@ -58,9 +53,8 @@ public abstract class GUIListener {
 							break;
 
 					}
-					if (click.equals(gui)) {
+					if (click.equals(gui))
 						onClick(e, slot);
-					}
 				}
 			}
 		} else if (event instanceof InventoryCloseEvent) {
@@ -87,7 +81,7 @@ public abstract class GUIListener {
 		return isStarted;
 	}
 	public void stop() {
-		if (isStarted()) {
+		if (isStarted() && gui.getViewers().size() == 0) { //In Global GUIs, someone can try to open a gui really fast or other player can, so let's make sure first
 			SkriptGUIEvent.getInstance().unregister(this);
 			isStarted = false;
 		}
