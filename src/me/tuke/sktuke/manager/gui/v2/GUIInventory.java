@@ -115,6 +115,7 @@ public class GUIInventory {
 			inv = InventoryUtils.newInventory(inv.getType(), newSize, newName);
 			if (inv == null)
 				return this; //Safe check only, it doesn't happen
+			getListener().setInventory(inv);
 			inv.setContents(copy);
 			viewers.forEach(human -> {
 				ItemStack cursor = human.getItemOnCursor();

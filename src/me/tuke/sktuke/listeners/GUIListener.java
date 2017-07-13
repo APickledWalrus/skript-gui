@@ -92,6 +92,9 @@ public abstract class GUIListener {
 			SkriptGUIEvent.getInstance().register(this);
 		}
 	}
+	public void setInventory(Inventory inv) {
+		gui = inv;
+	}
 	private boolean isAllowedType(ClickType ct){
 		if (ct != null)
 			switch(ct){
