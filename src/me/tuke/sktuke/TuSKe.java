@@ -85,6 +85,12 @@ public class TuSKe extends JavaPlugin {
 			new Documentation(this).load();
 		}
 		// ----------------------------------------------------------
+		// ---------------- Some thanks for donators ----------------
+		log(" ");
+		log(" A special thanks for donators:");
+		log(" @X0Freak - 46$");
+		log(" ");
+		// ----------------------------------------------------------
 		// ------------- Start to register all syntaxes -------------
 		SkriptAddon tuske = Skript.registerAddon(this).setLanguageFileDirectory("lang");
 		try {
