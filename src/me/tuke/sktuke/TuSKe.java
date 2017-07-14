@@ -343,7 +343,7 @@ public class TuSKe extends JavaPlugin {
 		if (!debug())
 			return;
 		StackTraceElement caller = new Exception().getStackTrace()[1];
-		log(String.format("[Debug] [%s, line %S] %s", caller.getFileName(), caller.getLineNumber(), StringUtils.join(objects, " || ")));
+		log(String.format("[Debug] [%s, line %s] %s", caller.getFileName(), caller.getLineNumber(), StringUtils.join(objects, " || ")));
 	}
 	public static NMS getNMS(){		
 		if (nms == null){
