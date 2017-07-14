@@ -4,7 +4,8 @@ main: me.tuke.sktuke.TuSKe
 version: 1.8.1
 author: Tuke_Nuke
 website: github.com/Tuke-Nuke/TuSKe
-softdepend: [Skript, SimpleClans, SimpleClansLegacy, Legendchat, Marriage, ProtocolSupport, ViaVersion, Landlord, Umbaska, SkQuery] #Last two dependencies are just to not register ClickType and InventoryType before them
+depend: [Skript]
+softdepend: [SimpleClans, SimpleClansLegacy, Legendchat, Marriage, ProtocolSupport, ViaVersion, Landlord, Umbaska, SkQuery] #Last two dependencies are just to not register ClickType and InventoryType before them
 commands:
   tuske:
     description: Main command for TuSKe
