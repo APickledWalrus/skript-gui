@@ -1,0 +1,12 @@
+#Excluding bukkit jars
+*/*
+*.*
+
+#In case of any new dependency, include its name here
+!SimpleClans.jar
+!Marriage.jar
+!Legendchat.jar
+!Landlord.jar
+!ProtocolSupport.jar
+!.gitignore
+!README.md
