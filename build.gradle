@@ -1,5 +1,4 @@
-group 'me.tuke'
-version '1.8.2'
+import org.apache.tools.ant.filters.ReplaceTokens
 
 apply plugin: 'java'
 
@@ -8,14 +7,30 @@ sourceCompatibility = 1.8
 repositories {
     jcenter()
     mavenCentral()
+    //Spigot
     maven {
         url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
     }
+    //Skript
     maven {
         url 'https://raw.githubusercontent.com/bensku/mvn-repo/master'
     }
+    //ViaVersion
     maven {
         url 'https://repo.viaversion.com/'
+    }
+    //Some Skript dependencies to avoid issues
+    maven {
+        url 'https://oss.sonatype.org/content/groups/public/'
+    }
+    maven {
+        url 'https://mvn.yawk.at'
+    }
+    maven {
+        url 'http://ci.emc.gs/nexus/content/groups/aikar/'
+    }
+    maven {
+        url 'http://maven.elmakers.com/repository/'
     }
 }
 
@@ -32,4 +47,15 @@ dependencies {
     //ViaVersion
     compile 'us.myles:viaversion-bukkit:1.1.1'
     //compile 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+}
+
+processResources {
+    filter ReplaceTokens, tokens: [
+            'version': project.property('version')
+    ]
+
+}
+
+jar {
+    archiveName 'TuSKe.jar'
 }

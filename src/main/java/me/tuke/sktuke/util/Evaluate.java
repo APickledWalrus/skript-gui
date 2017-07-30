@@ -1,7 +1,6 @@
 package me.tuke.sktuke.util;
 
 import ch.njol.skript.ScriptLoader;
-import ch.njol.skript.classes.Comparator;
 import ch.njol.skript.command.Argument;
 import ch.njol.skript.command.Commands;
 import ch.njol.skript.config.Config;
@@ -15,16 +14,12 @@ import ch.njol.skript.log.LogEntry;
 import ch.njol.skript.log.RetainingLogHandler;
 import ch.njol.skript.log.SkriptLogger;
 import ch.njol.skript.variables.Variables;
-import com.google.common.collect.Iterables;
-import me.tuke.sktuke.TuSKe;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Event;
-import sun.swing.SwingUtilities2;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.regex.Pattern;

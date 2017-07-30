@@ -4,6 +4,7 @@ import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
+import me.tuke.sktuke.TuSKe;
 import me.tuke.sktuke.util.Registry;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -42,7 +43,7 @@ public class EffCancelDrop extends Effect{
 	@Override
 	public boolean init(Expression<?>[] arg0, int arg1, Kleenean arg2, ParseResult arg3) {
 		if ((canCancelBreakDrops && !ScriptLoader.isCurrentEvent(PlayerDeathEvent.class, BlockBreakEvent.class) ||
-				!ScriptLoader.isCurrentEvent(PlayerDeathEvent.class))){
+				(!canCancelBreakDrops && !ScriptLoader.isCurrentEvent(PlayerDeathEvent.class)))){
 			Skript.error("Can't use '" + arg3.expr + "' outside of death" + (canCancelBreakDrops ? " or break" : "") + " event");
 			return false;
 		}

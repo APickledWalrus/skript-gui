@@ -105,7 +105,7 @@ public class TuSKe extends JavaPlugin {
 				new MarriageRegister(tuske);
 			if (ReflectionUtils.hasClass("com.jcdesimp.landlord.persistantData.LowOwnedLand")) //TODO Landlord provides support for an older version of API. Update needed
 				new LandlordRegister(tuske);
-			info("Loaded %d events, %d conditions, %d effects, %d expressions and %d types. Have fun!", Registry.getResults());
+			info("Loaded %d events, %d conditions, %d effects, %d expressions and %d types. Have fun!", (Object[]) Registry.getResults());
 
 		} catch (Exception e) {
 			info("Error while registering stuffs. Please, report it at %s", getDescription().getWebsite() + "/issues" );
