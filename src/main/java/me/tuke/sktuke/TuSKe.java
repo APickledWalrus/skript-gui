@@ -2,12 +2,11 @@ package me.tuke.sktuke;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
+import me.tuke.sktuke.documentation.*;
 import me.tuke.sktuke.listeners.OnlineStatusCheck;
 import me.tuke.sktuke.manager.gui.v2.SkriptGUIEvent;
 import me.tuke.sktuke.hooks.landlord.LandlordRegister;
@@ -29,7 +28,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.tuke.sktuke.manager.customenchantment.CustomEnchantment;
 import me.tuke.sktuke.manager.customenchantment.EnchantConfig;
 import me.tuke.sktuke.manager.customenchantment.EnchantManager;
-import me.tuke.sktuke.documentation.Documentation;
 import me.tuke.sktuke.manager.gui.GUIManager;
 import me.tuke.sktuke.nms.NMS;
 import me.tuke.sktuke.nms.ReflectionNMS;
@@ -88,7 +86,8 @@ public class TuSKe extends JavaPlugin {
 		// ---------------- Some thanks for donators ----------------
 		log(" ");
 		log(" A special thanks for donators:");
-		log(" @X0Freak - 46$");
+		log(" @X0Freak - 50$");
+		log(" @RepublicanSensei - 10$");
 		log(" ");
 		// ----------------------------------------------------------
 		// ------------- Start to register all syntaxes -------------
@@ -137,7 +136,34 @@ public class TuSKe extends JavaPlugin {
 	}
 
 	public void generateDocumentation() {
-		new Documentation(this).load();
+		FileType type;
+		String config = getConfig().getString("documentation.file_type");
+		switch (config.toLowerCase()) {
+			case "yaml":
+			case "yml":
+				type = new YamlFile();
+				break;
+			case "json":
+				type = new JsonFile(false);
+				break;
+			case "raw_json":
+			case "raw json":
+				type = new JsonFile(true);
+				break;
+			case "markdown":
+				type = new MarkdownFile();
+				break;
+			case "default":
+			case "skript":
+			case "script":
+			case "sk":
+				type = new DefaultFile();
+				break;
+			default:
+				log("Unknown value for 'documentation.file_type': " + config + ".");
+				return;
+		}
+		new Documentation(this, type).load();
 	}
 	@Override
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] arg){//TODO Remake this

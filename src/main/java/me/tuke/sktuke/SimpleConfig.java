@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 
-
 public class SimpleConfig{
 
 	private JavaPlugin pl;
@@ -69,26 +68,35 @@ public class SimpleConfig{
 			"#\topen virtual InventoryType.CHEST inventory with size 1 named \"Hi\" to player",
 			"#Don't need to worry about it, is just in case.");
 		addComentsAbove("documentation",
-				"#A documentation that will be generated at 'plugins/TuSKe/documentation/'",
-				"#for all addons");
+			"#A documentation that will be generated at 'plugins/TuSKe/documentation/'",
+			"#for all addons");
 		setDefault("documentation.enabled", true,
 			"#Should documentation be generated?");
+		setDefault("documentation.file_type", "default",
+			"#What type of file the documentation should be generated?",
+			"#By default, it uses a format to be easier to see which ends with '.sk'.",
+				"#In case you want to use this documentation externally, there are few options:",
+				"#  json: Generates a file with json format.",
+				"#  raw json: Generates a file with raw json format (single line only).",
+				"#  yaml: Generates a file in yaml format.",
+				"#  markdown: Generates in Markdown format, useful to github's wiki.",
+				"#  default: The default format described above.");
 		addComentsAbove("evaluate_filter",
-				"#Filter some effects/conditions/expressions from being used in evaluate effects.",
-				"#First, go to '/TuSKe/documentation' and get every syntax you don't want to be used in",
-				"#eval effect. Add them in list below and reload the config with '/tuske reload config'.",
-				"#Notes:",
-				"#  - You need to include 'with safety' in your evaluate effect. i.e.",
-				"#    \tevaluate with safety: stop server #It will actually check if 'stop server' is allowed or not",
-				"#  - If you have SkQuery, you might need to disallow its evaluate effect as well.",
-				"#  - The performance may be decreased depending of amount of syntaxes. Use it only for public reasons.");
+			"#Filter some effects/conditions/expressions from being used in evaluate effects.",
+			"#First, go to '/TuSKe/documentation' and get every syntax you don't want to be used in",
+			"#eval effect. Add them in list below and reload the config with '/tuske reload config'.",
+			"#Notes:",
+			"#  - You need to include 'with safety' in your evaluate effect. i.e.",
+			"#    \tevaluate with safety: stop server #It will actually check if 'stop server' is allowed or not",
+			"#  - If you have SkQuery, you might need to disallow its evaluate effect as well.",
+			"#  - The performance may be decreased depending of amount of syntaxes. Use it only for public reasons.");
 		setDefault("evaluate_filter.mode", "blacklist",
-				"#Mode to filter syntaxes: whitelist or blacklist");
+			"#Mode to filter syntaxes: whitelist or blacklist");
 		setDefault("evaluate_filter.syntaxes",
-				new String[]{"op %player%", "stop server"},
-				"#A list of syntaxes to add to whitelist/blacklist.",
-				"#Use quotes to properly use the yaml file, example:",
-				"#- \"kill %player%\"");
+			new String[]{"op %player%", "stop server"},
+			"#A list of syntaxes to add to whitelist/blacklist.",
+			"#Use quotes to properly use the yaml file, example:",
+			"#- \"kill %player%\"");
 		
 		//replace the config with the old values.
 		String str = "use-metrics";

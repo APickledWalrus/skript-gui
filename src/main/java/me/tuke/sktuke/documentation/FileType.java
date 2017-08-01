@@ -1,7 +1,7 @@
 package me.tuke.sktuke.documentation;
 
-import java.util.List;
-import java.util.Map;
+import java.io.BufferedWriter;
+import java.io.IOException;
 
 /**
  * @author Tuke_Nuke on 21/07/2017
@@ -17,6 +17,6 @@ public abstract class FileType {
 		return extension;
 	}
 
-	public abstract String write(Map<String, Map<String, List<SyntaxInfo>>> docs);
+	public abstract void write(BufferedWriter writer, AddonInfo addon) throws IOException;
 
 }
