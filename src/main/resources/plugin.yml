@@ -1,6 +1,6 @@
 name: TuSKe
 description: A Skript Addon which has some managers, such as custom enchantments, recipes and GUI inventory, and some general stuffs.
-main: me.tuke.sktuke.TuSKe
+main: com.github.tukenuke.tuske.TuSKe
 version: @version@
 author: Tuke_Nuke
 website: github.com/Tuke-Nuke/TuSKe
