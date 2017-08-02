@@ -30,7 +30,7 @@ public class YamlFile extends FileType {
 
 	public void addSection(YamlConfiguration yaml, String section, List<SyntaxInfo> list) {
 		for (SyntaxInfo info : list)
-			for (Map.Entry<String, Object> entry : info.toRawMap().entrySet())
+			for (Map.Entry<String, Object> entry : info.toMap().entrySet())
 				if (!entry.getKey().equalsIgnoreCase("name")) {
 					Object obj = entry.getValue();
 					if (entry.getKey().equalsIgnoreCase("Patterns") && obj instanceof String)

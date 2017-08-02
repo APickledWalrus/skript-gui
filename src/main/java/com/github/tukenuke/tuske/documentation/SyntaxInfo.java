@@ -142,21 +142,6 @@ public class SyntaxInfo {
 	public Map<String, Object> toMap() {
 		Map<String, Object> map = new LinkedHashMap<>();
 		addProperty(map, "Name", name);
-		addProperty(map, "Description", desc);
-		addProperty(map, "Examples", examples);
-		addProperty(map, "Usage", usage);
-		addProperty(map, "Since", since);
-		addProperty(map, "Return type", return_type);
-		addArray(map, "Changers", changers);
-		addProperty(map, "Patterns", patterns);
-		addArray(map, "Event values", event_values);
-		if (cancellable != null)
-			map.put("Cancellable", cancellable);
-		return map;
-	}
-	public Map<String, Object> toRawMap() {
-		Map<String, Object> map = new LinkedHashMap<>();
-		addProperty(map, "Name", name);
 		addArray(map, "Description", desc);
 		addArray(map, "Examples", examples);
 		addProperty(map, "Usage", usage);

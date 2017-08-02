@@ -38,7 +38,7 @@ public class DefaultFile extends FileType {
 	}
 	private void addSyntax(StringJoiner joiner, SyntaxInfo info) {
 		joiner.add("\t" + info.name + ":");
-		for (Map.Entry<String, Object> entry : info.toRawMap().entrySet())
+		for (Map.Entry<String, Object> entry : info.toMap().entrySet())
 			if (!entry.getKey().equals("Name")) //We already have the name above
 				addEntry(joiner, entry.getKey(), entry.getValue());
 	}
