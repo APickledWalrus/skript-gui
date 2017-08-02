@@ -72,10 +72,14 @@ public class Documentation implements Runnable{
 			addSyntax(getAddon(info).getTypes(), new SyntaxInfo(info));
 		for (JavaFunction info : Functions.getJavaFunctions()) //Only Skript use this...
 			addSyntax(getAddon(info.getClass()).getFunctions(), new SyntaxInfo(info));
+		//Before, lets delete old files...
+		File docsDir = new File(instance.getDataFolder(), "documentation/");
+		docsDir.delete();
+		docsDir.mkdirs();
 		//Done, now let's write them all into files
 		for (AddonInfo addon : addons.values()) {
 			addon.sortLists();
-			File file = new File(instance.getDataFolder(), "documentation" + File.separatorChar + addon.getName() + "." + fileType.getExtension());
+			File file = new File(docsDir, addon.getName() + "." + fileType.getExtension());
 			if (!file.exists()) {
 				file.getParentFile().mkdirs();
 				try {
