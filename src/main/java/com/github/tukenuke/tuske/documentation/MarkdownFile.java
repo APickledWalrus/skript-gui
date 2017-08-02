@@ -109,7 +109,7 @@ public class MarkdownFile extends FileType {
 		syntax.add("  <th><div title=\"Since which version it was added.\">Since</div></th>");
 		syntax.add("  <td>" + (info.since == null || info.since.isEmpty() ? "1.0" : info.since) + "</td>");
 		if (Util.notEmpty(info.return_type)) {
-			syntax.add("  <th><div title=\"What type it returns\">Return type</div</th>\n");
+			syntax.add("  <th><div title=\"What type it returns\">Return type</div</th>");
 			syntax.add("  <td>" + info.return_type + "</td>");
 		}
 		if (Util.notEmpty(info.changers)) {
@@ -119,6 +119,10 @@ public class MarkdownFile extends FileType {
 		if (info.cancellable != null) {
 			syntax.add("  <th><div title=\"It means if you can cancel this event from happening or not.\"><a href =\"http://bensku.github.io/Skript/effects.html#EffCancelEvent\">Cancellable</a></div></th>");
 			syntax.add("  <td>" + info.cancellable + "</td>");
+		}
+		if (Util.notEmpty(info.dependency))  {
+			syntax.add("  <th><div title=\"The necessary plugin to make it works.\">Dependency</div</th>");
+			syntax.add("  <td>" + info.dependency + "</td>");
 		}
 		syntax.add("</table>");
 	}

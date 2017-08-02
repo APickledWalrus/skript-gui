@@ -1,6 +1,9 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
-apply plugin: 'java'
+plugins {
+    id 'com.github.johnrengelman.shadow' version '2.0.1'
+    id 'java'
+}
 
 sourceCompatibility = 1.8
 
@@ -46,7 +49,6 @@ dependencies {
     compile 'com.github.mifmif:generex:1.0.2'
     //ViaVersion
     compile 'us.myles:viaversion:1.1.1'
-    //compile 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
 }
 
 processResources {
@@ -55,7 +57,6 @@ processResources {
     ]
 
 }
-
-jar {
-    archiveName 'TuSKe.jar'
+shadowJar {
+    baseName = 'TuSKe'
 }

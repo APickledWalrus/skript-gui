@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  */
 public class SyntaxInfo {
 
-	public String name, since, return_type;
+	public String name, since, return_type, dependency;
 	public String[] desc, examples, patterns, usage, changers, event_values;
 	public Boolean cancellable; //It needs to be null for non event syntax
 
@@ -41,8 +41,11 @@ public class SyntaxInfo {
 		patterns = fixPattern(info.patterns);
 		if (c.isAnnotationPresent(Since.class))
 			since = c.getAnnotation(Since.class).value();
+		if (c.isAnnotationPresent(Dependency.class))
+			dependency = c.getAnnotation(Dependency.class).value();
 	}
 	public SyntaxInfo(ExpressionInfo info, Class[] classes) {
+		//
 		this(info);
 		ClassInfo ci = Classes.getSuperClassInfo(info.returnType);
 		if (ci != null)
