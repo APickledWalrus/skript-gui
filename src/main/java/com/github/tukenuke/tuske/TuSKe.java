@@ -222,18 +222,21 @@ public class TuSKe extends JavaPlugin {
 					reloadConfig();
 					loadConfig();
 					sender.sendMessage("§e[§cTuSKe§e] §3Config reloaded!");
-				}
-				else if (arg.length > 1 && arg[1].equalsIgnoreCase("enchantments")){
+				} else if (arg.length > 1 && arg[1].equalsIgnoreCase("enchantments")) {
 					EnchantConfig.reload();
 					if (CustomEnchantment.getEnchantments().size() == 0)
 						sender.sendMessage("§e[§cTuSKe§e] §3No enchantments were loaded. :(");
 					else
 						sender.sendMessage("§e[§cTuSKe§e] §3A total of §c" + CustomEnchantment.getEnchantments().size() + "§3custom enchantments were loaded succesfully.");
+				} else if (arg.length > 1 && arg[1].equalsIgnoreCase("docs")){
+					sender.sendMessage("§e[§cTuSKe§e] §3Regenerating documentation files using §c" + getConfig().getString("documentation.file_type") + " §3format.");
+					generateDocumentation();
 				} else {
 					sender.sendMessage(new String[]{
 						"§e[§cTuSKe§e] §3Main commands of §c"+ arg[0]+"§3:",
 						"§4/§c" + label + " " + arg[0] + " config §e> §3Reload the config.",
 						"§4/§c" + label + " " + arg[0] + " enchantments §e> §3Reload the enchantments' file.",
+						"§4/§c" + label + " " + arg[0] + " docs §e> §Regenerate new documentation files.",
 					});
 					
 				}	
