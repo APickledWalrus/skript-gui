@@ -35,7 +35,7 @@ public class MarkdownFile extends FileType {
 	public void addSection(StringJoiner wiki, StringJoiner summary, String section, List<SyntaxInfo> list) {
 		if (list.size() == 0)
 			return;
-		summary.add("  * [" + section + "](#" + section + ")");
+		summary.add("  * [" + section + "](#" + section.toLowerCase().replace(' ', '_') + ")");
 		wiki.add("## " + section);
 		wiki.add(" ");
 		StringJoiner syntaxes = new StringJoiner("\n \n---\n \n");
