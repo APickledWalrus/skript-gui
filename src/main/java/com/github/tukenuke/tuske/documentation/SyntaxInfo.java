@@ -151,7 +151,7 @@ public class SyntaxInfo {
 		addProperty(map, "Patterns", patterns);
 		addArray(map, "Event values", event_values);
 		if (cancellable != null)
-			map.put("Cancellale", cancellable);
+			map.put("Cancellable", cancellable);
 		return map;
 	}
 	public Map<String, Object> toRawMap() {
@@ -166,7 +166,7 @@ public class SyntaxInfo {
 		addArray(map, "Patterns", patterns);
 		addArray(map, "Event values", event_values);
 		if (cancellable != null)
-			map.put("Cancellale", cancellable);
+			map.put("Cancellable", cancellable);
 		return map;
 	}
 	private void addProperty(Map<String, Object> map, String property, String... value) {

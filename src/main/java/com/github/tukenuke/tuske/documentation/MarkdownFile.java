@@ -27,7 +27,7 @@ public class MarkdownFile extends FileType {
 		addSection(wiki, summary, "Expressions", addon.getExpressions());
 		addSection(wiki, summary, "Types", addon.getTypes());
 		addSection(wiki, summary, "Functions", addon.getFunctions());
-		summary.add("<br>\n");
+		summary.add(" ");
 		writer.write(summary.toString());
 		writer.write(wiki.toString());
 	}
@@ -45,7 +45,6 @@ public class MarkdownFile extends FileType {
 			syntaxes.add(syntax.toString());
 		}
 		wiki.add(syntaxes.toString());
-		wiki.add("<br>");
 	}
 
 	public void addSyntax(StringJoiner syntax, SyntaxInfo info, String type) {
@@ -125,21 +124,5 @@ public class MarkdownFile extends FileType {
 			syntax.add("  <td>" + info.dependency + "</td>");
 		}
 		syntax.add("</table>");
-	}
-
-	private void addTable(StringJoiner sj, String property, String... array) {
-		if (array == null || array.length == 0)
-			return;
-		sj.add("  <tr>");
-		sj.add("    <th>" + property + "</th>");
-		sj.add("    <td>");
-		for (String str : array) {
-			if (property.equalsIgnoreCase("Patterns") || property.equalsIgnoreCase("Event values"))
-				sj.add("    <code>" + str + "</code><br>");
-			else
-				sj.add("    " + str + "");
-		}
-		sj.add("    </td>");
-		sj.add("  </tr>");
 	}
 }
