@@ -8,6 +8,7 @@ import ch.njol.skript.lang.function.Functions;
 import ch.njol.skript.lang.function.JavaFunction;
 import ch.njol.skript.log.ParseLogHandler;
 import ch.njol.skript.log.SkriptLogger;
+import com.github.tukenuke.tuske.util.EffectSection;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -48,8 +49,12 @@ public class Documentation implements Runnable{
 		EventValuesGetter getter = new EventValuesGetter();
 		for (SkriptEventInfo info : Skript.getEvents())
 			addSyntax(getAddon(info.c).getEvents(), new SyntaxInfo(info, getter));
-		for (SyntaxElementInfo info : Skript.getConditions())
-			addSyntax(getAddon(info.c).getConditions(), new SyntaxInfo(info));
+		for (SyntaxElementInfo info : Skript.getConditions()) {
+			if (EffectSection.class.isAssignableFrom(info.c)) //Separate effect sections to effects instead of conditions
+				addSyntax(getAddon(info.c).getEffects(), new SyntaxInfo(info));
+			else
+				addSyntax(getAddon(info.c).getConditions(), new SyntaxInfo(info));
+		}
 		for (SyntaxElementInfo info : Skript.getEffects())
 			addSyntax(getAddon(info.c).getEffects(), new SyntaxInfo(info));
 		Class[] types = new Class[Classes.getClassInfos().size()];

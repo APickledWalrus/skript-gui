@@ -45,7 +45,7 @@ dependencies {
     //Generex API. Used to expressions to generate strings from regex
     compile 'com.github.mifmif:generex:1.0.2'
     //ViaVersion
-    compile 'us.myles:viaversion-bukkit:1.1.1'
+    compile 'us.myles:viaversion:1.1.1'
     //compile 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
 }
 

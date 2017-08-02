@@ -19,19 +19,24 @@ public class MarkdownFile extends FileType {
 	@Override
 	public void write(BufferedWriter writer, AddonInfo addon) throws IOException {
 		StringJoiner wiki = new StringJoiner("\n");
-		addSection(wiki,"Events", addon.getEvents());
-		addSection(wiki, "Conditions", addon.getConditions());
-		addSection(wiki, "Effects", addon.getEffects());
-		addSection(wiki, "Expressions", addon.getExpressions());
-		addSection(wiki, "Types", addon.getTypes());
-		addSection(wiki, "Functions", addon.getFunctions());
+		StringJoiner summary = new StringJoiner("\n");
+		summary.add("## Summary");
+		addSection(wiki, summary, "Events", addon.getEvents());
+		addSection(wiki, summary, "Conditions", addon.getConditions());
+		addSection(wiki, summary, "Effects", addon.getEffects());
+		addSection(wiki, summary, "Expressions", addon.getExpressions());
+		addSection(wiki, summary, "Types", addon.getTypes());
+		addSection(wiki, summary, "Functions", addon.getFunctions());
+		summary.add("<br>\n");
+		writer.write(summary.toString());
 		writer.write(wiki.toString());
 	}
 
-	public void addSection(StringJoiner wiki,String section, List<SyntaxInfo> list) {
+	public void addSection(StringJoiner wiki, StringJoiner summary, String section, List<SyntaxInfo> list) {
 		if (list.size() == 0)
 			return;
-		wiki.add("<details><summary>" + section + "</summary><p>");
+		summary.add("  * [" + section + "](#" + section + ")");
+		wiki.add("## " + section);
 		wiki.add(" ");
 		StringJoiner syntaxes = new StringJoiner("\n \n---\n \n");
 		for (SyntaxInfo info : list) {
@@ -40,7 +45,7 @@ public class MarkdownFile extends FileType {
 			syntaxes.add(syntax.toString());
 		}
 		wiki.add(syntaxes.toString());
-		wiki.add("</p></summary></details>");
+		wiki.add("<br>");
 	}
 
 	public void addSyntax(StringJoiner syntax, SyntaxInfo info, String type) {
