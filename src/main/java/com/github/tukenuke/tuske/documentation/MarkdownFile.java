@@ -27,7 +27,7 @@ public class MarkdownFile extends FileType {
 		addSection(wiki, summary, "Expressions", addon.getExpressions());
 		addSection(wiki, summary, "Types", addon.getTypes());
 		addSection(wiki, summary, "Functions", addon.getFunctions());
-		summary.add(" ");
+		summary.add(" \n");
 		writer.write(summary.toString());
 		writer.write(wiki.toString());
 	}

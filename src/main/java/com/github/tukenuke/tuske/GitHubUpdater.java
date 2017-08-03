@@ -86,6 +86,10 @@ public class GitHubUpdater {
 				BufferedReader br = new BufferedReader(new InputStreamReader(github.getInputStream()));
 				JsonArray releases = (JsonArray) new JsonParser().parse(br); //Spigot does have Google Json's package, but in case it doesn't, them it won't check.
 				br.close();
+				UPDATE_DOWNLOAD_URL = null;
+				UPDATE_TITLE = null;
+				UPDATE_URL = null;
+				UPDATE_VERSION = null;
 				for (JsonElement release : releases) {
 					if (release instanceof JsonObject) {
 						if (UPDATE_VERSION == null && UPDATE_TITLE == null) { //It will get the first release
