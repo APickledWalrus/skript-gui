@@ -2,8 +2,11 @@ package com.github.tukenuke.tuske;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.logging.Level;
 
+import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
 import com.github.tukenuke.tuske.documentation.*;

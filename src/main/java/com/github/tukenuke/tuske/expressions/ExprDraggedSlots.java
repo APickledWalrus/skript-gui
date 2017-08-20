@@ -55,8 +55,8 @@ public class ExprDraggedSlots extends SimpleExpression<Integer>{
 		if (e instanceof InventoryDragEvent) {
 			for (Integer slot : ((InventoryDragEvent) e).getRawSlots()){
 				int max = ((InventoryDragEvent) e).getView().getTopInventory() != null ? ((InventoryDragEvent) e).getView().getTopInventory().getSize() : 0;
-				if (isTop ? slot.intValue() < max : slot.intValue() >= max)
-					slots.add(((InventoryDragEvent) e).getView().convertSlot(slot.intValue()));
+				if (isTop ? slot < max : slot >= max)
+					slots.add(((InventoryDragEvent) e).getView().convertSlot(slot));
 			}
 		}
 		return slots.toArray(new Integer[slots.size()]);

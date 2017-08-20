@@ -1,9 +1,6 @@
 package com.github.tukenuke.tuske.documentation;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -57,7 +54,7 @@ public class JsonFile extends FileType {
 			else {
 				JsonArray json = new JsonArray();
 				for (String str : (String[]) entry.getValue())
-					json.add(str);
+					json.add(new JsonPrimitive(str));
 				syntax.add(property, json);
 			}
 		}

@@ -61,7 +61,7 @@ public abstract class GUIListener {
 			InventoryCloseEvent e = (InventoryCloseEvent) event;
 			if (e.getInventory().equals(gui)){
 				if (e.getViewers().size() == 1) //Only stop listener when the last one close.
-					Bukkit.getScheduler().runTask(TuSKe.getInstance(), this::stop);
+					Bukkit.getScheduler().runTaskLater(TuSKe.getInstance(), this::stop, 1L);
 				onClose(e);
 				//	gui.clear();
 			}

@@ -1,9 +1,6 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
-plugins {
-    id 'com.github.johnrengelman.shadow' version '2.0.1'
-    id 'java'
-}
+apply plugin: 'java'
 
 sourceCompatibility = 1.8
 
@@ -36,7 +33,9 @@ repositories {
         url 'http://maven.elmakers.com/repository/'
     }
 }
-
+configurations {
+    dependency
+}
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     //This is the default bukkit version supported. It is just for javadocs and jar hierarchy
@@ -49,6 +48,7 @@ dependencies {
     compile 'com.github.mifmif:generex:1.0.2'
     //ViaVersion
     compile 'us.myles:viaversion:1.1.1'
+    //compile 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
 }
 
 processResources {
@@ -57,6 +57,7 @@ processResources {
     ]
 
 }
-shadowJar {
-    baseName = 'TuSKe'
+
+jar {
+    archiveName 'TuSKe.jar'
 }
