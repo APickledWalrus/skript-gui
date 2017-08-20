@@ -3,6 +3,7 @@ package com.github.tukenuke.tuske;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -10,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class SimpleConfig{
 
 	private JavaPlugin pl;
+	private boolean hasChanged = false;
 	private HashMap<String, String> map = new HashMap<>();
 	public SimpleConfig(JavaPlugin plugin){
 		pl = plugin;
@@ -36,11 +38,12 @@ public class SimpleConfig{
 			"#server.",
 			"#You can still download/update your plugin by command, see more in",
 			"#/tuske update");
-		setDefault("updater.download_pre_releases", (pl.getDescription().getVersion().contains("beta")),
+		String version = pl.getDescription().getVersion();
+		setDefault("updater.download_pre_releases", (version.contains("beta") || version.contains("dev")),
 			"#Download pre-releases.",
 			"#Note: pre-releases versions shoudln't be used in your main server.",
 			"#It's just to test new incomming features only!!");
-		addComentsAbove("disable", 
+		addCommentsAbove("disable",
 			"#This option will be for future things of TuSKe.",
 			"#It will be used when there is some features that isn't available",
 			"#or uncompatible with your version. For now, it doesn't do nothing",
@@ -67,7 +70,7 @@ public class SimpleConfig{
 			"#Example:",
 			"#\topen virtual InventoryType.CHEST inventory with size 1 named \"Hi\" to player",
 			"#Don't need to worry about it, is just in case.");
-		addComentsAbove("documentation",
+		addCommentsAbove("documentation",
 			"#A documentation that will be generated at 'plugins/TuSKe/documentation/'",
 			"#for all addons");
 		setDefault("documentation.enabled", true,
@@ -81,7 +84,8 @@ public class SimpleConfig{
 				"#  yaml: Generates a file in yaml format.",
 				"#  markdown: Generates in Markdown format, useful to github's wiki.",
 				"#  default: The default format described above.");
-		addComentsAbove("evaluate_filter",
+		//Might remove it. It's kind of waste of time trying to make it safe.
+		/*addCommentsAbove("evaluate_filter",
 			"#Filter some effects/conditions/expressions from being used in evaluate effects.",
 			"#First, go to '/TuSKe/documentation' and get every syntax you don't want to be used in",
 			"#eval effect. Add them in list below and reload the config with '/tuske reload config'.",
@@ -96,7 +100,7 @@ public class SimpleConfig{
 			new String[]{"op %player%", "stop server"},
 			"#A list of syntaxes to add to whitelist/blacklist.",
 			"#Use quotes to properly use the yaml file, example:",
-			"#- \"kill %player%\"");
+			"#- \"kill %player%\"");*/
 		
 		//replace the config with the old values.
 		String str = "use-metrics";
@@ -112,26 +116,24 @@ public class SimpleConfig{
 			
 		}
 	}
-	private boolean setDefault(String path, Object value, String... comments){
+	private void setDefault(String path, Object value, String... comments){
 		if (comments.length > 0)
-			addComentsAbove(path, comments);
+			addCommentsAbove(path, comments);
 		Object obj = pl.getConfig().get(path);
 		if (obj == null || (!obj.getClass().equals(value.getClass()) && !value.getClass().isArray())) {
+			hasChanged = true;
 			pl.getConfig().set(path, value);
-			return true;
 		}
-		return false;
 		
 	
 	}
-	private boolean addComentsAbove(String path, String... comments){
-		if (!map.containsKey(path)){
+	private void addCommentsAbove(String path, String... comments){
+		if (!map.containsKey(path))
 			map.put(path, (map.size() > 0 ? "\n" : "")+ StringUtils.join(comments, "\n"));
-			return true;
-		}
-		return false;
 	}
 	public void save(File file){
+		if (!hasChanged) //No need to save if the config is updated.
+			return;
 		try {
 			String str = saveToString();
 			if (str == null)
@@ -152,21 +154,20 @@ public class SimpleConfig{
 			String key = entry.getKey();
 			String comment = entry.getValue();
 			int last = key.split("\\.").length -1;
-			String space = "";//updater:(.+)update:
-			for (int x = 0; x < last; x++){
-				space = space + "  ";
-			}
+			StringBuilder space = new StringBuilder("");
+			for (int x = 0; x < last; x++)
+				space.append("  ");
 			comment = comment.replaceAll("\n", "\n" + space) + "\n";
 			String regex = keyToRegex(key);
 			if (!key.equalsIgnoreCase(regex))
-				toFile = toFile.replaceFirst("(?s)"+ regex, "$1$2" +  comment + space + "$3");
+				toFile = toFile.replaceFirst("(?s)"+ Matcher.quoteReplacement(regex), "$1$2" +  comment + space + "$3");
 			else
-				toFile = toFile.replaceFirst(key, comment + key);
+				toFile = toFile.replaceFirst(Matcher.quoteReplacement(key), comment + key);
 		}
 		map.clear();
 		return toFile;
 	}
 	private String keyToRegex(String key){		
-		return key.replaceAll("^((\\w+(\\s+|\\-)?)+)(\\.(.+\\.)?)((\\w+(\\s+|\\-)?)+)$", "($1:)(.+)($6:)"); //TODO fix that regex pattern
+		return key.replaceAll("^((\\w+(\\s+|-)?)+)(\\.(.+\\.)?)((\\w+(\\s+|-)?)+)$", "($1:)(.+)($6:)"); //TODO fix that regex pattern
 	}
 }
