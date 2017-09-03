@@ -1,4 +1,4 @@
-####Dependencies
+#### Dependencies
 
 Since it uses some NMS/OBC codes, It is necessary to manually add the spigot jars here.
 
@@ -20,3 +20,4 @@ Sources:
 * [Marriage](https://www.spigotmc.org/resources/18998/)
 * [ProtocolSupport](https://www.spigotmc.org/resources/7201/)
 * [Landlord](https://www.spigotmc.org/resources/2735/)
+* [Generex](https://github.com/mifmif/Generex) - This is not a bukkit plugin, it's compiled with plugin and uses a "lite" version compiled by myself.

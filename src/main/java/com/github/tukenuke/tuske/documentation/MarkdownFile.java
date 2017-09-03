@@ -113,7 +113,7 @@ public class MarkdownFile extends FileType {
 		}
 		if (Util.notEmpty(info.changers)) {
 			syntax.add("  <th><div title=\"The possible modifiers that this expression accepts.\"><a href=\"http://bensku.github.io/Skript/effects.html#EffChange\">Changers</a></div></th>");
-			syntax.add("  <td>" + Util.toFancyArray(info.changers) + "</td>");
+			syntax.add("  <td>" + Util.toFancyArray((Object[]) info.changers) + "</td>");
 		}
 		if (info.cancellable != null) {
 			syntax.add("  <th><div title=\"It means if you can cancel this event from happening or not.\"><a href =\"http://bensku.github.io/Skript/effects.html#EffCancelEvent\">Cancellable</a></div></th>");

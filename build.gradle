@@ -34,7 +34,7 @@ repositories {
     }
 }
 configurations {
-    dependency
+    compileWithJar
 }
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
@@ -45,19 +45,28 @@ dependencies {
     //Skript
     compile 'ch.njol:skript:2.2-dev28b'
     //Generex API. Used to expressions to generate strings from regex
-    compile 'com.github.mifmif:generex:1.0.2'
+    compileWithJar files('dependencies/Generex.jar')
     //ViaVersion
     compile 'us.myles:viaversion:1.1.1'
-    //compile 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+    configurations.compile.extendsFrom(configurations.compileWithJar)
+}
+
+//Used to copy the final jar in test server located in at same place
+//It requires that you execute "./gradlew clean build copy"
+task copy(type: Copy) {
+    from 'build/libs/TuSKe.jar'
+    into 'server/plugins'
 }
 
 processResources {
     filter ReplaceTokens, tokens: [
             'version': project.property('version')
     ]
-
 }
 
 jar {
     archiveName 'TuSKe.jar'
+    from {
+        configurations.compileWithJar.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
