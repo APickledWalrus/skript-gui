@@ -28,7 +28,7 @@ public class EventValuesGetter {
 					for (Object eventValue : values) {
 						Class<?> event = ReflectionUtils.getField(eventValue.getClass(), eventValue, "event");
 						if (event != null && (c.isAssignableFrom(event) || event.isAssignableFrom(c))) {
-							Class<?>[] excluded = ReflectionUtils.getField(eventValue.getClass(), eventValue, "excluded");
+							Class<?>[] excluded = ReflectionUtils.getField(eventValue.getClass(), eventValue, "exculdes");
 							if (excluded != null) {
 								for (Class<?> exclude : excluded)
 									if (exclude.isAssignableFrom(c))

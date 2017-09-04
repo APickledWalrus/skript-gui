@@ -4,6 +4,7 @@ import ch.njol.skript.Skript;
 import ch.njol.skript.registrations.Classes;
 import com.github.tukenuke.tuske.TuSKe;
 import com.github.tukenuke.tuske.manager.gui.GUI;
+import com.github.tukenuke.tuske.manager.gui.v2.SkriptGUIEvent;
 import com.github.tukenuke.tuske.util.EffectSection;
 import com.github.tukenuke.tuske.util.EvalFunction;
 import com.github.tukenuke.tuske.util.VariableUtil;
@@ -32,10 +33,10 @@ public class EffFormatGUI extends EffectSection {
 		String cr = "string/" + Classes.getExactClassInfo(ClickType.class).getCodeName();
 		Registry.newEffect(EffFormatGUI.class,
 				"(format|create|make) [a] gui slot [%-numbers%] of %players% with %itemstack% [to [do] nothing]",
-				"(format|create|make) [a] gui slot [%-numbers%] of %players% with %itemstack% to (1¦close|2¦open %-inventory%) [(using|with) %-" + cr + "% [(button|click|action)]]",
+				"(format|create|make) [a] gui slot [%-numbers%] of %players% with %itemstack% to close [(using|with) %-" + cr + "% [(button|click|action)]]",
 				"(format|create|make) [a] gui slot [%-numbers%] of %players% with %itemstack% to (run|exe[cute]) [(using|with) %-" + cr + "% [(button|click|action)]]",
-				"(format|create|make) [a] gui slot [%-numbers%] of %players% with %itemstack% to [(1¦close|2¦open %-inventory%) then] (run|exe[cute]) %commandsender% command %string% [(using|with) perm[ission] %-string%][[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
-				"(format|create|make) [a] gui slot [%-numbers%] of %players% with %itemstack% to [(1¦close|2¦open %-inventory%) then] (run|exe[cute]) function <(.+)>\\([<.*?>]\\)[[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
+				"(format|create|make) [a] gui slot [%-numbers%] of %players% with %itemstack% to [close then] (run|exe[cute]) %commandsender% command %string% [(using|with) perm[ission] %-string%][[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
+				"(format|create|make) [a] gui slot [%-numbers%] of %players% with %itemstack% to [close then] (run|exe[cute]) function <(.+)>\\([<.*?>]\\)[[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
 				//"(format|create|make) [a] gui slot %numbers% of %players% with %itemstack% to [(1¦close|2¦open %-inventoy%) then] (run|exe[cute]) function <(.+)>\\([%-objects%[, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%][, %-objects%]]\\)[[(,| and)] (using|with) %-" + cr + "% [(button|click|action)]][[(,| and)] (using|with) cursor [item] %-itemstack%]",
 				"(format|create|make) [a] gui slot [%-numbers%] of %players% with %itemstack% to (run|exe[cute]) [gui [click]] event");
 	}
@@ -74,10 +75,8 @@ public class EffFormatGUI extends EffectSection {
 		s = (Expression<Number>) arg[0];
 		p = (Expression<Player>) arg[1];
 		i = (Expression<ItemStack>) arg[2]/*.getConvertedExpression(ItemStack.class)*/;
-		toClose = arg3.mark > 0;
+		toClose = arg3.expr.contains("to close");
 		Type = arg1;
-		if (arg3.mark == 2)
-			inv = (Expression<Inventory>) arg[3];
 		switch (arg1){
 		case 5:
 			runEvent = true;
@@ -88,9 +87,9 @@ public class EffFormatGUI extends EffectSection {
 			ct = arg[arg.length -1] != null ? arg[arg.length -1].getConvertedExpression(Object.class) : null;
 		case 0:  break;
 		case 3:
-			sender = (Expression<CommandSender>) arg[4];
-			cmd = (Expression<String>) arg[5];
-			perm =  arg[6] != null ? (Expression<String>) arg[6] : null;
+			sender = (Expression<CommandSender>) arg[3];
+			cmd = (Expression<String>) arg[4];
+			perm =  arg[5] != null ? (Expression<String>) arg[5] : null;
 			break;
 		case 4:
 			String name = arg3.regexes.get(0).group(0).replaceAll(" ","");
@@ -107,6 +106,8 @@ public class EffFormatGUI extends EffectSection {
 			ct = arg[max - 2] != null ? arg[max - 2].getConvertedExpression(Object.class): null;
 			i2 = arg[max - 1] != null ? (Expression<ItemStack>) arg[max - 1] : null;
 		}
+		//Just a safe check, to make sure the listener was registered when this is loaded
+		SkriptGUIEvent.getInstance().register();
 		return true;
 	}
 
