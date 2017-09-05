@@ -9,6 +9,7 @@ import com.github.tukenuke.tuske.TuSKe;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -20,7 +21,11 @@ public class TriggerUnregisterListener extends SelfRegisteringSkriptEvent {
 	private Trigger t;
 
 	public TriggerUnregisterListener() {
-		t = new Trigger(null, getClass().getName(), this, new ArrayList<>());
+	}
+
+	public void register() {
+		if (t == null) //A file object, just to not use null
+			t = new Trigger(new File("TuSKe"), getClass().getName(), this, new ArrayList<>());
 		SkriptEventHandler.addSelfRegisteringTrigger(t);
 	}
 
@@ -37,7 +42,6 @@ public class TriggerUnregisterListener extends SelfRegisteringSkriptEvent {
 	@Override
 	public void unregisterAll() {
 		SkriptGUIEvent.getInstance().unregisterAll();
-		Bukkit.getScheduler().runTask(TuSKe.getInstance(), () -> SkriptEventHandler.addSelfRegisteringTrigger(t));
 	}
 
 	@Override

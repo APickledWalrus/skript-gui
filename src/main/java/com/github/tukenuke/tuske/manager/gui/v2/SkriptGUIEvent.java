@@ -29,7 +29,6 @@ public class SkriptGUIEvent extends SkriptEvent {
 	private final List<GUIListener> listeners = new ArrayList<>();
 	private boolean registered = false;
 	private SkriptGUIEvent() {
-		new TriggerUnregisterListener();
 		register();
 	}
 
@@ -47,6 +46,8 @@ public class SkriptGUIEvent extends SkriptEvent {
 		if (!registered) {
 			//Make sure it only execute this once when necessary
 			registered = true;
+			// A listener to know when Skript will remove all listeners
+			new TriggerUnregisterListener().register();
 			// This is a safe Trigger. Even using null values, it won't cause any issue.
 			// It will be used to load as "SkriptListener" instead of Bukkit one,
 			// So, when cancelling this event, it will still calling all scripts events too.

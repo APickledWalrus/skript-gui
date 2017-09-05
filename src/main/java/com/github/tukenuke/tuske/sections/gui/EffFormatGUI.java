@@ -53,7 +53,6 @@ public class EffFormatGUI extends EffectSection {
 	private Expression<ItemStack> i;
 	private Expression<?> ct;
 	private Expression<ItemStack> i2;
-	private Expression<Inventory> inv = null;
 	private boolean runEvent;
 
 	@SuppressWarnings("unchecked")
@@ -155,8 +154,6 @@ public class EffFormatGUI extends EffectSection {
 							gui.toCallEvent(runEvent);
 						else
 							gui.toClose(toClose);
-						if (this.inv != null)
-							gui.toOpenInventory(this.inv.getSingle(e));
 						TuSKe.getGUIManager().newGUI(inv, slots[x].intValue(), i.getSingle(e), gui);
 					}
 				}
