@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  */
 public class SyntaxInfo {
 
-	public String name, since, return_type, dependency;
+	public String id, name, since, return_type, dependency;
 	public String[] desc, examples, patterns, usage, changers, event_values;
 	public Boolean cancellable; //It needs to be null for non event syntax
 
@@ -34,6 +34,7 @@ public class SyntaxInfo {
 			name = c.getAnnotation(Name.class).value();
 		if (name == null || name.isEmpty())
 			name = c.getSimpleName();
+		id = c.getSimpleName();
 		if (c.isAnnotationPresent(Description.class))
 			desc = escapeHtml(c.getAnnotation(Description.class).value());
 		if (c.isAnnotationPresent(Examples.class))
@@ -70,6 +71,10 @@ public class SyntaxInfo {
 		if (info.getDescription() != null && info.getDescription().equals(SkriptEventInfo.NO_DOC))
 			return;
 		name = info.getName();
+        if (info.c.getSimpleName().equalsIgnoreCase("SimpleEvent")){
+            id = info.getId();
+        }
+        id = info.getId();
 		desc = escapeHtml(info.getDescription());
 		examples = info.getExamples();
 		patterns = fixPattern(info.patterns);
@@ -106,6 +111,7 @@ public class SyntaxInfo {
 		if (info.getDocName() != null && info.getDocName().equals(ClassInfo.NO_DOC))
 			return;
 		name = info.getDocName();
+        id = info.getC().getSimpleName();
 		desc = escapeHtml(info.getDescription());
 		examples = info.getExamples();
 		usage = escapeHtml(info.getUsage());
@@ -120,6 +126,7 @@ public class SyntaxInfo {
 
 	public SyntaxInfo(JavaFunction info) {
 		name = info.getName();
+		id = info.getClass().getSimpleName();
 		desc = escapeHtml(info.getDescription());
 		examples = info.getExamples();
 		StringBuilder sb = new StringBuilder();
@@ -141,6 +148,7 @@ public class SyntaxInfo {
 
 	public Map<String, Object> toMap() {
 		Map<String, Object> map = new LinkedHashMap<>();
+        addProperty(map, "ID", id);
 		addProperty(map, "Name", name);
 		addArray(map, "Description", desc);
 		addArray(map, "Examples", examples);
