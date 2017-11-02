@@ -71,9 +71,6 @@ public class SyntaxInfo {
 		if (info.getDescription() != null && info.getDescription().equals(SkriptEventInfo.NO_DOC))
 			return;
 		name = info.getName();
-        if (info.c.getSimpleName().equalsIgnoreCase("SimpleEvent")){
-            id = info.getId();
-        }
         id = info.getId();
 		desc = escapeHtml(info.getDescription());
 		examples = info.getExamples();
