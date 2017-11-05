@@ -7,7 +7,6 @@ import com.github.tukenuke.tuske.TuSKe;
 import com.github.tukenuke.tuske.listeners.GUIListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -15,8 +14,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
-import ch.njol.skript.Skript;
 
 public class GUIManager {
 
@@ -116,16 +113,6 @@ public class GUIManager {
 				break;
 		}
 		return true;
-	}
-	public void runCommand(final CommandSender sender, String cmd, String perm){
-		if (sender != null && cmd != null){
-			if (sender instanceof Player && perm != null && !sender.isOp()){
-				sender.addAttachment(TuSKe.getInstance(), perm, true, 0);
-			}
-			if (cmd.startsWith("/"))
-				cmd = cmd.substring(1);
-			Skript.dispatchCommand(sender, cmd);
-		}
 	}
 	private int getIndex(ClickType ct){
 		if (ct == null)

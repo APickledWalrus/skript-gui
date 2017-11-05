@@ -1,6 +1,6 @@
 package com.github.tukenuke.tuske.effects;
 
-import com.github.tukenuke.tuske.TuSKe;
+import com.github.tukenuke.tuske.util.CommandUtils;
 import com.github.tukenuke.tuske.util.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -14,9 +14,9 @@ import ch.njol.util.Kleenean;
 public class EffExecutePermission extends Effect{
 	static {
 		Registry.newEffect(EffExecutePermission.class,
-				"[execute] [the] command %strings% by %players% with perm[ission] %string%",
-				"[execute] [the] %players% command %strings% with perm[ission] %string%",
-				"(let|make) %players% execute [[the] command] %strings% with perm[ission] %string%");
+				"[execute] [the] command %strings% by %players% with perm[ission] %strings%",
+				"[execute] [the] %players% command %strings% with perm[ission] %strings%",
+				"(let|make) %players% execute [[the] command] %strings% with perm[ission] %strings%");
 	}
 
 	private Expression<Player> p;
@@ -49,7 +49,7 @@ public class EffExecutePermission extends Effect{
 		if (p != null && cmd != null && perm != null){
 			for (Player player : p)
 				for (String command : cmd)
-						TuSKe.getGUIManager().runCommand(player, command, perm);
+						CommandUtils.runCommand(player, command, perm);
 		}
 	}
 

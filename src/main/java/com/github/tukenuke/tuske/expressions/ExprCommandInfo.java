@@ -6,8 +6,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.event.Event;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Nullable;
 
@@ -81,7 +80,7 @@ public class ExprCommandInfo extends SimpleExpression<String>{
 				if (c != null){
 					switch(id){
 						case 0: return new String[]{c.getDescription() != null && !c.getDescription().equalsIgnoreCase("") ? c.getDescription(): null};
-						case 1: return new String[]{c.getLabel()};
+						case 1: return new String[]{c.getName()};
 						case 2: return new String[]{c.getPermission() != null && !c.getPermission().equalsIgnoreCase("") ? c.getPermission(): null};
 						case 3: return new String[]{c.getPermissionMessage()};
 						case 4:

@@ -5,10 +5,7 @@ import ch.njol.skript.registrations.Classes;
 import com.github.tukenuke.tuske.TuSKe;
 import com.github.tukenuke.tuske.manager.gui.GUI;
 import com.github.tukenuke.tuske.manager.gui.v2.SkriptGUIEvent;
-import com.github.tukenuke.tuske.util.EffectSection;
-import com.github.tukenuke.tuske.util.EvalFunction;
-import com.github.tukenuke.tuske.util.VariableUtil;
-import com.github.tukenuke.tuske.util.Registry;
+import com.github.tukenuke.tuske.util.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -132,7 +129,7 @@ public class EffFormatGUI extends EffectSection {
 								final CommandSender s = sender != null ? sender.getSingle(e) : p[y];
 								final String pe = perm != null ? perm.getSingle(e) : null;
 								final String c = cmd.getSingle(e);
-								rn = (Runnable) () -> TuSKe.getGUIManager().runCommand(s, c, pe);
+								rn = (Runnable) () -> CommandUtils.runCommand(s, c, pe);
 								break;
 							case 4:
 								final EvalFunction f = func.getParemetersValues(e);
