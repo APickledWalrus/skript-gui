@@ -1,6 +1,7 @@
 package com.github.tukenuke.tuske.documentation;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -9,6 +10,7 @@ import ch.njol.skript.lang.function.JavaFunction;
 import ch.njol.skript.log.ParseLogHandler;
 import ch.njol.skript.log.SkriptLogger;
 import com.github.tukenuke.tuske.util.EffectSection;
+import com.github.tukenuke.tuske.util.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -70,8 +72,10 @@ public class Documentation implements Runnable{
 
 		for (ClassInfo info : Classes.getClassInfos())
 			addSyntax(getAddon(info).getTypes(), new SyntaxInfo(info));
-		for (JavaFunction info : Functions.getJavaFunctions()) //Only Skript use this...
-			addSyntax(getAddon(info.getClass()).getFunctions(), new SyntaxInfo(info));
+		Collection<JavaFunction<?>> functions = ReflectionUtils.invokeMethod(Functions.class, "getJavaFunctions", null);
+		if (functions != null)
+			for (JavaFunction info : functions) //Only Skript use this...
+				addSyntax(getAddon(info.getClass()).getFunctions(), new SyntaxInfo(info));
 		//Before, lets delete old files...
 		File docsDir = new File(instance.getDataFolder(), "documentation/");
 		if (docsDir.exists()) {

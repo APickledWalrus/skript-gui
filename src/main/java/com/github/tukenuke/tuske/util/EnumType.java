@@ -42,7 +42,7 @@ public class EnumType extends ClassInfo{
 		}
 
 	}
-	private <T extends Enum<T>> Parser<T> getParser(Class<T> c, EnumUtils<T> enumUtils) {
+	public static <T extends Enum<T>> Parser<T> getParser(Class<T> c, EnumUtils<T> enumUtils) {
 		if (!TuSKe.getInstance().getConfig().getBoolean("use_only_enum_names")){//It will parse the enum types as '<Enum name>' and '<Enum type>.<Enum name>'
 			return new Parser<T>() {
 				@Override

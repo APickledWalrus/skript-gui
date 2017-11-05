@@ -1,5 +1,12 @@
 package com.github.tukenuke.tuske.expressions.gui;
 
+import ch.njol.skript.Skript;
+import ch.njol.skript.classes.Parser;
+import ch.njol.skript.lang.ParseContext;
+import ch.njol.skript.lang.util.SimpleLiteral;
+import ch.njol.skript.util.EnumUtils;
+import com.github.tukenuke.tuske.TuSKe;
+import com.github.tukenuke.tuske.util.EnumType;
 import com.github.tukenuke.tuske.util.InventoryUtils;
 import com.github.tukenuke.tuske.util.Registry;
 import org.bukkit.event.Event;
@@ -14,12 +21,13 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 
 public class ExprVirtualInv extends SimpleExpression<Inventory>{
+	private static Parser<InventoryType> parser = EnumType.getParser(InventoryType.class, null);
 	static {
 		Registry.newSimple(ExprVirtualInv.class,
-				"virtual %inventorytype% [inventory] [with size %-number%] [(named|with (name|title)) %-string%]",
-				"virtual %inventorytype% [inventory] [with %-number% row[s]] [(named|with (name|title)) %-string%]",
-				"virtual %inventorytype% [inventory] [(named|with (name|title)) %-string%] with size %-number%",
-				"virtual %inventorytype% [inventory] [(named|with (name|title)) %-string%] with %-number% row[s]");
+				"virtual <.+?> [inventory] [with size %-number%] [(named|with (name|title)) %-string%]",
+				"virtual <.+?> [inventory] [with %-number% row[s]] [(named|with (name|title)) %-string%]",
+				"virtual <.+?> [inventory] [(named|with (name|title)) %-string%] with size %-number%",
+				"virtual <.+?> [inventory] [(named|with (name|title)) %-string%] with %-number% row[s]");
 	}
 
 	private Expression<InventoryType> it;
@@ -39,13 +47,22 @@ public class ExprVirtualInv extends SimpleExpression<Inventory>{
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
-		it = (Expression<InventoryType>) arg[0];
+		if (arg3.regexes != null && arg3.regexes.size() > 0) {// No value found, so let's try the workaround with regex
+			String stringType = arg3.regexes.get(0).group(0);
+			InventoryType type = parser.parse(stringType, ParseContext.COMMAND);
+			if (type != null)
+				it = new SimpleLiteral<>(type, false);
+			else {
+				Skript.error("There is no inventory type called '" + stringType + "'. Check TuSKe documentation to search about it.");
+				return false;
+			}
+		}
 		if (arg1 > 1) {
-			name = (Expression<String>) arg[1];
-			size = (Expression<Number>) arg[2];
-		} else {
+			name = (Expression<String>) arg[0];
 			size = (Expression<Number>) arg[1];
-			name = (Expression<String>) arg[2];
+		} else {
+			size = (Expression<Number>) arg[0];
+			name = (Expression<String>) arg[1];
 		}
 		return true;
 	}
@@ -58,8 +75,8 @@ public class ExprVirtualInv extends SimpleExpression<Inventory>{
 	@Override
 	@Nullable
 	protected Inventory[] get(Event e) {
-		InventoryType type = it.getSingle(e);
-		if (type != null){
+		InventoryType type;
+		if (it != null && (type = it.getSingle(e)) != null){
 			Integer size = this.size != null ? this.size.getSingle(e).intValue() : null;
 			String name = this.name != null ? this.name.getSingle(e) : null;
 			return new Inventory[]{InventoryUtils.newInventory(type, size, name)};
