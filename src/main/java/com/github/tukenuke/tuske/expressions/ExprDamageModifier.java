@@ -1,9 +1,6 @@
 package com.github.tukenuke.tuske.expressions;
 
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Events;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.*;
 import com.github.tukenuke.tuske.util.ReflectionUtils;
 import com.github.tukenuke.tuske.util.Registry;
 import org.bukkit.event.Event;
@@ -31,7 +28,7 @@ import ch.njol.util.coll.CollectionUtils;
 		"\tset armor damage to armor damage + 1",
 		"\tclear armor damage",
 		"\treset armor damage"})
-@Events("")
+@Since("1.7-beta.2")
 public class ExprDamageModifier extends SimpleExpression<Double>{
 	static {
 		if (ReflectionUtils.hasClass("org.bukkit.event.entity.EntityDamageEvent.DamageModifier"))

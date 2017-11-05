@@ -1,5 +1,9 @@
 package com.github.tukenuke.tuske.effects;
 
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import com.github.tukenuke.tuske.util.CommandUtils;
 import com.github.tukenuke.tuske.util.Registry;
 import org.bukkit.entity.Player;
@@ -11,12 +15,17 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 
+@Name("Command with Permission")
+@Description("Make the player execute a command with a temporary permission, when the player finishes executing the " +
+		"command, the permission is removed.")
+@Examples("make all players execute command \"example\" with permissions \"permission.one\" and \"permission.two\"")
+@Since("1.6.9.7")
 public class EffExecutePermission extends Effect{
 	static {
 		Registry.newEffect(EffExecutePermission.class,
-				"[execute] [the] command %strings% by %players% with perm[ission] %strings%",
-				"[execute] [the] %players% command %strings% with perm[ission] %strings%",
-				"(let|make) %players% execute [[the] command] %strings% with perm[ission] %strings%");
+				"[execute] [the] command %strings% by %players% with perm[ission][s] %strings%",
+				"[execute] [the] %players% command %strings% with perm[ission][s] %strings%",
+				"(let|make) %players% execute [[the] command] %strings% with perm[ission][s] %strings%");
 	}
 
 	private Expression<Player> p;
