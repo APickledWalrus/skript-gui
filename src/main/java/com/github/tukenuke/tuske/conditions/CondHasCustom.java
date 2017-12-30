@@ -17,7 +17,7 @@ public class CondHasCustom extends Condition{
 	static {
 		Registry.newCondition(CondHasCustom.class,
 				"%itemstack% has [a] custom enchantment [%-customenchantment%]",
-				"%itemstack% has(n't| not) [a] custom enchantment [%-customenchantment%]");
+				"%itemstack% does(n't| not) [have] custom enchantment [%-customenchantment%]");
 	}
 
 	private Expression<ItemStack> i;
@@ -34,7 +34,7 @@ public class CondHasCustom extends Condition{
 
 	@Override
 	public String toString(@Nullable Event arg0, boolean arg1) {
-		return this.i + ((isNegated())? " hasn't":" has") + " custom enchantment";
+		return this.i + ((isNegated())? " doesn't":" has") + " custom enchantment";
 	}
 
 	@Override
