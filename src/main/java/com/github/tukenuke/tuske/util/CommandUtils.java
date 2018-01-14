@@ -32,9 +32,10 @@ public class CommandUtils {
 	}
 	public static void runCommand(final CommandSender sender, String cmd, String... perms){
 		if (sender != null && cmd != null){
-			if (sender instanceof Player && perms != null && !sender.isOp()){
+			if (sender instanceof Player && perms != null && !sender.isOp()) {
 				for (String perm : perms)
-					if (perm != null) sender.addAttachment(TuSKe.getInstance(), perm, true, 0);
+					if (perm != null)
+						sender.addAttachment(TuSKe.getInstance(), perm, true, 0);
 			}
 			if (cmd.startsWith("/"))
 				cmd = cmd.substring(1);

@@ -139,14 +139,11 @@ public class TuSKeTypes {
 			@Override
 			@Nullable
 			public Pattern parse(String s, ParseContext arg1) {
-				if (arg1 == ParseContext.COMMAND){
+				if (arg1 == ParseContext.COMMAND)
 					return Regex.getInstance().parse(s);
-				}
+				else if (s.startsWith("/") && s.endsWith("/"))
+					return Regex.getInstance().parse(s.substring(1, s.length() - 1));
 				return null;
-			}
-			@Override
-			public boolean canParse(ParseContext arg1){
-				return arg1 == ParseContext.COMMAND;
 			}
 			@Override
 			public String toString(Pattern reg, int arg1) {
@@ -158,9 +155,15 @@ public class TuSKeTypes {
 				return reg.pattern();
 			}}
 				.name("Regex")
-				.description("Represents a regex object. For now, it won't have any usage but only for test the pattern. It will have more usage in future versions.")
+				.description("Represents an regex pattern object, it can be created with `\"regex here\" parsed as regex`" +
+						" or `/regex here/`. The second option is useful cause you don't need to escape Skript " +
+						"characters (like double %%, \"\"). Obviously, you can't use Skript expression in it, so for that" +
+						"you will need the first option.")
+				.usage("/.../")
 				.examples(
 						"set {_regex} to \"(\\d+(\\.\\d+)*\" parsed as regex",
+						"#or",
+						"set {_regex} to /(\\d+(\\.\\d+)*/",
 						"if regex error is set: #It will case there is a missing parentheses at the end.",
 						"\tsend \"A error occurred with the regex pattern. Details:\"",
 						"\tsend last regex parser error",
@@ -168,13 +171,13 @@ public class TuSKeTypes {
 						"\t#Unclosed group near index 12",
 						"\t#(\\d+(\\.\\d+)*",
 						"\t#             ^")
-				.since("1.7.1");
+				.since("1.7.1, 1.8.3 (regex escaper)");
 		new SimpleType<CEnchant>(CEnchant.class, "customenchantment", "custom ?enchantments?") {
 			@Override
 			@Nullable
 			public CEnchant parse(String s, ParseContext arg1) {
 				int l = 0;
-				if (s.matches(".*\\s{1,}\\d{1,}$")){
+				if (s.matches(".*\\s+\\d+$")){
 					l = Integer.valueOf(s.split(" ")[s.split(" ").length-1]);
 					s = s.replace(" " + l,"");
 				}
