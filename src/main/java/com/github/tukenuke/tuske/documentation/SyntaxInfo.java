@@ -62,7 +62,7 @@ public class SyntaxInfo {
 			}
 			if (array.size() == 0)
 				array.add("none");
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			array.add("unknown");
 		}
 		changers = array.toArray(new String[array.size()]);
