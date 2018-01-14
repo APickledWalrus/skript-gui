@@ -5,8 +5,7 @@ import ch.njol.skript.lang.Literal;
 import ch.njol.skript.lang.SelfRegisteringSkriptEvent;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.skript.lang.Trigger;
-import com.github.tukenuke.tuske.TuSKe;
-import org.bukkit.Bukkit;
+import com.github.tukenuke.tuske.util.ReflectionUtils;
 import org.bukkit.event.Event;
 
 import java.io.File;
@@ -26,7 +25,8 @@ public class TriggerUnregisterListener extends SelfRegisteringSkriptEvent {
 	public void register() {
 		if (t == null) //A file object, just to not use null
 			t = new Trigger(new File("TuSKe"), getClass().getName(), this, new ArrayList<>());
-		SkriptEventHandler.addSelfRegisteringTrigger(t);
+		//Some old skript version doesn't have this method public
+		ReflectionUtils.invokeMethod(SkriptEventHandler.class, null, "addSelfRegisteringTrigger", t);
 	}
 
 	@Override
