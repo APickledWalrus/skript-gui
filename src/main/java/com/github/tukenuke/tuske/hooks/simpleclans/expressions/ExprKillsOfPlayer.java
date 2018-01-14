@@ -19,7 +19,7 @@ import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 
 public class ExprKillsOfPlayer extends SimpleExpression<Number>{
 	static {
-		Registry.newProperty(ExprKillsOfPlayer.class, "clan (1Â¦rival|2Â¦neutral|3Â¦civilian) kills", "player");
+		Registry.newProperty(ExprKillsOfPlayer.class, "clan (1¦rival|2¦neutral|3¦civilian) kills", "player");
 	}
 	
 	private Expression<Player> p;

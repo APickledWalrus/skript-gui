@@ -20,8 +20,8 @@ public class EffGuiProperties extends Effect {
 	static {
 		Registry.newEffect(EffGuiProperties.class, 1,
 				"change gui inventory to name %string% and size %number%",
-				"change gui shape [of (1Â¦items|2Â¦actions)] to %strings%",
-				"change gui properties of inventory to name %string% [with %-number% row[s]] and shape [of (1Â¦items|2Â¦actions)] to %strings%");
+				"change gui shape [of (1¦items|2¦actions)] to %strings%",
+				"change gui properties of inventory to name %string% [with %-number% row[s]] and shape [of (1¦items|2¦actions)] to %strings%");
 	}
 
 	private Expression<String> name;

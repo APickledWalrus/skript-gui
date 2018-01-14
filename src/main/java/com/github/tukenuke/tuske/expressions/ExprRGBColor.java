@@ -1,10 +1,13 @@
 package com.github.tukenuke.tuske.expressions;
 
+import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
+import com.github.tukenuke.tuske.TuSKe;
 import com.github.tukenuke.tuske.util.Registry;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -49,9 +52,10 @@ public class ExprRGBColor extends SimpleExpression<Integer>{
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] arg, int arg1, Kleenean arg2, ParseResult arg3) {
-		i = arg[0];
+		i = arg[0].getConvertedExpression(Object.class);
 		return true;
 	}
 
@@ -63,61 +67,65 @@ public class ExprRGBColor extends SimpleExpression<Integer>{
 	@Override
 	@Nullable
 	protected Integer[] get(@Nullable Event e) {
-		if (this.i.getArray(e).length > 0 && this.i.getArray(e)[0] != null ){
+		Object[] array = i.getArray(e);
+		//just some safe check
+		if (array != null && array.length > 0 && array[0] != null){
 			int red = 0;
 			int green = 0;
 			int blue = 0;
-			if (this.i.getAll(e)[0] instanceof ItemStack){
-				ItemMeta im = ((ItemStack)this.i.getAll(e)[0]).getItemMeta();
-				if (!(im instanceof LeatherArmorMeta))
+			//It works only for the first one in expression
+			if (array[0] instanceof Color){
+				red = ((Color)array[0]).getBukkitColor().getRed();
+				green = ((Color)array[0]).getBukkitColor().getGreen();
+				blue = ((Color)array[0]).getBukkitColor().getBlue();
+			} else if (array[0] instanceof ItemStack || array[0] instanceof ItemType){
+				ItemMeta im = array[0] instanceof ItemType ? ((ItemType)array[0]).getRandom().getItemMeta() :
+						((ItemStack)array[0]).getItemMeta();
+				if (im == null || !(im instanceof LeatherArmorMeta))
 					return null;
 				red = ((LeatherArmorMeta) im).getColor().getRed();;
 				green = ((LeatherArmorMeta) im).getColor().getGreen();;
 				blue = ((LeatherArmorMeta) im).getColor().getBlue();
-			} else if (this.i.getArray(e)[0] instanceof Color){
-				red = ((Color)this.i.getArray(e)[0]).getBukkitColor().getRed();
-				green = ((Color)this.i.getArray(e)[0]).getBukkitColor().getGreen();
-				blue = ((Color)this.i.getArray(e)[0]).getBukkitColor().getBlue();
 			}
 			return new Integer[] {red, green, blue};
-				
-			
 		}
 		return null;
 	}
 	public void change(Event e, Object[] delta, Changer.ChangeMode mode){
-		if (this.i.getArray(e).length > 0 && delta != null && delta.length == 3 && this.i.getAll(e)[0] instanceof ItemStack){
-			for (ItemStack it : ((ItemStack[])this.i.getArray(e))){
-				if (it != null){
-					ItemMeta im = it.getItemMeta();
-					if (im instanceof LeatherArmorMeta){
-						int red = ((Number)delta[0]).intValue();
-						int green = ((Number)delta[1]).intValue();
-						int blue = ((Number)delta[2]).intValue();
-						if (red < 0 || red > 255)
-							red = (red < 0) ? 0 : 255;
-						if (green < 0 || green> 255)
-							green = (green < 0) ? 0 : 255;
-						if (blue < 0 || blue > 255)
-							blue = (blue < 0) ? 0 : 255;
-						
-						org.bukkit.Color color = org.bukkit.Color.fromRGB(red, green, blue);
-						((LeatherArmorMeta) im).setColor(color);
-						it.setItemMeta(im);
-					}
-				}
+		Object[] array = i.getArray(e);
+		if (array == null || array.length == 0)
+			return;
+		if (delta != null && delta.length == 3){
+			int red = ((Number)delta[0]).intValue();
+			int green = ((Number)delta[1]).intValue();
+			int blue = ((Number)delta[2]).intValue();
+			if (red < 0 || red > 255)
+				red = (red < 0) ? 0 : 255;
+			if (green < 0 || green> 255)
+				green = (green < 0) ? 0 : 255;
+			if (blue < 0 || blue > 255)
+				blue = (blue < 0) ? 0 : 255;
+			org.bukkit.Color color = org.bukkit.Color.fromRGB(red, green, blue);
+			for (Object obj : array){
+				if (obj == null || !(obj instanceof ItemStack || obj instanceof ItemType))
+					continue;
+				ItemMeta meta = obj instanceof ItemStack ? ((ItemStack) obj).getItemMeta() : ((ItemType)obj).getRandom().getItemMeta();
+				TuSKe.debug(meta);
+				if (meta == null || !(meta instanceof LeatherArmorMeta))
+					continue;
+				((LeatherArmorMeta) meta).setColor(color);
+				if (obj instanceof ItemStack)
+					((ItemStack) obj).setItemMeta(meta);
+				else
+					((ItemType) obj).setItemMeta(meta);
 			}
 		}
-		
-		
 	}
 	@SuppressWarnings("unchecked")
 	public Class<?>[] acceptChange(final Changer.ChangeMode mode) {
-	
 		if (mode == ChangeMode.SET)
 			return CollectionUtils.array(Number[].class);
 		return null;
-		
 	}
 
 }

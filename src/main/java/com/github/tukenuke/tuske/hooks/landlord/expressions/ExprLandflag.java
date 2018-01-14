@@ -19,7 +19,7 @@ import ch.njol.util.coll.CollectionUtils;
 
 public class ExprLandflag extends SimpleExpression<Boolean>{
 	static {
-		Registry.newSimple(ExprLandflag.class, "landflag %landflag% of %landclaim% for (1Â¦everyone|2Â¦friends)");
+		Registry.newSimple(ExprLandflag.class, "landflag %landflag% of %landclaim% for (1¦everyone|2¦friends)");
 	}
 
 	private Expression<LowOwnedLand> ol;

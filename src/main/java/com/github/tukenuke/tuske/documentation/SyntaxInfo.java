@@ -46,7 +46,6 @@ public class SyntaxInfo {
 			dependency = c.getAnnotation(Dependency.class).value();
 	}
 	public SyntaxInfo(ExpressionInfo info, Class[] classes) {
-		//
 		this(info);
 		ClassInfo ci = Classes.getSuperClassInfo(info.returnType);
 		if (ci != null)
@@ -183,7 +182,7 @@ public class SyntaxInfo {
 		if (Util.notEmpty(syntaxes)) {
 			syntaxes = syntaxes.clone();
 			for (int x = 0; x < syntaxes.length; x++)
-				syntaxes[x] = syntaxes[x].replaceAll("\\\\([()])", "$1").replaceAll("\\d+Â¦", "");
+				syntaxes[x] = syntaxes[x].replaceAll("\\\\([()])", "$1").replaceAll("\\d+¦", "");
 		}
 		return syntaxes;
 	}
