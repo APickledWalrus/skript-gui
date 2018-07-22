@@ -47,7 +47,7 @@ dependencies {
     //Since it uses NMS/OBC stuffs, it's required to manually add the bukkit jars.
     compile fileTree(dir: 'dependencies', include: '*.jar')
     //Skript
-    compile 'ch.njol:skript:2.2-dev32'
+    compile 'ch.njol:skript:2.2-dev35b'
     //Generex API. Used to expressions to generate strings from regex
     compileWithJar files('dependencies/Generex.jar')
     //ViaVersion

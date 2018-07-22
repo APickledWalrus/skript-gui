@@ -2,7 +2,7 @@ package com.github.tukenuke.tuske.effects;
 
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.registrations.Classes;
-import ch.njol.skript.util.Slot;
+import ch.njol.skript.util.slot.Slot;
 import com.github.tukenuke.tuske.TuSKe;
 import com.github.tukenuke.tuske.util.Registry;
 import org.bukkit.Material;

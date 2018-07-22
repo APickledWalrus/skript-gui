@@ -2,6 +2,10 @@
 
 Since it uses some NMS/OBC codes, It is necessary to manually add the spigot jars here.
 
+Note that gradle will use the Bukkit api from the first jar loaded and thus
+**you must prefix the latest Bukkit jar with `!!` so that gradle loads it first.**
+If you do not do this **TuSKe will not compile**. 
+
 1_12_R1: `spigot-1.12-R0.1-SNAPSHOT`  
 1_11_R1: `spigot-1.11-R0.1-SNAPSHOT`  
 1_10_R1: `spigot-1.10-R0.1-SNAPSHOT`  
