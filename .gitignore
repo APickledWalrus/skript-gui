@@ -1,6 +1,10 @@
-.idea/
+/bin/
+/target
 .gradle/
 build/
 out/
-server/
-dependencies/spigot*
+.idea/
+.classpath
+*.iml
+.project
+.settings/

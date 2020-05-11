@@ -1,76 +1,18 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
-apply plugin: 'java'
-
-sourceCompatibility = 1.8
+plugins {
+    id 'java'
+    id 'idea'
+    id 'eclipse'
+}
 
 repositories {
-    jcenter()
     mavenCentral()
-    //Spigot
-    maven {
-        url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
-    }
-    //Skript
-    maven {
-        url 'https://raw.githubusercontent.com/bensku/mvn-repo/master'
-    }
-    //ViaVersion
-    maven {
-        url 'https://repo.viaversion.com/'
-    }
-    //Some Skript dependencies to avoid issues
-    maven {
-        url 'https://oss.sonatype.org/content/groups/public/'
-    }
-    maven {
-        url 'https://mvn.yawk.at'
-    }
-    maven {
-        url 'http://ci.emc.gs/nexus/content/groups/aikar/'
-    }
-    maven {
-        url 'http://maven.elmakers.com/repository/'
-    }
-    //PreicousStone
-    maven {
-        url 'https://jitpack.io'
-    }
+    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots' }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url 'https://jitpack.io' }
 }
-configurations {
-    compileWithJar
-}
+
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    //This is the default bukkit version supported. It is just for javadocs and jar hierarchy
-    compile 'org.spigotmc:spigot-api:1.12-R0.1-SNAPSHOT'
-    //Since it uses NMS/OBC stuffs, it's required to manually add the bukkit jars.
-    compile fileTree(dir: 'dependencies', include: '*.jar')
-    //Skript
-    compile 'ch.njol:skript:2.2-dev35b'
-    //Generex API. Used to expressions to generate strings from regex
-    compileWithJar files('dependencies/Generex.jar')
-    //ViaVersion
-    compile 'us.myles:viaversion:1.1.1'
-    configurations.compile.extendsFrom(configurations.compileWithJar)
-}
-
-//Used to copy the final jar in test server located in at same place
-//It requires that you execute "./gradlew clean build copy"
-task copy(type: Copy) {
-    from 'build/libs/TuSKe.jar'
-    into 'server/plugins'
-}
-
-processResources {
-    filter ReplaceTokens, tokens: [
-            'version': project.property('version')
-    ]
-}
-
-jar {
-    archiveName 'TuSKe.jar'
-    from {
-        configurations.compileWithJar.collect { it.isDirectory() ? it : zipTree(it) }
-    }
+	implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:1.1.0'
+    implementation 'org.spigotmc:spigot-api:1.14.4-R0.1-SNAPSHOT'
+    implementation 'com.github.SkriptLang:Skript:2.3'
 }
