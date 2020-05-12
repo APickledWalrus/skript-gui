@@ -82,15 +82,8 @@ public class InventoryUtils {
 		}
 
 		switch (type) {
-			case BEACON:
-			case MERCHANT:
-			case CRAFTING:
-			case CREATIVE:
-				return null;
 			case CHEST:
 				return Bukkit.getServer().createInventory(null, size, name);
-			case DROPPER:
-				type = InventoryType.DISPENSER;
 			default:
 				return Bukkit.getServer().createInventory(null, type, name);
 		}

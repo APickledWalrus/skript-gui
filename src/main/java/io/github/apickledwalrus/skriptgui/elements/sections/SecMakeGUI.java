@@ -54,8 +54,8 @@ public class SecMakeGUI extends EffectSection {
 		if (checkIfCondition())
 			return false;
 
-		if (getCurrentSection(SecCreateGUI.class) == null) {
-			Skript.error("You can't make a gui outside of 'create/edit gui' effect.");
+		if (!isCurrentSection(SecCreateGUI.class)) {
+			Skript.error("You can't make a GUI slot outside of a GUI creation or editing section.");
 			return false;
 		}
 

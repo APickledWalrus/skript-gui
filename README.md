@@ -15,7 +15,7 @@ If you run into any issues, have questions, or want a new feature added, please 
 
 **Skript:** https://github.com/SkriptLang/Skript
 
-**Skript Chat Discord:** https://discord.gg/XuMmNbk
+**Skript Chat Discord:** Coming Soon
 
 # Examples and Documentation
 

@@ -19,6 +19,7 @@ import ch.njol.util.coll.CollectionUtils;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecCreateGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
+import io.github.apickledwalrus.skriptgui.gui.GUI.ShapeMode;
 import io.github.apickledwalrus.skriptgui.util.EffectSection;
 
 @Name("GUI Properties")
@@ -42,17 +43,26 @@ public class ExprGUIProperties extends SimpleExpression<Object> {
 	}
 
 	private int pattern;
-	private int shapeMode;
+	private ShapeMode shapeMode;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult) {
 		if (!EffectSection.isCurrentSection(SecCreateGUI.class)) {
-			Skript.error("You can't change or get the GUI properties outside of a GUI creation section.");
+			Skript.error("You can't change or get the GUI properties outside of a GUI creation or editing section.");
 			return false;
 		}
+
 		pattern = matchedPattern;
-		shapeMode = parseResult.mark;
+
+		if (parseResult.mark == 1) {
+			shapeMode = ShapeMode.ITEMS;
+		} else if (parseResult.mark == 2) {
+			shapeMode = ShapeMode.ACTIONS;
+		} else {
+			shapeMode = ShapeMode.BOTH;
+		}
+
 		return true;
 	}
 
@@ -84,14 +94,27 @@ public class ExprGUIProperties extends SimpleExpression<Object> {
 	}
 
 	public void change(final Event e, Object[] delta, ChangeMode mode) {
-		if (delta == null || delta.length < 1 || (mode != ChangeMode.SET && mode != ChangeMode.RESET))
+		if (delta == null || (mode != ChangeMode.SET && mode != ChangeMode.RESET))
 			return;
 		GUI gui = SkriptGUI.getGUIManager().getGUIEvent(e);
-		switch (pattern) {
-			case 0: gui.setName((String) delta[0]);
-			case 1: gui.setSize(((Number) delta[0]).intValue());
-			case 2: gui.setShape(false, shapeMode == 2, (String[]) delta[0]);
-			case 3: gui.setStealable(!(Boolean) delta[0]);
+		switch (mode) {
+			case SET:
+				switch (pattern) {
+					case 0: gui.setName((String) delta[0]); break;
+					case 1: gui.setSize(((Number) delta[0]).intValue()); break;
+					case 2: gui.setShape(false, shapeMode, (String[]) delta[0]); break;
+					case 3: gui.setStealable(!(Boolean) delta[0]); break;
+				}
+				break;
+			case RESET:
+				switch (pattern) {
+					case 0: gui.setName(gui.getInventory().getType().getDefaultTitle()); break;
+					case 1: gui.setSize(gui.getInventory().getType().getDefaultSize()); break;
+					case 2: gui.setShape(true, null); break; // Reset shape to default
+					case 3: gui.setStealable(false); break;
+				}
+			default:
+				break;
 		}
 	}
 
@@ -103,10 +126,10 @@ public class ExprGUIProperties extends SimpleExpression<Object> {
 	@Override
 	public Class<? extends Object> getReturnType() {
 		switch (pattern) {
-			case 1: return String.class;
-			case 2: return Number.class;
-			case 3: return String.class;
-			case 4: return Boolean.class;
+			case 0: return String.class;
+			case 1: return Number.class;
+			case 2: return String.class;
+			case 3: return Boolean.class;
 			default: return Object.class;
 		}
 	}
@@ -116,7 +139,7 @@ public class ExprGUIProperties extends SimpleExpression<Object> {
 		switch (pattern) {
 			case 0: return "the gui inventory name";
 			case 1: return "the total number of gui rows";
-			case 2: return "the gui shape of " + (shapeMode == 2 ? "actions" : "items");
+			case 2: return "the gui shape of " + shapeMode.name().toLowerCase();
 			case 3: return "the gui lock status";
 			default: return "gui properties";
 		}

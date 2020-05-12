@@ -41,7 +41,7 @@ public class SecOnCloseGUI extends EffectSection {
 			return false;
 
 		if (!isCurrentSection(SecCreateGUI.class)) {
-			Skript.error("GUI close sections can only be put within GUI creation sections.");
+			Skript.error("GUI close sections can only be put within GUI creation or editing sections.");
 			return false;
 		}
 

@@ -1,0 +1,8 @@
+slot types:
+	armor: armor, armour
+	container: container
+	crafting: crafting
+	fuel: fuel
+	outside: outside
+	quickbar: quickbar, quick bar, hotbar, hot bar, bottom row
+	result: result, crafting result, smelting result

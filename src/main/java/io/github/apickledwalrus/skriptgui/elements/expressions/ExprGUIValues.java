@@ -31,7 +31,7 @@ import io.github.apickledwalrus.skriptgui.gui.GUI;
 import io.github.apickledwalrus.skriptgui.util.EffectSection;
 
 @Name("GUI Values")
-@Description("Different utility values for a GUI. Not all values are available for the GUI close section.")
+@Description("Different utility values for a GUI. Some are available in vanilla Skript. Not all values are available for the GUI close section.")
 @Examples({"create a gui with virtual chest inventory:",
 			"\tmake gui 10 with water bucket:",
 			"\t\tset the clicked-item to lava bucket"
@@ -121,7 +121,7 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 	}
 
 	public void change(final Event event, Object[] delta, ChangeMode mode) {
-		if (!(event instanceof InventoryClickEvent) || mode != ChangeMode.SET || delta == null)
+		if (!(event instanceof InventoryClickEvent) || delta == null)
 			return;
 
 		InventoryClickEvent e = (InventoryClickEvent) event;

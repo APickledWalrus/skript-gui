@@ -13,20 +13,22 @@ import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
-
+import ch.njol.util.coll.CollectionUtils;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 
 @Name("Last GUI/GUI from id")
 @Description("It is used to return the last created gui or a gui from a string id.")
-@Examples("")
+@Examples({"open gui last gui for player",
+			"open gui (gui with id \"globalGUI\") for player"
+})
 @Since("1.0.0")
 public class ExprLastGUI extends SimpleExpression<GUI> {
 
 	static {
 		Skript.registerExpression(ExprLastGUI.class, GUI.class, ExpressionType.SIMPLE,
 				"[the] last[ly] [created] gui",
-				"[the] gui [with id] %string%"
+				"[the] gui [with [the] id] %string%"
 		);
 	}
 
@@ -48,8 +50,8 @@ public class ExprLastGUI extends SimpleExpression<GUI> {
 	}
 
 	public Class<?>[] acceptChange(final ChangeMode mode) {
-		if (mode == ChangeMode.DELETE)
-			return new Class[]{Object.class};
+		if (mode == ChangeMode.DELETE && id != null)
+			return CollectionUtils.array(Object.class);
 		return null;
 	}
 

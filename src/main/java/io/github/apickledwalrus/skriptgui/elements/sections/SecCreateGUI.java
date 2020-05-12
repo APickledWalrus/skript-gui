@@ -15,6 +15,7 @@ import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import io.github.apickledwalrus.skriptgui.gui.SkriptGUIEvent;
+import io.github.apickledwalrus.skriptgui.gui.GUI.ShapeMode;
 import io.github.apickledwalrus.skriptgui.util.EffectSection;
 
 @Name("Create / Edit GUI")
@@ -79,9 +80,9 @@ public class SecCreateGUI extends EffectSection {
 				GUI gui = new GUI(inv, moveableItems);
 
 				if (shape == null) {
-					gui.setShape(true, true);
+					gui.setShape(true, null);
 				} else {
-					gui.setShape(false, true, shape.getArray(e));
+					gui.setShape(false, ShapeMode.BOTH, shape.getArray(e));
 				}
 
 				String id = this.id != null ? this.id.getSingle(e) : null;
