@@ -29,7 +29,7 @@ public class SecCreateGUI extends EffectSection {
 
 	static {
 		Skript.registerCondition(SecCreateGUI.class,
-				"create [a] [new] gui [[with id] %-string%] with %inventory% [(1¦and (moveable|stealable) items)] [and shape %-strings%]",
+				"create [a] [new] gui [[with id] %-string%] with %inventory% [(1¦(and|with) (moveable|stealable) items)] [(and|with) shape %-strings%]",
 				"(change|edit) [gui] %guiinventory%"
 		);
 	}

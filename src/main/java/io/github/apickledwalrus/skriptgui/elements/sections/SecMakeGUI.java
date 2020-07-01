@@ -43,7 +43,7 @@ public class SecMakeGUI extends EffectSection {
 
 	public static SecMakeGUI lastInstance = null;
 
-	private Expression<?> slots; // Can be number or a string
+	private Expression<Object> slots; // Can be number or a string
 	private Expression<ItemType> item;
 
 	private int pattern;
@@ -63,7 +63,7 @@ public class SecMakeGUI extends EffectSection {
 		if (matchedPattern < 2)
 			item = (Expression<ItemType>) exprs[matchedPattern];
 		if (matchedPattern == 1 || matchedPattern == 3)
-			slots = exprs[0].getConvertedExpression(Object.class);
+			slots = (Expression<Object>) exprs[0];
 
 		if (hasSection())
 			loadSection("gui effect", false, InventoryClickEvent.class);

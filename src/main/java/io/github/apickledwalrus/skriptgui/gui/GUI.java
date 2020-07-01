@@ -457,9 +457,10 @@ public class GUI {
 	 * @return The slot's {@link Consumer}, or {@link GUI#NULL_CONSUMER} if it does not have one.
 	 * @see GUI#getSlot(int)
 	 */
-	@Nullable
 	public Consumer<InventoryClickEvent> getSlot(char ch) {
-		return ch > 0 ? slots.get(ch) : NULL_CONSUMER;
+		if (ch > 0 && slots.containsKey(ch))
+			return slots.get(ch);
+		return NULL_CONSUMER;
 	}
 
 	public GUIListener getListener() {
@@ -468,6 +469,8 @@ public class GUI {
 				@Override
 				public void onClick(InventoryClickEvent e, int slot) {
 					Consumer<InventoryClickEvent> run = getSlot(slot);
+					// Cancel the event if this GUI slot runs something
+					// If it doesn't, check whether items are stealable in this GUI
 					e.setCancelled(run != NULL_CONSUMER || !getStealable());
 					if (run != null && slot == e.getSlot() && guiInventory.equals(e.getClickedInventory())) {
 						run.accept(e);
@@ -486,7 +489,7 @@ public class GUI {
 						SkriptGUI.getGUIManager().setGUIEvent(e, GUI.this);
 						try {
 							getOnClose().accept(e);
-						} catch (Exception ex){
+						} catch (Exception ex) {
 							Skript.exception(ex, "An error occurred while closing a GUI. If you are unsure why this occured, please report the error on the skript-gui GitHub.");
 						}
 					}
@@ -494,8 +497,10 @@ public class GUI {
 
 				@Override
 				public void onDrag(InventoryDragEvent e, int slot) {
-					if (getSlot(slot) != null)
-						e.setCancelled(!getStealable());
+					Consumer<InventoryClickEvent> run = getSlot(slot);
+					// Cancel the event if this GUI slot runs something
+					// If it doesn't, check whether items are stealable in this GUI
+					e.setCancelled(run != NULL_CONSUMER || !getStealable());
 				}
 			};
 		}
