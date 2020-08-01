@@ -45,8 +45,8 @@ public class ExprGUIProperties extends SimpleExpression<Object> {
 	private int pattern;
 	private ShapeMode shapeMode;
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult) {
 		if (!EffectSection.isCurrentSection(SecCreateGUI.class)) {
 			Skript.error("You can't change or get the GUI properties outside of a GUI creation or editing section.");
@@ -81,6 +81,7 @@ public class ExprGUIProperties extends SimpleExpression<Object> {
 		return new Object[]{};
 	}
 
+	@Override
 	public Class<?>[] acceptChange(final ChangeMode mode) {
 		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
 			switch (pattern) {
@@ -93,28 +94,32 @@ public class ExprGUIProperties extends SimpleExpression<Object> {
 		return null;
 	}
 
+	@Override
 	public void change(final Event e, Object[] delta, ChangeMode mode) {
 		if (delta == null || (mode != ChangeMode.SET && mode != ChangeMode.RESET))
 			return;
 		GUI gui = SkriptGUI.getGUIManager().getGUIEvent(e);
-		switch (mode) {
-			case SET:
-				switch (pattern) {
-					case 0: gui.setName((String) delta[0]); break;
-					case 1: gui.setSize(((Number) delta[0]).intValue()); break;
-					case 2: gui.setShape(false, shapeMode, (String[]) delta[0]); break;
-					case 3: gui.setStealable(!(Boolean) delta[0]); break;
-				}
-				break;
-			case RESET:
-				switch (pattern) {
-					case 0: gui.setName(gui.getInventory().getType().getDefaultTitle()); break;
-					case 1: gui.setSize(gui.getInventory().getType().getDefaultSize()); break;
-					case 2: gui.setShape(true, null); break; // Reset shape to default
-					case 3: gui.setStealable(false); break;
-				}
-			default:
-				break;
+		if (gui != null) {
+			switch (mode) {
+				case SET:
+					switch (pattern) {
+						case 0: gui.setName((String) delta[0]); break;
+						case 1: gui.setSize(((Number) delta[0]).intValue()); break;
+						case 2: gui.setShape(false, shapeMode, (String[]) delta); break;
+						case 3: gui.setStealable(!(Boolean) delta[0]); break;
+					}
+					break;
+				case RESET:
+					switch (pattern) {
+						case 0: gui.setName(gui.getInventory().getType().getDefaultTitle()); break;
+						case 1: gui.setSize(gui.getInventory().getType().getDefaultSize()); break;
+						case 2: gui.setShape(true, null); break; // Reset shape to default
+						case 3: gui.setStealable(false); break;
+					}
+					break;
+				default:
+					assert false;
+			}
 		}
 	}
 

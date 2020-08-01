@@ -1,5 +1,6 @@
 package io.github.apickledwalrus.skriptgui.elements.sections;
 
+import io.github.apickledwalrus.skriptgui.elements.expressions.ExprVirtualInventory;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.Inventory;
 
@@ -70,19 +71,21 @@ public class SecCreateGUI extends EffectSection {
 
 	@Override
 	public void execute(Event e) {
-
-		SkriptGUI.getGUIManager().setGUIEvent(e, null);
-
 		if (exprGUI == null) { // Creating a new GUI.
 			Inventory inv = this.inv.getSingle(e);
 			if (inv != null) {
 
-				GUI gui = new GUI(inv, moveableItems);
+				GUI gui;
+				if (this.inv instanceof ExprVirtualInventory) { // Try to set the name
+					gui = new GUI(inv, moveableItems, ((ExprVirtualInventory) this.inv).getName());
+				} else {
+					gui = new GUI(inv, moveableItems);
+				}
 
 				if (shape == null) {
 					gui.setShape(true, null);
 				} else {
-					gui.setShape(false, ShapeMode.BOTH, shape.getArray(e));
+					gui.setShape(false, ShapeMode.ACTIONS, shape.getArray(e));
 				}
 
 				String id = this.id != null ? this.id.getSingle(e) : null;
@@ -93,8 +96,7 @@ public class SecCreateGUI extends EffectSection {
 			}
 		} else { // Editing the given GUI.
 			GUI gui = exprGUI.getSingle(e);
-			if (gui != null)
-				SkriptGUI.getGUIManager().setGUIEvent(e, gui);
+			SkriptGUI.getGUIManager().setGUIEvent(e, gui);
 		}
 
 		if (hasSection())

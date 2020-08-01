@@ -61,8 +61,8 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 	private boolean isDelayed;
 	private String toString = "gui values";
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult) {
 		if (!EffectSection.isCurrentSection(SecMakeGUI.class, SecOnCloseGUI.class)) {
 			Skript.error("You can't use '" + parseResult.expr.replace("(-| )", " ") + "' outside of a GUI make or close section.");

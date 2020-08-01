@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import ch.njol.skript.Skript;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -102,7 +103,12 @@ public class SkriptGUIEvent extends SkriptEvent {
 	private void addTrigger(Trigger t, int priority, Class<? extends Event>... classes) {
 		if (priority == 0) {
 			for (Class<?> clazz : classes) {
-				List<Trigger> current = triggers.get(clazz);
+				List<Trigger> current = null;
+				try {
+					current = triggers.get(clazz);
+				} catch (NullPointerException ex) {
+					Skript.exception(ex, "An error occured while trying to add triggers. If you are unsure why this occured, please report the error on the skript-gui GitHub.");
+				}
 				List<Trigger> newList = new ArrayList<>();
 				if (current == null) {
 					// It will add a new array in case it doesn't have the event.

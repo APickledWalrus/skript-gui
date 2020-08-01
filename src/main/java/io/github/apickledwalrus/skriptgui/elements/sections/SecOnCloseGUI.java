@@ -34,8 +34,8 @@ public class SecOnCloseGUI extends EffectSection {
 		);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult) {
 		if (checkIfCondition())
 			return false;

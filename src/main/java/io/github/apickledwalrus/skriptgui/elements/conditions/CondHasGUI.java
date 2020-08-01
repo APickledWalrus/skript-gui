@@ -33,8 +33,8 @@ public class CondHasGUI extends Condition {
 
 	private Expression<Player> players;
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult) {
 		players = (Expression<Player>) exprs[0];
 		setNegated(matchedPattern % 2 != 0);
@@ -48,8 +48,7 @@ public class CondHasGUI extends Condition {
 
 	@Override
 	public String toString(Event e, boolean debug) {
-		return players.toString(e, debug) + (isNegated() == false ? " has/have " : " do not/don't have ") + " a gui open";
+		return players.toString(e, debug) + (!isNegated() ? " has/have " : " do not/don't have ") + " a gui open";
 	}
-
 
 }

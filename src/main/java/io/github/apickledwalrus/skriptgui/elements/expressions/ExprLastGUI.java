@@ -34,8 +34,8 @@ public class ExprLastGUI extends SimpleExpression<GUI> {
 
 	private Expression<String> id;
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult) {
 		if (matchedPattern == 1)
 			id = (Expression<String>) exprs[0];
@@ -49,6 +49,7 @@ public class ExprLastGUI extends SimpleExpression<GUI> {
 		return new GUI[]{SkriptGUI.getGUIManager().getGUIEvent(e)};
 	}
 
+	@Override
 	public Class<?>[] acceptChange(final ChangeMode mode) {
 		if (mode == ChangeMode.DELETE && id != null)
 			return CollectionUtils.array(Object.class);

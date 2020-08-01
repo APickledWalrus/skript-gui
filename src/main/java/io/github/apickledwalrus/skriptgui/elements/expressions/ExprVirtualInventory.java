@@ -35,8 +35,11 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 	private Expression<Number> size;
 	private Expression<String> name;
 
-	@SuppressWarnings("unchecked")
+	// The name of this inventory.
+	public static String invName;
+
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult) {
 		inventoryType = (Expression<InventoryType>) exprs[0];
 		if (matchedPattern > 1) {
@@ -56,6 +59,7 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 			return new Inventory[]{};
 		Number size = this.size != null ? this.size.getSingle(e) : null;
 		String name = this.name != null ? this.name.getSingle(e) : null;
+		invName = name != null ? name : type.getDefaultTitle();
 		return new Inventory[]{InventoryUtils.newInventory(type, (size != null ? size.intValue() : 0), name)};
 	}
 
@@ -74,6 +78,13 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 		return "virtual " + inventoryType.toString(e, debug)
 			+ (name != null ? " with name" + name.toString(e, debug) : "")
 			+ (size != null ? " with " + size.toString(e, debug) + " rows" : "");
+	}
+
+	/**
+	 * @return The name of this inventory.
+	 */
+	public String getName() {
+		return invName;
 	}
 
 }

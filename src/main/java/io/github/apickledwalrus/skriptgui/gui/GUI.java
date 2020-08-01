@@ -1,5 +1,6 @@
 package io.github.apickledwalrus.skriptgui.gui;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -31,10 +32,8 @@ public class GUI {
 	private String name;
 	private String rawShape;
 
-	private Map<Character, Consumer<InventoryClickEvent>> slots = new HashMap<>();
+	private final Map<Character, Consumer<InventoryClickEvent>> slots = new HashMap<>();
 	private Consumer<InventoryCloseEvent> onClose;
-
-	private Map<Character, ItemStack> items = new HashMap<>();
 
 	/*
 	 * Constructors
@@ -43,7 +42,7 @@ public class GUI {
 	/**
 	 * Creates a new {@link GUI} with the given inventory
 	 * @param inv A {@link Inventory}
-	 * @see ExprVirtualInventory
+	 * @see io.github.apickledwalrus.skriptgui.elements.expressions.ExprVirtualInventory
 	 */
 	public GUI(Inventory inv) {
 		this.guiInventory = inv;
@@ -55,11 +54,24 @@ public class GUI {
 	 * Creates a new {@link GUI} with the given inventory and lock status.
 	 * @param inv A {@link Inventory}
 	 * @param stealableItems Whether items can be taken from this {@link GUI} by the viewer
-	 * @see ExprVirtualInventory
+	 * @see io.github.apickledwalrus.skriptgui.elements.expressions.ExprVirtualInventory
 	 */
 	public GUI(Inventory inv, boolean stealableItems) {
 		this.guiInventory = inv;
 		this.name = inv.getType().getDefaultTitle();
+		this.stealableItems = stealableItems;
+	}
+
+	/**
+	 * Creates a new {@link GUI} with the given inventory and lock status.
+	 * @param inv A {@link Inventory}
+	 * @param stealableItems Whether items can be taken from this {@link GUI} by the viewer
+	 * @param name The name of this GUI. This SHOULD be the name of the created inventory used in {@link io.github.apickledwalrus.skriptgui.elements.sections.SecCreateGUI}.
+	 * @see io.github.apickledwalrus.skriptgui.elements.expressions.ExprVirtualInventory
+	 */
+	public GUI(Inventory inv, boolean stealableItems, String name) {
+		this.guiInventory = inv;
+		this.name = name;
 		this.stealableItems = stealableItems;
 	}
 
@@ -71,27 +83,15 @@ public class GUI {
 	 * @return The {@link Inventory} of this {@link GUI}
 	 */
 	public Inventory getInventory() {
-		if (!getListener().isStarted()) {
+		if (!getListener().isStarted())
 			getListener().start();
-			if (items.size() > 0) {
-				int x = 0;
-				for (char ch : rawShape.toCharArray()) {
-					ItemStack item = items.get(ch);
-					if (item != null && item.getType() != Material.AIR)
-						guiInventory.setItem(x, item);
-					x++;
-				}
-				// It won't be necessary anymore, so just cleaning it up
-				items.clear();
-			}
-		}
 		return guiInventory;
 	}
 
 	/**
 	 * Converts an integer to a char.
 	 * This method is for {@link GUI} shapes.
-	 * @param slot
+	 * @param slot Usually the slot from an inventory event.
 	 * @return The converted slot integer. This char is the key to what item the slot holds.
 	 */
 	public char convertSlot(int slot) {
@@ -187,17 +187,18 @@ public class GUI {
 	 * Changes the name of this {@link GUI}.
 	 * If the {@link GUI} currently has viewers, it will be reopened for them to update the name.
 	 * @param newName The new name for this {@link GUI}
-	 * @return The modified {@link GUI}
+	 * @return The modified {@link GUI}. No modifications will occur if the new name is null.
 	 * @see GUI#getName()
 	 */
 	public GUI setName(String newName) {
 		if (newName == null)
-			return null;
+			return this;
 
 		Inventory inv = InventoryUtils.newInventory(getInventory().getType(), getInventory().getSize() / 9, newName);
 		inv.setContents(getInventory().getContents());
 
-		getInventory().getViewers().forEach(viewer -> {
+		// Create clone to avoid a CME
+		new ArrayList<>(getInventory().getViewers()).forEach(viewer -> {
 			ItemStack cursor = viewer.getItemOnCursor();
 			viewer.setItemOnCursor(null);
 			viewer.openInventory(inv);
@@ -206,14 +207,14 @@ public class GUI {
 
 		guiInventory = inv;
 		getListener().setInventory(guiInventory);
+		this.name = newName;
 
 		return this;
 	}
 
 	/**
 	 * @return The name of this {@link GUI}.
-	 * @see {@link GUI#setName(String)}
-	 * @see {@link GUI#setNameAndSize(String, int)}
+	 * @see GUI#setName(String)
 	 */
 	public String getName() {
 		return this.name;
@@ -223,14 +224,16 @@ public class GUI {
 	 * Changes the size of this {@link GUI}.
 	 * If the {@link GUI} currently has viewers, it will be reopened for them to update the size.
 	 * @param newSize The new size for this {@link GUI}
-	 * @return The modified {@link GUI}
+	 * @return The modified {@link GUI}. If this GUI is not a chest GUI, no modifications will occur.
 	 * @see GUI#getSize()
 	 */
 	public GUI setSize(int newSize) {
+		if (getInventory().getType() != InventoryType.CHEST)
+			return this;
 		Inventory inv = InventoryUtils.newInventory(getInventory().getType(), newSize, getName());
 
 		// Check if the new inventory is smaller - avoid issues.
-		if (newSize < getInventory().getContents().length) {
+		if (newSize < getSize()) {
 			for (int i = 0; i < inv.getSize(); i++)
 				inv.setItem(i, getInventory().getItem(i));
 			rawShape = rawShape.substring(0, inv.getSize());
@@ -238,7 +241,8 @@ public class GUI {
 			inv.setContents(getInventory().getContents());
 		}
 
-		getInventory().getViewers().forEach(viewer -> {
+		// Create clone to avoid a CME
+		new ArrayList<>(getInventory().getViewers()).forEach(viewer -> {
 			ItemStack cursor = viewer.getItemOnCursor();
 			viewer.setItemOnCursor(null);
 			viewer.openInventory(inv);
@@ -254,7 +258,6 @@ public class GUI {
 	/**
 	 * @return The size of this {@link GUI}.
 	 * @see GUI#setSize(int)
-	 * @see GUI#setNameAndSize(String, int)
 	 */
 	public int getSize() {
 		return getInventory().getSize();
@@ -262,7 +265,7 @@ public class GUI {
 
 	/**
 	 * The type of shape change to be applied
-	 * @see GUI#setShape(Boolean, boolean, String...)
+	 * @see GUI#setShape(Boolean, ShapeMode, String...)
 	 */
 	public enum ShapeMode {
 
@@ -285,7 +288,7 @@ public class GUI {
 	/**
 	 * Sets the shape of this {@link GUI}
 	 * @param defaultShape If true, the {@link GUI}'s shape will be reset to default
-	 * @param actions If true, the shape will be changed for actions. If false, it will be changed for items.
+	 * @param shapeMode If true, the shape will be changed for actions. If false, it will be changed for items.
 	 * @param shapes The new shape patterns for this {@link GUI}
 	 * @return The modified {@link GUI}
 	 * @see GUI#getRawShape()
@@ -293,19 +296,20 @@ public class GUI {
 	public GUI setShape(Boolean defaultShape, ShapeMode shapeMode, String... shapes) {
 		if (defaultShape) {
 			StringBuilder sb = new StringBuilder();
-			for (char c = 'A'; c < getInventory().getSize() + 'A'; c++)
+			for (char c = 'A'; c < getSize() + 'A'; c++)
 				sb.append(c);
 			this.rawShape = sb.toString();
 		} else if (shapes.length > 0 && shapeMode != null) {
 			StringBuilder sb = new StringBuilder();
 			for (String shape : shapes)
 				sb.append(shape);
-			while (sb.length() < getInventory().getSize())
+			while (sb.length() < getSize())
 				sb.append(' ');
+			String newRawShape = sb.toString();
+			if (shapeMode == ShapeMode.ITEMS || shapeMode == ShapeMode.BOTH) // In case it's both, we MUST do this first.
+				updateShape(newRawShape);
 			if (shapeMode == ShapeMode.ACTIONS || shapeMode == ShapeMode.BOTH)
-				this.rawShape = sb.toString();
-			if (shapeMode == ShapeMode.ITEMS || shapeMode == ShapeMode.BOTH)
-				updateShape(sb.toString());
+				this.rawShape = newRawShape;
 		}
 		return this;
 	}
@@ -316,29 +320,33 @@ public class GUI {
 	 * @see GUI#setShape(Boolean, ShapeMode, String...)
 	 */
 	private void updateShape(String newRawShape) {
-		ItemStack[] contents = getInventory().getContents();
-		ItemStack[] newItems = contents.clone();
-		int length = getInventory().getType() == InventoryType.CHEST ? getInventory().getSize() : newItems.length;
-		contents = new ItemStack[length];
+
+		// Get a map of the current shape for contents.
 		int x = 0;
 		Map<Character, ItemStack> items = new HashMap<>();
-		for (char ch1 : rawShape.toCharArray()) {
-			if (x < newItems.length)
-				items.put(ch1, newItems[x++]);
+		for (char ch : rawShape.toCharArray()) {
+			if (x >= getSize())
+				break;
+			items.put(ch, getInventory().getItem(x));
+			x++;
 		}
+
+		// Set the contents
+		ItemStack[] newContents = new ItemStack[getSize()];
 		x = 0;
 		for (char ch : newRawShape.toCharArray()) {
 			ItemStack item = items.get(ch);
-			if (item != null && x < contents.length)
-				contents[x] = item;
+			if (item != null && x < getSize())
+				newContents[x] = item;
 			x++;
 		}
-		getInventory().setContents(contents);
+
+		getInventory().setContents(newContents);
 	}
 
 	/**
 	 * @return The raw shape of this {@link GUI}.
-	 * @see GUI#setShape(Boolean, String...)
+	 * @see GUI#setShape(Boolean, ShapeMode, String...)
 	 */
 	public String getRawShape() {
 		return this.rawShape;
@@ -399,10 +407,10 @@ public class GUI {
 
 	/**
 	 * Sets a slot's item.
-	 * @param slot The slot to put the item in. It will be converted by {@link GUI#convert(Object)}
+	 * @param slot The slot to put the item in. It will be converted by {@link GUI#convert(Object)}.
 	 * @param item The {@link ItemStack} to put in the slot.
 	 * @param consumer The {@link Consumer} that the slot will run when clicked. Put as null if the slot should not run anything when clicked.
-	 * @return The modified {@link GUI}
+	 * @return The modified {@link GUI}.
 	 */
 	public GUI setItem(Object slot, ItemStack item, @Nullable Consumer<InventoryClickEvent> consumer) {
 		char ch = convert(slot);
@@ -423,22 +431,17 @@ public class GUI {
 	}
 
 	/**
-	 * If the {@link Inventory} is a {@linkplain ExprVirtualInventory}, has no viewers, or if the listener is null, it will set the slot later.
-	 * If it is an {@link Inventory} from somewhere (like a block) or has someone already viewing it, it will set the slot then.
+	 * Set's the char slot's ItemStack in the GUI inventory.
 	 * @param ch The char for the slot(s). It is assumed that this char has already been converted.
 	 * @param item The {@link ItemStack} to be put in the slot.
 	 * @see GUI#setItem(Object, ItemStack, Consumer)
 	 */
 	private void setItem(char ch, ItemStack item) {
-		if (listener == null && (getInventory().getHolder() == null || getInventory().getViewers().size() == 0)) {
-			items.put(ch, item);
-		} else { // Set the slot now.
-			int x = -1;
-			for (char ch1 : rawShape.toCharArray()) {
-				if (++x < getInventory().getSize() && ch1 == ch) {
-					getInventory().setItem(x, item);
-				}
-			}
+		int x = 0;
+		for (char ch1 : rawShape.toCharArray()) {
+			if (ch == ch1 && x < getSize())
+				getInventory().setItem(x, item);
+			x++;
 		}
 	}
 
@@ -453,7 +456,7 @@ public class GUI {
 	}
 
 	/**
-	 * @param slot The slot in char form. It is assumed that this char was already converted.
+	 * @param ch The slot in char form. It is assumed that this char was already converted.
 	 * @return The slot's {@link Consumer}, or {@link GUI#NULL_CONSUMER} if it does not have one.
 	 * @see GUI#getSlot(int)
 	 */
@@ -485,12 +488,14 @@ public class GUI {
 				@Override
 				public void onClose(InventoryCloseEvent e) {
 					SkriptGUI.getGUIManager().removeGUI((Player) e.getPlayer());
-					if (hasOnClose()){
+					if (hasOnClose()) {
 						SkriptGUI.getGUIManager().setGUIEvent(e, GUI.this);
-						try {
-							getOnClose().accept(e);
-						} catch (Exception ex) {
-							Skript.exception(ex, "An error occurred while closing a GUI. If you are unsure why this occured, please report the error on the skript-gui GitHub.");
+						if (getOnClose() != null) {
+							try {
+								getOnClose().accept(e);
+							} catch (Exception ex) {
+								Skript.exception(ex, "An error occurred while closing a GUI. If you are unsure why this occured, please report the error on the skript-gui GitHub.");
+							}
 						}
 					}
 				}

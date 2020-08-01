@@ -53,4 +53,5 @@ public class TriggerUnregisterListener extends SelfRegisteringSkriptEvent {
 	public String toString(Event e, boolean debug) {
 		return getClass().getName();
 	}
+
 }

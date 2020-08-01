@@ -7,19 +7,20 @@ import java.util.WeakHashMap;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.eclipse.jdt.annotation.Nullable;
 
 public class GUIManager {
 
 	public GUIManager() {}
 
-	private Map<String, GUI> globalGUIs = new HashMap<>();
+	private final Map<String, GUI> globalGUIs = new HashMap<>();
 
-	private WeakHashMap<Event, GUI> eventGUIs = new WeakHashMap<>();
+	private final WeakHashMap<Event, GUI> eventGUIs = new WeakHashMap<>();
 
-	private Map<UUID, GUI> players = new HashMap<>();
+	private final Map<UUID, GUI> players = new HashMap<>();
 
 	public GUI getGUIEvent(Event e) {
-		return e != null ? eventGUIs.get(e) : null;
+		return eventGUIs.get(e);
 	}
 
 	/**
@@ -27,19 +28,17 @@ public class GUIManager {
 	 * @param e The event for the GUI to be paired with.
 	 * @param gui The GUI for the event to be paired with.
 	 */
-	public void setGUIEvent(Event e, GUI gui) {
-		if (e != null && gui != null) {
+	public void setGUIEvent(Event e, @Nullable GUI gui) {
+		if (gui != null) {
 			eventGUIs.put(e, gui);
-		} else if (e != null) {
+		} else {
 			eventGUIs.remove(e);
 		}
 	}
 
+	@Nullable
 	public GUI getGlobalGUI(String id) {
-		if (id == null)
-			return null;
-		GUI gui = globalGUIs.get(id);
-		return gui;
+		return id != null ? globalGUIs.get(id) : null;
 	}
 
 	public void addGlobalGUI(String id, GUI gui) {
@@ -47,6 +46,7 @@ public class GUIManager {
 			globalGUIs.put(id, gui);
 	}
 
+	@Nullable
 	public GUI removeGlobalGUI(String id) {
 		return globalGUIs.remove(id);
 	}

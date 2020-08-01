@@ -33,8 +33,8 @@ public class EffOpenGUI extends Effect {
 	private Expression<GUI> gui;
 	private Expression<Player> players;
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		gui = (Expression<GUI>) exprs[0];
 		players = (Expression<Player>) exprs[1];
