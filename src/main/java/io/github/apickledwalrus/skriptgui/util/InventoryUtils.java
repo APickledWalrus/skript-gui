@@ -5,6 +5,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.eclipse.jdt.annotation.Nullable;
 
 public class InventoryUtils {
 
@@ -71,9 +72,9 @@ public class InventoryUtils {
 	 * @param name The name for the {@link Inventory}
 	 * @return The created {@link Inventory}
 	 */
-	public static Inventory newInventory(InventoryType type, Integer size, String name) {
+	public static Inventory newInventory(InventoryType type, @Nullable Integer size, @Nullable String name) {
 
-		size = size == null ? type.getDefaultSize() : size * 9;
+		size = (size == null || size == 0) ? type.getDefaultSize() : size * 9;
 
 		if (name == null) {
 			name = type.getDefaultTitle();
