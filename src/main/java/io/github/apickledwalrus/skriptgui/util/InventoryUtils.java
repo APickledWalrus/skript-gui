@@ -32,7 +32,7 @@ public class InventoryUtils {
 	/**
 	 * The slot of the given {@link Inventory} that given {@link ItemStack} was moved to.
 	 * @param invTo The inventory the {@link ItemStack} is was moved to.
-	 * @param i The {@link ItemStack} being moved.
+	 * @param item The {@link ItemStack} being moved.
 	 * @return The slot the item is being moved to, or the first empty slot if it wasn't found.
 	 */
 	public static int getSlotTo(Inventory invTo, ItemStack item) {
@@ -81,12 +81,9 @@ public class InventoryUtils {
 			name = name.substring(0, 32);
 		}
 
-		switch (type) {
-			case CHEST:
-				return Bukkit.getServer().createInventory(null, size, name);
-			default:
-				return Bukkit.getServer().createInventory(null, type, name);
-		}
+		if (type == InventoryType.CHEST)
+			return Bukkit.getServer().createInventory(null, size, name);
+		return Bukkit.getServer().createInventory(null, type, name);
 
 	}
 

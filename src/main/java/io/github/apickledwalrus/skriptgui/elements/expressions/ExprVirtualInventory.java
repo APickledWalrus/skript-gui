@@ -36,7 +36,7 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 	private Expression<String> name;
 
 	// The name of this inventory.
-	public static String invName;
+	private String invName;
 
 	@Override
 	@SuppressWarnings("unchecked")

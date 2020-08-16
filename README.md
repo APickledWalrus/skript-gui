@@ -15,10 +15,11 @@ If you run into any issues, have questions, or want a new feature added, please 
 
 **Skript:** https://github.com/SkriptLang/Skript
 
-**Skript Chat Discord:** Coming Soon
-
 # Examples and Documentation
 
 Documentation is available on the following wikis:
 
 **GitHub Wiki:** https://github.com/APickledWalrus/skript-gui/wiki
+
+
+[![SkriptHubViewTheDocs](http://skripthub.net/static/addon/ViewTheDocsButton.png)](http://skripthub.net/docs/?addon=skript-gui)

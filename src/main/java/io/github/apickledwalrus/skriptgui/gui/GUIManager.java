@@ -55,6 +55,11 @@ public class GUIManager {
 		players.put(p.getUniqueId(), gui);
 	}
 
+	@Nullable
+	public GUI getGUI(Player p) {
+		return players.get(p.getUniqueId());
+	}
+
 	public void removeGUI(Player p) {
 		players.remove(p.getUniqueId());
 	}

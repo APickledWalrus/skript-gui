@@ -150,7 +150,7 @@ public class GUI {
 		int x = -1;
 		for (char ch : rawShape.toCharArray()) {
 			if (++x < getInventory().getSize() && slots.containsKey(ch)) {
-				setItem(ch, new ItemStack(Material.AIR));
+				setItem(ch, new ItemStack(Material.AIR), null);
 			}
 		}
 		slots.clear();
@@ -164,8 +164,8 @@ public class GUI {
 	 * @return The modified {@link GUI}.
 	 */
 	@SuppressWarnings("null")
-	public GUI clearSlots(Object... chars){
-		if (chars != null || chars.length > 0) {
+	public GUI clearSlots(Object... chars) {
+		if (chars != null && chars.length > 0) {
 			for (Object ch : chars) {
 				char ch1 = convert(ch);
 				int x = -1;
@@ -320,7 +320,6 @@ public class GUI {
 	 * @see GUI#setShape(Boolean, ShapeMode, String...)
 	 */
 	private void updateShape(String newRawShape) {
-
 		// Get a map of the current shape for contents.
 		int x = 0;
 		Map<Character, ItemStack> items = new HashMap<>();
@@ -426,23 +425,15 @@ public class GUI {
 			ch = ch2;
 		}
 		slots.put(ch, consumer);
-		setItem(ch, item);
-		return this;
-	}
 
-	/**
-	 * Set's the char slot's ItemStack in the GUI inventory.
-	 * @param ch The char for the slot(s). It is assumed that this char has already been converted.
-	 * @param item The {@link ItemStack} to be put in the slot.
-	 * @see GUI#setItem(Object, ItemStack, Consumer)
-	 */
-	private void setItem(char ch, ItemStack item) {
 		int x = 0;
 		for (char ch1 : rawShape.toCharArray()) {
 			if (ch == ch1 && x < getSize())
 				getInventory().setItem(x, item);
 			x++;
 		}
+
+		return this;
 	}
 
 	/**
@@ -494,7 +485,7 @@ public class GUI {
 							try {
 								getOnClose().accept(e);
 							} catch (Exception ex) {
-								Skript.exception(ex, "An error occurred while closing a GUI. If you are unsure why this occured, please report the error on the skript-gui GitHub.");
+								throw Skript.exception(ex, "An error occurred while closing a GUI. If you are unsure why this occured, please report the error on the skript-gui GitHub.");
 							}
 						}
 					}
