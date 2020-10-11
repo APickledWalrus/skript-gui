@@ -545,6 +545,8 @@ public class GUI {
 										@Override
 										public void run() {
 											e.getPlayer().openInventory(getInventory());
+											// Reset behavior (it shouldn't persist)
+											setCloseCancelled(false);
 										}
 									}.runTaskLater(SkriptGUI.getInstance(), 1);
 								} else { // Event isn't being "cancelled"
