@@ -2,9 +2,11 @@ package io.github.apickledwalrus.skriptgui.gui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -14,6 +16,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.eclipse.jdt.annotation.Nullable;
 
 import ch.njol.skript.Skript;
@@ -27,13 +30,20 @@ public class GUI {
 	private Inventory guiInventory;
 	private GUIListener listener;
 
-	// Whether the player can take items from this GUI.
-	private boolean stealableItems;
 	private String name;
 	private String rawShape;
 
 	private final Map<Character, Consumer<InventoryClickEvent>> slots = new HashMap<>();
 	private Consumer<InventoryCloseEvent> onClose;
+
+	// Whether the player can take items from this GUI.
+	private boolean stealableItems;
+	// The individual slots of this GUI that can be stolen. Overrides 'stealableItems'
+	// Ignored if 'stealableItems' is true
+	private final List<Character> stealableSlots = new ArrayList<>();
+
+	// Whether the inventory close event for this GUI is cancelled.
+	private boolean closeCancelled;
 
 	/*
 	 * Constructors
@@ -154,6 +164,7 @@ public class GUI {
 			}
 		}
 		slots.clear();
+		stealableSlots.clear();
 		return this;
 	}
 
@@ -174,6 +185,7 @@ public class GUI {
 						setItem(ch, new ItemStack(Material.AIR), null);
 				}
 				slots.remove(ch1);
+				stealableSlots.remove(ch1);
 			}
 		}
 		return this;
@@ -354,7 +366,7 @@ public class GUI {
 	/**
 	 * @param stealable Whether items in this {@link GUI} should be stealable
 	 * @return The modified {@link GUI}
-	 * @see GUI#getStealable()
+	 * @see GUI#isStealable()
 	 */
 	public GUI setStealable(Boolean stealable) {
 		this.stealableItems = stealable;
@@ -365,8 +377,15 @@ public class GUI {
 	 * @return Whether the items in this {@link GUI} can be stolen.
 	 * @see GUI#setStealable(Boolean)
 	 */
-	public boolean getStealable() {
+	public boolean isStealable() {
 		return this.stealableItems;
+	}
+
+	/**
+	 * @return Whether the given slot in this {@link GUI} can be stolen.
+	 */
+	public boolean isStealable(char slot) {
+		return this.stealableSlots.contains(slot);
 	}
 
 	/*
@@ -405,6 +424,23 @@ public class GUI {
 	}
 
 	/**
+	 * Set whether the GUI close event should be cancelled.
+	 * @param cancel Whether the close event should be cancelled.
+	 * @see GUI#isCloseCancelled
+	 */
+	public void setCloseCancelled(boolean cancel) {
+		this.closeCancelled = cancel;
+	}
+
+	/**
+	 * @return Whether the close event for this GUI is cancelled.
+	 * @see GUI#setCloseCancelled(boolean)
+	 */
+	public boolean isCloseCancelled() {
+		return this.closeCancelled;
+	}
+
+	/**
 	 * Sets a slot's item.
 	 * @param slot The slot to put the item in. It will be converted by {@link GUI#convert(Object)}.
 	 * @param item The {@link ItemStack} to put in the slot.
@@ -412,6 +448,18 @@ public class GUI {
 	 * @return The modified {@link GUI}.
 	 */
 	public GUI setItem(Object slot, ItemStack item, @Nullable Consumer<InventoryClickEvent> consumer) {
+		return setItem(slot, item, false, consumer);
+	}
+
+	/**
+	 * Sets a slot's item.
+	 * @param slot The slot to put the item in. It will be converted by {@link GUI#convert(Object)}.
+	 * @param item The {@link ItemStack} to put in the slot.
+	 * @param stealable Whether this {@link ItemStack} can be stolen.
+	 * @param consumer The {@link Consumer} that the slot will run when clicked. Put as null if the slot should not run anything when clicked.
+	 * @return The modified {@link GUI}.
+	 */
+	public GUI setItem(Object slot, ItemStack item, boolean stealable, @Nullable Consumer<InventoryClickEvent> consumer) {
 		char ch = convert(slot);
 		if (consumer == null)
 			consumer = NULL_CONSUMER;
@@ -425,6 +473,12 @@ public class GUI {
 			ch = ch2;
 		}
 		slots.put(ch, consumer);
+
+		if (stealable) {
+			stealableSlots.add(ch);
+		} else { // Just in case - we may be updating a slot.
+			stealableSlots.remove(Character.valueOf(ch));
+		}
 
 		int x = 0;
 		for (char ch1 : rawShape.toCharArray()) {
@@ -462,10 +516,11 @@ public class GUI {
 			listener = new GUIListener(guiInventory) {
 				@Override
 				public void onClick(InventoryClickEvent e, int slot) {
-					Consumer<InventoryClickEvent> run = getSlot(slot);
+					char realSlot = convertSlot(slot);
+					Consumer<InventoryClickEvent> run = getSlot(realSlot);
 					// Cancel the event if this GUI slot runs something
-					// If it doesn't, check whether items are stealable in this GUI
-					e.setCancelled(run != NULL_CONSUMER || !getStealable());
+					// If it doesn't, check whether items are stealable in this GUI, or if the specific slot is stealable
+					e.setCancelled(run != NULL_CONSUMER || (!isStealable() && !isStealable(realSlot)));
 					if (run != null && slot == e.getSlot() && guiInventory.equals(e.getClickedInventory())) {
 						run.accept(e);
 					}
@@ -478,12 +533,23 @@ public class GUI {
 
 				@Override
 				public void onClose(InventoryCloseEvent e) {
-					SkriptGUI.getGUIManager().removeGUI((Player) e.getPlayer());
-					if (hasOnClose()) {
+					if (!hasOnClose()) { // No way this event will be "cancelled"
+						SkriptGUI.getGUIManager().removeGUI((Player) e.getPlayer());
+					} else {
 						SkriptGUI.getGUIManager().setGUIEvent(e, GUI.this);
 						if (getOnClose() != null) {
 							try {
 								getOnClose().accept(e);
+								if (isCloseCancelled()) {
+									new BukkitRunnable() {
+										@Override
+										public void run() {
+											e.getPlayer().openInventory(getInventory());
+										}
+									}.runTaskLater(SkriptGUI.getInstance(), 1);
+								} else { // Event isn't being "cancelled"
+									SkriptGUI.getGUIManager().removeGUI((Player) e.getPlayer());
+								}
 							} catch (Exception ex) {
 								throw Skript.exception(ex, "An error occurred while closing a GUI. If you are unsure why this occured, please report the error on the skript-gui GitHub.");
 							}
@@ -493,10 +559,11 @@ public class GUI {
 
 				@Override
 				public void onDrag(InventoryDragEvent e, int slot) {
-					Consumer<InventoryClickEvent> run = getSlot(slot);
+					char realSlot = convertSlot(slot);
+					Consumer<InventoryClickEvent> run = getSlot(realSlot);
 					// Cancel the event if this GUI slot runs something
-					// If it doesn't, check whether items are stealable in this GUI
-					e.setCancelled(run != NULL_CONSUMER || !getStealable());
+					// If it doesn't, check whether items are stealable in this GUI, or if the specific slot is stealable
+					e.setCancelled(run != NULL_CONSUMER || (!isStealable() && !isStealable(realSlot)));
 				}
 			};
 		}

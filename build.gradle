@@ -13,6 +13,6 @@ repositories {
 
 dependencies {
 	implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:1.1.0'
-    implementation 'org.spigotmc:spigot-api:1.14.4-R0.1-SNAPSHOT'
+    implementation 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT'
     implementation 'com.github.SkriptLang:Skript:2.3'
 }

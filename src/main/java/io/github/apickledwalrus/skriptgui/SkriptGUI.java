@@ -17,7 +17,6 @@ public class SkriptGUI extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-
 		instance = this;
 
 		addonInstance = Skript.registerAddon(this);
@@ -31,7 +30,6 @@ public class SkriptGUI extends JavaPlugin {
 			e.printStackTrace();
 			getServer().getPluginManager().disablePlugin(this);
 		}
-
 	}
 
 	public static SkriptGUI getInstance() {

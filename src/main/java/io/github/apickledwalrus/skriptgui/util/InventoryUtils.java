@@ -16,8 +16,8 @@ public class InventoryUtils {
 	 * @param inv The {@link Inventory} to get the opposite of.
 	 * @return
 	 */
+	@Nullable
 	public static Inventory getOppositeInventory(InventoryView view, Inventory inv) {
-
 		if (view == null || inv == null)
 			return null;
 
@@ -27,7 +27,6 @@ public class InventoryUtils {
 			return view.getTopInventory();
 
 		return null;
-
 	}
 
 	/**
@@ -37,7 +36,6 @@ public class InventoryUtils {
 	 * @return The slot the item is being moved to, or the first empty slot if it wasn't found.
 	 */
 	public static int getSlotTo(Inventory invTo, ItemStack item) {
-
 		if (item == null || invTo.first(item.getType()) < 0)
 			return invTo.firstEmpty();
 
@@ -47,11 +45,9 @@ public class InventoryUtils {
 		}
 
 		return invTo.firstEmpty();
-
 	}
 
 	public static int getInvertedSlotTo(Inventory invTo, ItemStack item) {
-
 		for (int i = 8; i >= 0; i--) {
 			if (isSimilar(item, invTo.getItem(i)))
 				return i;
@@ -63,7 +59,6 @@ public class InventoryUtils {
 		}
 
 		return -1;
-
 	}
 
 	/**
@@ -73,7 +68,6 @@ public class InventoryUtils {
 	 * @return The created {@link Inventory}
 	 */
 	public static Inventory newInventory(InventoryType type, @Nullable Integer size, @Nullable String name) {
-
 		size = (size == null || size == 0) ? type.getDefaultSize() : size * 9;
 
 		if (name == null) {
@@ -85,11 +79,9 @@ public class InventoryUtils {
 		if (type == InventoryType.CHEST)
 			return Bukkit.getServer().createInventory(null, size, name);
 		return Bukkit.getServer().createInventory(null, type, name);
-
 	}
 
 	public static boolean isSimilar(ItemStack one, ItemStack two) {
-
 		if (one == null || two == null)
 			return false;
 
@@ -98,10 +90,7 @@ public class InventoryUtils {
 		boolean sameMeta = Bukkit.getItemFactory().equals(one.getItemMeta(), two.getItemMeta());
 		boolean sameEnchantments = one.getEnchantments().equals(two.getEnchantments());
 
-		if (sameMaterial && sameAmount && sameMeta && sameEnchantments)
-			return true;
-		return false;
-
+		return sameMaterial && sameAmount && sameMeta && sameEnchantments;
 	}
 
 }

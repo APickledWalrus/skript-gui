@@ -72,7 +72,7 @@ public class SkriptGUIEvent extends SkriptEvent {
 			// These will be added before all triggers to cancel it before them.
 			addTrigger(t, 0 , InventoryClickEvent.class, InventoryDragEvent.class);
 
-			//It will add for the last one
+			// It will add for the last one
 			addTrigger(t, 1 , InventoryCloseEvent.class, InventoryOpenEvent.class);
 
 			ReflectionUtils.invokeMethod(SkriptEventHandler.class, "registerBukkitEvents", null);

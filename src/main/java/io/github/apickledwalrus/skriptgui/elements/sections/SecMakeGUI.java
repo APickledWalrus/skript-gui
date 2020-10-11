@@ -28,13 +28,13 @@ import io.github.apickledwalrus.skriptgui.util.VariableUtils;
 			"\tunformat gui 10 # Removes the GUI item at slot 10",
 			"\tunformat the next gui # Removes the GUI item at the slot before the next available slot."
 })
-@Since("1.0.0")
+@Since("1.0.0, 1.2.0 (making specific slots stealable)")
 public class SecMakeGUI extends EffectSection {
 
 	static {
 		Skript.registerCondition(SecMakeGUI.class,
-				"(make|format) [the] next gui [slot] (with|to) %itemtype%",
-				"(make|format) gui [slot[s]] %strings/numbers% (with|to) %itemtype%",
+				"(make|format) [the] next gui [slot] (with|to) [(1¦(moveable|stealable))] %itemtype%",
+				"(make|format) gui [slot[s]] %strings/numbers% (with|to) [(1¦(moveable|stealable))] %itemtype%",
 				"(un(make|format)|remove) [the] next gui [slot]",
 				"(un(make|format)|remove) gui [slot[s]] %strings/numbers%",
 				"(un(make|format)|remove) all [of the] gui [slots]"
@@ -47,6 +47,7 @@ public class SecMakeGUI extends EffectSection {
 	private Expression<ItemType> item;
 
 	private int pattern;
+	private boolean stealable;
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -64,6 +65,8 @@ public class SecMakeGUI extends EffectSection {
 			item = (Expression<ItemType>) exprs[matchedPattern];
 		if (matchedPattern == 1 || matchedPattern == 3)
 			slots = (Expression<Object>) exprs[0];
+
+		stealable = parseResult.mark == 1;
 
 		if (hasSection())
 			loadSection("gui effect", false, InventoryClickEvent.class);
@@ -89,13 +92,13 @@ public class SecMakeGUI extends EffectSection {
 				for (Object slot : slots != null ? slots.getArray(e) : new Object[]{gui.nextSlot()}) {
 					if (hasSection()) {
 						final Object variables = VariableUtils.getInstance().copyVariables(e);
-						gui.setItem(slot, item, event -> {
+						gui.setItem(slot, item, stealable, event -> {
 							VariableUtils.getInstance().pasteVariables(event, variables);
 							SkriptGUI.getGUIManager().setGUIEvent(event, gui);
 							runSection(event);
 						});
 					} else {
-						gui.setItem(slot, item, null);
+						gui.setItem(slot, item, stealable, null);
 					}
 				}
 				break;

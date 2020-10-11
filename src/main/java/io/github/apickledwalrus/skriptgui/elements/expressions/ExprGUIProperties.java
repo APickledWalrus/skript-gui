@@ -75,7 +75,7 @@ public class ExprGUIProperties extends SimpleExpression<Object> {
 				case 0: return new String[]{gui.getName()};
 				case 1: return new Number[]{gui.getInventory().getSize()};
 				case 2: return new String[]{gui.getRawShape()};
-				case 3: return new Boolean[]{!gui.getStealable()};
+				case 3: return new Boolean[]{!gui.isStealable()};
 			}
 		}
 		return new Object[]{};
