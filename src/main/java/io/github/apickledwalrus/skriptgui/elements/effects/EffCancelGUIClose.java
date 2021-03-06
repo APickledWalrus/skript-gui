@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 		" This effect can be used within a GUI close section.",
 		" A 1 tick delay is applied by this effect."
 })
-@Examples({"create a gui with virtual chest inventory with 3 rows named \"My GUI\"",
+@Examples({"create a gui with virtual chest inventory with 3 rows named \"My GUI\":",
 		"\trun on gui close:",
 		"\t\tcancel the gui closing"
 })

@@ -41,6 +41,10 @@ public class GUIManager {
 		return id != null ? globalGUIs.get(id) : null;
 	}
 
+	public String[] getGlobalIdentifiers() {
+		return globalGUIs.keySet().toArray(new String[0]);
+	}
+
 	public void addGlobalGUI(String id, GUI gui) {
 		if (id != null && gui != null)
 			globalGUIs.put(id, gui);

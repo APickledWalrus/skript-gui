@@ -4,6 +4,8 @@ plugins {
     id 'eclipse'
 }
 
+version '1.2.1'
+
 repositories {
     mavenCentral()
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots' }
@@ -14,5 +16,7 @@ repositories {
 dependencies {
 	implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:1.1.0'
     implementation 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT'
-    implementation 'com.github.SkriptLang:Skript:2.3'
+    implementation ('com.github.SkriptLang:Skript:2.3') {
+        transitive = false
+    }
 }
