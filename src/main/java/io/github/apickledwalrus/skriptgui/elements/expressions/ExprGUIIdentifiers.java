@@ -1,6 +1,10 @@
 package io.github.apickledwalrus.skriptgui.elements.expressions;
 
 import ch.njol.skript.Skript;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
@@ -10,6 +14,14 @@ import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
 
+@Name("Global GUI Identifiers")
+@Description("A list of the identifiers of all registered global GUIs.")
+@Examples({"command /guis:",
+		"\ttrigger:",
+		"\t\tloop all of the registered gui identifiers:",
+		"\t\t\tsend loop-string"
+})
+@Since("1.2.1")
 public class ExprGUIIdentifiers extends SimpleExpression<String> {
 
 	static {
