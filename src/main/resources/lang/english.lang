@@ -6,3 +6,6 @@ slot types:
 	outside: outside
 	quickbar: quickbar, quick bar, hotbar, hot bar, bottom row
 	result: result, crafting result, smelting result
+types:
+    guiinventory: gui inventor¦y¦ies
+    slottype: slot type¦s

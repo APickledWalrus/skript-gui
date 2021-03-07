@@ -72,8 +72,6 @@ public class InventoryUtils {
 
 		if (name == null) {
 			name = type.getDefaultTitle();
-		} else if (name.length() > 32) {
-			name = name.substring(0, 32);
 		}
 
 		if (type == InventoryType.CHEST)
