@@ -4,7 +4,7 @@ plugins {
     id 'eclipse'
 }
 
-version '1.2.2'
+version '1.3-alpha1'
 
 repositories {
     mavenCentral()
@@ -16,7 +16,7 @@ repositories {
 dependencies {
 	implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:1.1.0'
     implementation 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT'
-    implementation ('com.github.SkriptLang:Skript:2.3') {
+    implementation ('com.github.SkriptLang.Skript:Skript:2.6-alpha1') {
         transitive = false
     }
 }

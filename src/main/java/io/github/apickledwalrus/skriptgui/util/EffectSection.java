@@ -1,6 +1,5 @@
 package io.github.apickledwalrus.skriptgui.util;
 
-import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.Node;
 import ch.njol.skript.config.SectionNode;
@@ -9,6 +8,7 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.skript.lang.TriggerItem;
 import ch.njol.skript.lang.TriggerSection;
+import ch.njol.skript.lang.parser.ParserInstance;
 import ch.njol.skript.log.HandlerList;
 import ch.njol.skript.log.LogHandler;
 import ch.njol.skript.log.ParseLogHandler;
@@ -16,7 +16,6 @@ import ch.njol.skript.log.RetainingLogHandler;
 import ch.njol.skript.log.SkriptLogger;
 import ch.njol.util.Kleenean;
 import ch.njol.util.StringUtils;
-import io.github.apickledwalrus.skriptgui.util.ReflectionUtils;
 import org.bukkit.event.Event;
 
 import java.util.ArrayList;
@@ -39,7 +38,7 @@ public abstract class EffectSection extends Condition {
 
 	public EffectSection() {
 		Node n = SkriptLogger.getNode(); // Skript sets the node before parsing this 'effect'
-		if (n == null || !(n instanceof SectionNode)) // Check in case it wasn't loaded as an inline condition
+		if (!(n instanceof SectionNode)) // Check in case it wasn't loaded as an inline condition
 			return;
 		// True if it was used as condition
 		hasIfOrElseIf = StringUtils.startsWithIgnoreCase(n.getKey(), "if ") || StringUtils.startsWithIgnoreCase(n.getKey(), "else if ");
@@ -83,10 +82,7 @@ public abstract class EffectSection extends Condition {
 	public static void stopLog(RetainingLogHandler logger) {
 		// Stop the current log handler
 		logger.stop();
-		// Using reflection to access the iterator of handlers
-		HandlerList handler = ReflectionUtils.getField(SkriptLogger.class, null, "handlers");
-		if (handler == null)
-			return;
+		HandlerList handler = ParserInstance.get().getHandlers();
 		Iterator<LogHandler> it = handler.iterator();
 		// A list containing the last handlers that will be stopped
 		List<LogHandler> toStop = new ArrayList<>();
@@ -156,7 +152,7 @@ public abstract class EffectSection extends Condition {
 
 	/**
 	 * It will load the section of this if any and then it will parse as in specific event.
-	 * Basically it will call {@link ScriptLoader#setCurrentEvent(String, Class[])}, parse the current section,
+	 * Basically it will call {@link ParserInstance#setCurrentEvent(String, Class[])}, parse the current section,
 	 * and then set the current event back to the previous one.
 	 * Useful to load a code from event X and parse as Y, allowing to use syntaxes that work on it.
 	 *
@@ -167,13 +163,13 @@ public abstract class EffectSection extends Condition {
 	@SuppressWarnings("unchecked")
 	public void loadSection(String name, boolean setNext, Class<? extends Event>... events) {
 		if (section != null && name != null && events != null && events.length > 0) {
-			String previousName = ScriptLoader.getCurrentEventName();
-			Class<? extends Event>[] previousEvents = ScriptLoader.getCurrentEvents();
-			Kleenean previousDelay = ScriptLoader.hasDelayBefore;
-			ScriptLoader.setCurrentEvent(name, events);
+			String previousName = getParser().getCurrentEventName();
+			Class<? extends Event>[] previousEvents = getParser().getCurrentEvents();
+			Kleenean previousDelay = getParser().getHasDelayBefore();
+			getParser().setCurrentEvent(name, events);
 			loadSection(setNext);
-			ScriptLoader.setCurrentEvent(previousName, previousEvents);
-			ScriptLoader.hasDelayBefore = previousDelay;
+			getParser().setCurrentEvent(previousName, previousEvents);
+			getParser().setHasDelayBefore(previousDelay);
 		}
 	}
 

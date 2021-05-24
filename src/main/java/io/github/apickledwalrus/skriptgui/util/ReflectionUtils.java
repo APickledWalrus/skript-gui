@@ -41,9 +41,9 @@ public class ReflectionUtils {
 	 * @param clazz The class to create the instance of.
 	 * @return A instance object of the given class.
 	 */
-	public static <T> T newInstance(Class<T> clz) {
+	public static <T> T newInstance(Class<T> clazz) {
 		try {
-			Constructor<T> c = clz.getDeclaredConstructor();
+			Constructor<T> c = clazz.getDeclaredConstructor();
 			c.setAccessible(true);
 			return c.newInstance();
 		} catch (Exception e) {
