@@ -104,8 +104,10 @@ public class SkriptGUIEvent extends SkriptEvent {
 	 * Removes all currently open {@link GUI}s.
 	 */
 	public void unregisterAll(){
-		listeners.forEach(GUIListener::finalize);
-		listeners.clear();
+		if (listeners.size() != 0) { //
+			listeners.forEach(GUIListener::finalize);
+			listeners.clear();
+		}
 		// When running '/skript reload all', it removes this object from Skript's event listener
 		registered = false;
 	}
