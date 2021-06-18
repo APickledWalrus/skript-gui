@@ -12,11 +12,13 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Name("Global GUI Identifiers")
 @Description("A list of the identifiers of all registered global GUIs.")
-@Examples({"command /guis:",
+@Examples({
+		"command /guis:",
 		"\ttrigger:",
 		"\t\tloop all of the registered gui identifiers:",
 		"\t\t\tsend loop-string"
@@ -31,7 +33,7 @@ public class ExprGUIIdentifiers extends SimpleExpression<String> {
 	}
 
 	@Override
-	public boolean init(Expression<?>[] expressions, int i, Kleenean kleenean, ParseResult parseResult) {
+	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		return true;
 	}
 
@@ -46,12 +48,14 @@ public class ExprGUIIdentifiers extends SimpleExpression<String> {
 	}
 
 	@Override
+	@NotNull
 	public Class<? extends String> getReturnType() {
 		return String.class;
 	}
 
 	@Override
-	public String toString(@Nullable Event event, boolean b) {
+	@NotNull
+	public String toString(@Nullable Event e, boolean debug) {
 		return "all of the registered gui identifiers";
 	}
 

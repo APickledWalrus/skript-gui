@@ -8,12 +8,15 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.entity.Player;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Name("GUI of Player")
 @Description("The GUI that the player currently has open.")
-@Examples({"edit the player's gui:",
-		"\tmake gui 1 with dirt named \"Edited Slot\""})
+@Examples({
+		"edit the player's gui:",
+		"\tmake gui 1 with dirt named \"Edited Slot\""
+})
 @Since("1.1.0")
 public class ExprGUI extends SimplePropertyExpression<Player, GUI> {
 
@@ -28,11 +31,13 @@ public class ExprGUI extends SimplePropertyExpression<Player, GUI> {
 	}
 
 	@Override
+	@NotNull
 	public Class<? extends GUI> getReturnType() {
 		return GUI.class;
 	}
 
 	@Override
+	@NotNull
 	protected String getPropertyName() {
 		return "gui";
 	}

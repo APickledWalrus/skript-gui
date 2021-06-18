@@ -18,6 +18,8 @@ import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import io.github.apickledwalrus.skriptgui.util.EffectSection;
 import io.github.apickledwalrus.skriptgui.util.VariableUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Name("Set GUI Slots")
 @Description("Set or clear GUI slots.")
@@ -33,15 +35,13 @@ public class SecMakeGUI extends EffectSection {
 
 	static {
 		Skript.registerCondition(SecMakeGUI.class,
-				"(make|format) [the] next gui [slot] (with|to) [(1¦(moveable|stealable))] %itemtype%",
-				"(make|format) gui [slot[s]] %strings/numbers% (with|to) [(1¦(moveable|stealable))] %itemtype%",
+				"(make|format) [the] next gui [slot] (with|to) [(1Â¦(moveable|stealable))] %itemtype%",
+				"(make|format) gui [slot[s]] %strings/numbers% (with|to) [(1Â¦(moveable|stealable))] %itemtype%",
 				"(un(make|format)|remove) [the] next gui [slot]",
 				"(un(make|format)|remove) gui [slot[s]] %strings/numbers%",
 				"(un(make|format)|remove) all [of the] gui [slots]"
 		);
 	}
-
-	public static SecMakeGUI lastInstance = null;
 
 	private Expression<Object> slots; // Can be number or a string
 	private Expression<ItemType> item;
@@ -61,15 +61,18 @@ public class SecMakeGUI extends EffectSection {
 		}
 
 		pattern = matchedPattern;
-		if (matchedPattern < 2)
+		if (matchedPattern < 2) {
 			item = (Expression<ItemType>) exprs[matchedPattern];
-		if (matchedPattern == 1 || matchedPattern == 3)
+		}
+		if (matchedPattern == 1 || matchedPattern == 3) {
 			slots = (Expression<Object>) exprs[0];
+		}
 
 		stealable = parseResult.mark == 1;
 
-		if (hasSection())
+		if (hasSection()) {
 			loadSection("gui effect", false, InventoryClickEvent.class);
+		}
 
 		return true;
 	}
@@ -91,22 +94,31 @@ public class SecMakeGUI extends EffectSection {
 				ItemStack item = itemType.getRandom();
 				for (Object slot : slots != null ? slots.getArray(e) : new Object[]{gui.nextSlot()}) {
 					if (hasSection()) {
-						final Object variables = VariableUtils.getInstance().copyVariables(e);
-						gui.setItem(slot, item, stealable, event -> {
-							VariableUtils.getInstance().pasteVariables(event, variables);
-							SkriptGUI.getGUIManager().setGUIEvent(event, gui);
-							runSection(event);
-						});
+						Object variables = VariableUtils.getInstance().copyVariables(e);
+						if (variables != null) {
+							gui.setItem(slot, item, stealable, event -> {
+								VariableUtils.getInstance().pasteVariables(event, variables);
+								SkriptGUI.getGUIManager().setGUIEvent(event, gui);
+								runSection(event);
+							});
+						} else { // Don't paste variables if there are none copied
+							gui.setItem(slot, item, stealable, event -> {
+								SkriptGUI.getGUIManager().setGUIEvent(event, gui);
+								runSection(event);
+							});
+						}
 					} else {
 						gui.setItem(slot, item, stealable, null);
 					}
 				}
 				break;
 			case 2: // Clear the next slot
-				gui.clearSlots(gui.nextInvertedSlot());
+				gui.clear(gui.nextSlotInverted());
 				break;
 			case 3: // Clear the input slots
-				gui.clearSlots(slots.getArray(e));
+				for (Object slot : slots.getArray(e)) {
+					gui.clear(slot);
+				}
 				break;
 			case 4: // Clear all slots
 				gui.clear();
@@ -115,7 +127,8 @@ public class SecMakeGUI extends EffectSection {
 	}
 
 	@Override
-	public String toString(Event e, boolean debug) {
+	@NotNull
+	public String toString(@Nullable Event e, boolean debug) {
 		switch (pattern) {
 			case 0:
 				return "make next gui slot with " + item.toString(e, debug);
@@ -131,4 +144,5 @@ public class SecMakeGUI extends EffectSection {
 				return "make gui";
 		}
 	}
+
 }

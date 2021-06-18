@@ -16,6 +16,8 @@ import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Name("Last GUI/GUI from id")
 @Description("It is used to return the last created gui or a gui from a string id.")
@@ -44,8 +46,10 @@ public class ExprLastGUI extends SimpleExpression<GUI> {
 
 	@Override
 	protected GUI[] get(Event e) {
-		if (id != null)
-			return new GUI[]{SkriptGUI.getGUIManager().getGlobalGUI(id.getSingle(e))};
+		if (id != null) {
+			String id = this.id.getSingle(e);
+			return id != null ? new GUI[]{SkriptGUI.getGUIManager().getGlobalGUI(id)} : new GUI[0];
+		}
 		return new GUI[]{SkriptGUI.getGUIManager().getGUIEvent(e)};
 	}
 
@@ -57,12 +61,13 @@ public class ExprLastGUI extends SimpleExpression<GUI> {
 	}
 
 	@Override
-	public void change(final Event e, Object[] delta, ChangeMode mode){
+	public void change(final Event e, Object @Nullable [] delta, ChangeMode mode){
 		String id = this.id.getSingle(e);
 		if (id != null) {
 			GUI gui = SkriptGUI.getGUIManager().removeGlobalGUI(id);
-			if (gui != null)
+			if (gui != null) {
 				gui.clear();
+			}
 		}
 	}
 
@@ -72,12 +77,14 @@ public class ExprLastGUI extends SimpleExpression<GUI> {
 	}
 
 	@Override
+	@NotNull
 	public Class<? extends GUI> getReturnType() {
 		return GUI.class;
 	}
 
 	@Override
-	public String toString(Event e, boolean debug) {
+	@NotNull
+	public String toString(@Nullable Event e, boolean debug) {
 		return id == null ? "last gui" : "gui with id" + id.toString(e, debug);
 	}
 

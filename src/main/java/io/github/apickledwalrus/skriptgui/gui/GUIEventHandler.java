@@ -1,5 +1,7 @@
 package io.github.apickledwalrus.skriptgui.gui;
 
+import io.github.apickledwalrus.skriptgui.SkriptGUI;
+import io.github.apickledwalrus.skriptgui.util.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.ClickType;
@@ -10,22 +12,14 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 
-import io.github.apickledwalrus.skriptgui.SkriptGUI;
-import io.github.apickledwalrus.skriptgui.util.InventoryUtils;
+public abstract class GUIEventHandler {
 
-public abstract class GUIListener {
-
-	private Inventory gui;
+	private GUI gui;
 	private boolean isStarted = false;
 
-	public GUIListener(Inventory gui) {
+	public GUIEventHandler(GUI gui) {
 		this.gui = gui;
 	}
-
-	public abstract void onClick(InventoryClickEvent e, int slot);
-	public abstract void onOpen(InventoryOpenEvent e);
-	public abstract void onClose(InventoryCloseEvent e);
-	public abstract void onDrag(InventoryDragEvent e, int slot);
 
 	public void onEvent(Event event) {
 
@@ -101,21 +95,12 @@ public abstract class GUIListener {
 						break;
 				}
 			}
-			return;
 		}
 
 	}
 
-	public boolean isStarted() {
-		return isStarted;
-	}
-
-	public void stop() {
-		// In Global GUIs, someone can try to open a GUI really fast, so let's make sure first.
-		if (isStarted() && gui.getViewers().size() == 0) {
-			SkriptGUIEvent.getInstance().unregister(this);
-			isStarted = false;
-		}
+	public void setGui(GUI gui) {
+		this.gui = gui;
 	}
 
 	public void start() {
@@ -125,15 +110,19 @@ public abstract class GUIListener {
 		}
 	}
 
-	public void setInventory(Inventory inv) {
-		gui = inv;
+	public void stop() { // TODO investigate comment
+		// In Global GUIs, someone can try to open a GUI really fast, so let's make sure first.
+		if (isStarted() && gui.getViewers().size() == 0) {
+			SkriptGUIEvent.getInstance().unregister(this);
+			isStarted = false;
+		}
+	}
+
+	public boolean isStarted() {
+		return isStarted;
 	}
 
 	private boolean isAllowedType(ClickType ct) {
-
-		if (ct == null)
-			return false;
-
 		switch(ct) {
 			case UNKNOWN:
 			case WINDOW_BORDER_RIGHT:
@@ -143,11 +132,15 @@ public abstract class GUIListener {
 			default:
 				return true;
 		}
-
 	}
 
 	public void finalize() {
 		gui.clear();
 	}
+
+	public abstract void onClick(InventoryClickEvent e, int slot);
+	public abstract void onDrag(InventoryDragEvent e, int slot);
+	public abstract void onOpen(InventoryOpenEvent e);
+	public abstract void onClose(InventoryCloseEvent e);
 
 }

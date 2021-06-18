@@ -1,5 +1,7 @@
 package io.github.apickledwalrus.skriptgui.util;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -18,8 +20,9 @@ public class ReflectionUtils {
 	 * @param parameters The parameters of the method
 	 * @return The result of the method, or null if the method was null or the invocation failed
 	 */
+	@Nullable
 	@SuppressWarnings("unchecked")
-	public static <T> T invokeMethod(Class<?> clazz, String method, Object instance, Object... parameters) {
+	public static <T> T invokeMethod(Class<?> clazz, String method, @Nullable Object instance, Object... parameters) {
 		try {
 			Class<?>[] parameterTypes = new Class<?>[parameters.length];
 			int x = 0;
@@ -41,6 +44,7 @@ public class ReflectionUtils {
 	 * @param clazz The class to create the instance of.
 	 * @return A instance object of the given class.
 	 */
+	@Nullable
 	public static <T> T newInstance(Class<T> clazz) {
 		try {
 			Constructor<T> c = clazz.getDeclaredConstructor();
@@ -76,8 +80,9 @@ public class ReflectionUtils {
 	 * @param field The field name
 	 * @return The field or null if it couldn't be gotten
 	 */
+	@Nullable
 	@SuppressWarnings("unchecked")
-	public static <T> T getField(Class<?> from, Object obj, String field) {
+	public static <T> T getField(Class<?> from, @Nullable Object obj, String field) {
 		try {
 			Field f = from.getDeclaredField(field);
 			f.setAccessible(true);

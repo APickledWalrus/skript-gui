@@ -1,13 +1,13 @@
 package io.github.apickledwalrus.skriptgui.gui;
 
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
-
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
 
 public class GUIManager {
 
@@ -38,7 +38,7 @@ public class GUIManager {
 
 	@Nullable
 	public GUI getGlobalGUI(String id) {
-		return id != null ? globalGUIs.get(id) : null;
+		return globalGUIs.get(id);
 	}
 
 	public String[] getGlobalIdentifiers() {
@@ -46,8 +46,7 @@ public class GUIManager {
 	}
 
 	public void addGlobalGUI(String id, GUI gui) {
-		if (id != null && gui != null)
-			globalGUIs.put(id, gui);
+		globalGUIs.put(id, gui);
 	}
 
 	@Nullable

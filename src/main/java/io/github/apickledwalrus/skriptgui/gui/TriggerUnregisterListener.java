@@ -1,15 +1,15 @@
 package io.github.apickledwalrus.skriptgui.gui;
 
-import java.io.File;
-import java.util.ArrayList;
-
-import org.bukkit.event.Event;
-
 import ch.njol.skript.SkriptEventHandler;
 import ch.njol.skript.lang.Literal;
 import ch.njol.skript.lang.SelfRegisteringSkriptEvent;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.Trigger;
+import org.bukkit.event.Event;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
 
 /**
  * This is called only when someone uses /sk reload all, so it will register {@link SkriptGUIEvent} again.
@@ -22,10 +22,8 @@ public class TriggerUnregisterListener extends SelfRegisteringSkriptEvent {
 	}
 
 	public void register() {
-
-		if (t == null) // A file object, just to not use null
-			t = new Trigger(new File("SkriptGUI"), getClass().getName(), this, new ArrayList<>());
-
+		if (t == null)
+			t = new Trigger(null, getClass().getName(), this, new ArrayList<>());
 		SkriptEventHandler.addSelfRegisteringTrigger(t);
 	}
 
@@ -50,7 +48,8 @@ public class TriggerUnregisterListener extends SelfRegisteringSkriptEvent {
 	}
 
 	@Override
-	public String toString(Event e, boolean debug) {
+	@NotNull
+	public String toString(@Nullable Event e, boolean debug) {
 		return getClass().getName();
 	}
 

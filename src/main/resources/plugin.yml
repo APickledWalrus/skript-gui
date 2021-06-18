@@ -4,4 +4,4 @@ version: 1.3-alpha2
 authors: [APickledWalrus, Tuke_Nuke]
 description: Enables the easy creation of advanced and organized GUIs with Skript.
 website: https://github.com/APickledWalrus/skript-gui
-depend: [Skript]
+softdepend: [Skript]

@@ -18,6 +18,8 @@ import io.github.apickledwalrus.skriptgui.gui.GUI;
 import io.github.apickledwalrus.skriptgui.gui.SkriptGUIEvent;
 import io.github.apickledwalrus.skriptgui.gui.GUI.ShapeMode;
 import io.github.apickledwalrus.skriptgui.util.EffectSection;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Name("Create / Edit GUI")
 @Description("The base of creating and editing GUIs.")
@@ -30,7 +32,7 @@ public class SecCreateGUI extends EffectSection {
 
 	static {
 		Skript.registerCondition(SecCreateGUI.class,
-				"create [a] [new] gui [[with id] %-string%] with %inventory% [(1¦(and|with) (moveable|stealable) items)] [(and|with) shape %-strings%]",
+				"create [a] [new] gui [[with id] %-string%] with %inventory% [(1Â¦(and|with) (moveable|stealable) items)] [(and|with) shape %-strings%]",
 				"(change|edit) [gui] %guiinventory%"
 		);
 	}
@@ -39,13 +41,14 @@ public class SecCreateGUI extends EffectSection {
 	private Expression<Inventory> inv;
 	private Expression<String> shape, id;
 
-	private boolean moveableItems;
+	private boolean stealableItems;
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult) {
-		if (checkIfCondition())
+		if (checkIfCondition()) {
 			return false;
+		}
 
 		if (matchedPattern == 1) {
 			if (!hasSection()) {
@@ -57,11 +60,12 @@ public class SecCreateGUI extends EffectSection {
 			id = (Expression<String>) exprs[0];
 			inv = (Expression<Inventory>) exprs[1];
 			shape = (Expression<String>) exprs[2];
-			moveableItems = parseResult.mark == 1;
+			stealableItems = parseResult.mark == 1;
 		}
 
-		if (hasSection())
+		if (hasSection()) {
 			loadSection(true);
+		}
 
 		// Just a safe check, to make sure the listener was registered when this is loaded
 		SkriptGUIEvent.getInstance().register();
@@ -77,15 +81,15 @@ public class SecCreateGUI extends EffectSection {
 
 				GUI gui;
 				if (this.inv instanceof ExprVirtualInventory) { // Try to set the name
-					gui = new GUI(inv, moveableItems, ((ExprVirtualInventory) this.inv).getName());
+					gui = new GUI(inv, stealableItems, ((ExprVirtualInventory) this.inv).getName());
 				} else {
-					gui = new GUI(inv, moveableItems);
+					gui = new GUI(inv, stealableItems, null);
 				}
 
 				if (shape == null) {
-					gui.setShape(true, null);
+					gui.resetShape();
 				} else {
-					gui.setShape(false, ShapeMode.ACTIONS, shape.getArray(e));
+					gui.setShape(ShapeMode.ACTIONS, shape.getArray(e));
 				}
 
 				String id = this.id != null ? this.id.getSingle(e) : null;
@@ -105,10 +109,9 @@ public class SecCreateGUI extends EffectSection {
 	}
 
 	@Override
-	public String toString(Event e, boolean debug) {
-		if (exprGUI != null)
-			return "edit GUI " + exprGUI.toString(e, debug);
-		return "create gui";
+	@NotNull
+	public String toString(@Nullable Event e, boolean debug) {
+		return exprGUI != null ? "edit GUI " + exprGUI.toString(e, debug) : "create gui";
 	}
 
 }

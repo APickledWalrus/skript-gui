@@ -17,6 +17,8 @@ import ch.njol.skript.log.SkriptLogger;
 import ch.njol.util.Kleenean;
 import ch.njol.util.StringUtils;
 import org.bukkit.event.Event;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +32,7 @@ import java.util.List;
  */
 public abstract class EffectSection extends Condition {
 
-	protected static HashMap<Class<? extends EffectSection>, EffectSection> map = new HashMap<>();
+	protected static final HashMap<Class<? extends EffectSection>, EffectSection> map = new HashMap<>();
 	protected SectionNode section = null;
 	private TriggerSection trigger = null;
 	private boolean hasIfOrElseIf = false;
@@ -40,17 +42,33 @@ public abstract class EffectSection extends Condition {
 		Node n = SkriptLogger.getNode(); // Skript sets the node before parsing this 'effect'
 		if (!(n instanceof SectionNode)) // Check in case it wasn't loaded as an inline condition
 			return;
+
+		String key = n.getKey();
+		if (key == null) {
+			throw new UnexpectedParameterException("[skript-gui] Encountered a null key while trying to create an EffectSection.");
+		}
 		// True if it was used as condition
-		hasIfOrElseIf = StringUtils.startsWithIgnoreCase(n.getKey(), "if ") || StringUtils.startsWithIgnoreCase(n.getKey(), "else if ");
+		hasIfOrElseIf = StringUtils.startsWithIgnoreCase(key, "if ") || StringUtils.startsWithIgnoreCase(key, "else if ");
+
 		// The comment value of a note is protected, so it is needed, but not really necessary though.
 		// It doesn't make difference, it's just to make a exactly copy.
 		String comment = ReflectionUtils.getField(Node.class, n, "comment");
-		if (comment == null)
+		if (comment == null) {
 			comment = "";
+		}
+
+		SectionNode parent = n.getParent();
+		if (parent == null) {
+			throw new UnexpectedParameterException("[skript-gui] Encountered a null SectioNnode parent while trying to create an EffectSection.");
+		}
 		// Creating a copy of current node.
 		section = new SectionNode(n.getKey(), comment, n.getParent(), n.getLine());
+
 		// It will copy the "ArrayList<Node> nodes" field too as it is protected.
-		ReflectionUtils.setField(SectionNode.class, section, "nodes", ReflectionUtils.getField(SectionNode.class, n, "nodes"));
+		Object nodes = ReflectionUtils.getField(SectionNode.class, n, "nodes");
+		if (nodes != null) { // If we don't set it, it should just be an empty list
+			ReflectionUtils.setField(SectionNode.class, section, "nodes", nodes);
+		}
 		// Then it will clear the nodes from the current node, so Skript won't parse it (you need to parse them later).
 		ReflectionUtils.setField(SectionNode.class, n, "nodes", new ArrayList<Node>());
 	}
@@ -128,8 +146,9 @@ public abstract class EffectSection extends Condition {
 				trigger = new TriggerSection(section) {
 
 					@Override
-					public String toString(Event event, boolean b) {
-						return EffectSection.this.toString(event, b);
+					@NotNull
+					public String toString(@Nullable Event e, boolean debug) {
+						return EffectSection.this.toString(e, debug);
 					}
 
 					@Override
@@ -162,12 +181,13 @@ public abstract class EffectSection extends Condition {
 	 */
 	@SuppressWarnings("unchecked")
 	public void loadSection(String name, boolean setNext, Class<? extends Event>... events) {
-		if (section != null && name != null && events != null && events.length > 0) {
+		if (section != null && events.length > 0) {
 			String previousName = getParser().getCurrentEventName();
 			Class<? extends Event>[] previousEvents = getParser().getCurrentEvents();
 			Kleenean previousDelay = getParser().getHasDelayBefore();
 			getParser().setCurrentEvent(name, events);
 			loadSection(setNext);
+			//noinspection ConstantConditions
 			getParser().setCurrentEvent(previousName, previousEvents);
 			getParser().setHasDelayBefore(previousDelay);
 		}

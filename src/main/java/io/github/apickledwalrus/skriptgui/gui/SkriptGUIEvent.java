@@ -14,6 +14,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,7 @@ public class SkriptGUIEvent extends SkriptEvent {
 	private static SkriptGUIEvent instance;
 	private final List<NonNullPair<Class<? extends Event>, Trigger>> triggers = ReflectionUtils.getField(SkriptEventHandler.class, null, "triggers");
 
-	private final List<GUIListener> listeners = new ArrayList<>();
+	private final List<GUIEventHandler> listeners = new ArrayList<>();
 	private boolean registered = false;
 
 	private SkriptGUIEvent() {
@@ -43,8 +45,8 @@ public class SkriptGUIEvent extends SkriptEvent {
 
 	@Override
 	public boolean check(Event event) {
-		List<GUIListener> current = new ArrayList<>(listeners);
-		for (GUIListener gui : current) {
+		List<GUIEventHandler> current = new ArrayList<>(listeners);
+		for (GUIEventHandler gui : current) {
 			gui.onEvent(event);
 			if (event instanceof Cancellable && ((Cancellable) event).isCancelled())
 				break; // A matching GUI was already found, so let's stop it.
@@ -53,8 +55,9 @@ public class SkriptGUIEvent extends SkriptEvent {
 	}
 
 	@Override
-	public String toString(Event event, boolean b) {
-		return event != null ? "gui event: " + event.getEventName() : "gui event";
+	@NotNull
+	public String toString(@Nullable Event e, boolean debug) {
+		return e != null ? "gui event: " + e.getEventName() : "gui event";
 	}
 
 	public void register() {
@@ -90,13 +93,13 @@ public class SkriptGUIEvent extends SkriptEvent {
 		}
 	}
 
-	public void register(GUIListener gui) {
+	public void register(GUIEventHandler gui) {
 		// Just in case it didn't enable the listener before opening a GUI
 		register();
 		listeners.add(gui);
 	}
 
-	public void unregister(GUIListener gui) {
+	public void unregister(GUIEventHandler gui) {
 		listeners.remove(gui);
 	}
 
@@ -105,7 +108,7 @@ public class SkriptGUIEvent extends SkriptEvent {
 	 */
 	public void unregisterAll(){
 		if (listeners.size() != 0) { //
-			listeners.forEach(GUIListener::finalize);
+			listeners.forEach(GUIEventHandler::finalize);
 			listeners.clear();
 		}
 		// When running '/skript reload all', it removes this object from Skript's event listener

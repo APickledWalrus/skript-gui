@@ -1,13 +1,12 @@
 package io.github.apickledwalrus.skriptgui.gui;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-
+import ch.njol.skript.Skript;
+import io.github.apickledwalrus.skriptgui.SkriptGUI;
+import io.github.apickledwalrus.skriptgui.util.InventoryUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -15,269 +14,431 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import ch.njol.skript.Skript;
-import io.github.apickledwalrus.skriptgui.SkriptGUI;
-import io.github.apickledwalrus.skriptgui.util.InventoryUtils;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.function.Consumer;
 
-public class GUI {
+public class GUI implements Inventory {
 
-	private final Consumer<InventoryClickEvent> NULL_CONSUMER = e -> {};
-
-	private Inventory guiInventory;
-	private GUIListener listener;
-
+	private Inventory inventory;
 	private String name;
-	private String rawShape;
+	private final GUIEventHandler eventHandler = new GUIEventHandler(this) {
+		@Override
+		public void onClick(InventoryClickEvent e, int slot) {
+			char realSlot = convert(slot);
+			Consumer<InventoryClickEvent> run = getSlot(realSlot);
+			/*
+			 * Cancel the event if this GUI slot is a button (it runs a consumer)
+			 * If it isn't, check whether items are stealable in this GUI, or if the specific slot is stealable
+			 */
+			e.setCancelled(run != null || (!isStealable() && !isStealable(realSlot)));
+			if (run != null && slot == e.getSlot()) {
+				run.accept(e);
+			}
+		}
+
+		@Override
+		public void onDrag(InventoryDragEvent e, int slot) {
+			char realSlot = convert(slot);
+			Consumer<InventoryClickEvent> run = getSlot(realSlot);
+			/*
+			 * Cancel the event if this GUI slot is a button (it runs a consumer)
+			 * If it isn't, check whether items are stealable in this GUI, or if the specific slot is stealable
+			 */
+			e.setCancelled(run != null || (!isStealable() && !isStealable(realSlot)));
+		}
+
+		@Override
+		public void onOpen(InventoryOpenEvent e) {
+			SkriptGUI.getGUIManager().setGUI((Player) e.getPlayer(), GUI.this);
+			if (onOpen != null)
+				onOpen.accept(e);
+		}
+
+		@Override
+		public void onClose(InventoryCloseEvent e) {
+			if (onClose == null) { // If this GUI does not run anything when it is closed, it will not be able to cancel its closing
+				SkriptGUI.getGUIManager().removeGUI((Player) e.getPlayer());
+				return;
+			}
+
+			SkriptGUI.getGUIManager().setGUIEvent(e, GUI.this);
+			try {
+				onClose.accept(e);
+				if (closeCancelled) {
+					Bukkit.getScheduler().runTaskLater(SkriptGUI.getInstance(), () -> {
+						e.getPlayer().openInventory(getInventory());
+						// Reset behavior (it shouldn't persist)
+						setCloseCancelled(false);
+					}, 1);
+				} else { // Event isn't being "cancelled"
+					SkriptGUI.getGUIManager().removeGUI((Player) e.getPlayer());
+				}
+			} catch (Exception ex) {
+				throw Skript.exception(ex, "An error occurred while closing a GUI. If you are unsure why this occurred, please report the error on the skript-gui GitHub.");
+			}
+		}
+	};
 
 	private final Map<Character, Consumer<InventoryClickEvent>> slots = new HashMap<>();
-	private Consumer<InventoryCloseEvent> onClose;
+	private String rawShape;
 
-	// Whether the player can take items from this GUI.
+	// Whether all items of this GUI (excluding buttons) can be taken.
 	private boolean stealableItems;
-	// The individual slots of this GUI that can be stolen. Overrides 'stealableItems'
-	// Ignored if 'stealableItems' is true
+	/*
+	 * The individual slots of this GUI that can be stolen.
+	 * Even if stealableItems is false, slots in this list will be stealable.
+	 * Ignored if 'stealableItems' is true.
+	 */
 	private final List<Character> stealableSlots = new ArrayList<>();
 
-	// Whether the inventory close event for this GUI is cancelled.
+	// To be ran when this inventory is opened.
+	private Consumer<InventoryOpenEvent> onOpen;
+	// To be ran when this inventory is closed.
+	private Consumer<InventoryCloseEvent> onClose;
+	// Whether the inventory close event for this event handler is cancelled.
 	private boolean closeCancelled;
 
-	/*
-	 * Constructors
-	 */
-
-	/**
-	 * Creates a new {@link GUI} with the given inventory
-	 * @param inv A {@link Inventory}
-	 * @see io.github.apickledwalrus.skriptgui.elements.expressions.ExprVirtualInventory
-	 */
-	public GUI(Inventory inv) {
-		this.guiInventory = inv;
-		this.name = inv.getType().getDefaultTitle();
-		this.stealableItems = false;
-	}
-
-	/**
-	 * Creates a new {@link GUI} with the given inventory and lock status.
-	 * @param inv A {@link Inventory}
-	 * @param stealableItems Whether items can be taken from this {@link GUI} by the viewer
-	 * @see io.github.apickledwalrus.skriptgui.elements.expressions.ExprVirtualInventory
-	 */
-	public GUI(Inventory inv, boolean stealableItems) {
-		this.guiInventory = inv;
-		this.name = inv.getType().getDefaultTitle();
+	public GUI(Inventory inventory, boolean stealableItems, @Nullable String name) {
+		this.inventory = inventory;
 		this.stealableItems = stealableItems;
+		this.name = name != null ? name : inventory.getType().getDefaultTitle();
+		getEventHandler().start();
 	}
 
-	/**
-	 * Creates a new {@link GUI} with the given inventory and lock status.
-	 * @param inv A {@link Inventory}
-	 * @param stealableItems Whether items can be taken from this {@link GUI} by the viewer
-	 * @param name The name of this GUI. This SHOULD be the name of the created inventory used in {@link io.github.apickledwalrus.skriptgui.elements.sections.SecCreateGUI}.
-	 * @see io.github.apickledwalrus.skriptgui.elements.expressions.ExprVirtualInventory
-	 */
-	public GUI(Inventory inv, boolean stealableItems, String name) {
-		this.guiInventory = inv;
-		this.name = name;
-		this.stealableItems = stealableItems;
-	}
-
-	/*
-	 * General Methods
-	 */
-
-	/**
-	 * @return The {@link Inventory} of this {@link GUI}
-	 */
 	public Inventory getInventory() {
-		if (!getListener().isStarted())
-			getListener().start();
-		return guiInventory;
+		return inventory;
+	}
+
+	@Override
+	public int getSize() {
+		return inventory.getSize();
+	}
+
+	public void setSize(int size) {
+		changeInventory(size, getName());
+	}
+
+	@Override
+	public int getMaxStackSize() {
+		return inventory.getMaxStackSize();
+	}
+
+	@Override
+	public void setMaxStackSize(int i) {
+		inventory.setMaxStackSize(i);
+	}
+
+	@NotNull
+	public String getName() {
+		return name;
+	}
+
+	@NotNull
+	public String getTitle() {
+		return name;
+	}
+
+	public void setName(@Nullable String name) {
+		changeInventory(getSize(), name);
+	}
+
+	@Override
+	public ItemStack getItem(int i) {
+		return inventory.getItem(i);
+	}
+
+	@Override
+	public void setItem(int i, @Nullable ItemStack itemStack) {
+		setItem(i, itemStack, false, null);
+	}
+
+	@Override
+	@NotNull
+	public HashMap<Integer, ItemStack> addItem(ItemStack... itemStacks) throws IllegalArgumentException {
+		return inventory.addItem(itemStacks);
+	}
+
+	@Override
+	@NotNull
+	public HashMap<Integer, ItemStack> removeItem(ItemStack... itemStacks) throws IllegalArgumentException {
+		return inventory.removeItem(itemStacks);
+	}
+
+	@Override
+	public ItemStack[] getContents() {
+		return inventory.getContents();
+	}
+
+	@Override
+	public void setContents(ItemStack[] itemStacks) throws IllegalArgumentException {
+		inventory.setContents(itemStacks);
+	}
+
+	@Override
+	public ItemStack[] getStorageContents() {
+		return inventory.getStorageContents();
+	}
+
+	@Override
+	public void setStorageContents(ItemStack[] itemStacks) throws IllegalArgumentException {
+		inventory.setStorageContents(itemStacks);
+	}
+
+	@Override
+	public boolean contains(@NotNull Material material) throws IllegalArgumentException {
+		return inventory.contains(material);
+	}
+
+	@Override
+	public boolean contains(@Nullable ItemStack itemStack) {
+		return inventory.contains(itemStack);
+	}
+
+	@Override
+	public boolean contains(@NotNull Material material, int i) throws IllegalArgumentException {
+		return inventory.contains(material, i);
+	}
+
+	@Override
+	public boolean contains(@Nullable ItemStack itemStack, int i) {
+		return inventory.contains(itemStack, i);
+	}
+
+	@Override
+	public boolean containsAtLeast(@Nullable ItemStack itemStack, int i) {
+		return inventory.containsAtLeast(itemStack, i);
+	}
+
+	@Override
+	@NotNull
+	public HashMap<Integer, ? extends ItemStack> all(@NotNull Material material) throws IllegalArgumentException {
+		return inventory.all(material);
+	}
+
+	@Override
+	@NotNull
+	public HashMap<Integer, ? extends ItemStack> all(@Nullable ItemStack itemStack) {
+		return inventory.all(itemStack);
+	}
+
+	@Override
+	public int first(@NotNull Material material) throws IllegalArgumentException {
+		return inventory.first(material);
+	}
+
+	@Override
+	public int first(@NotNull ItemStack itemStack) {
+		return inventory.first(itemStack);
+	}
+
+	@Override
+	public int firstEmpty() {
+		return inventory.firstEmpty();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return inventory.isEmpty();
+	}
+
+	@Override
+	public void remove(@NotNull Material material) throws IllegalArgumentException {
+		inventory.remove(material);
+	}
+
+	@Override
+	public void remove(@NotNull ItemStack itemStack) {
+		inventory.remove(itemStack);
 	}
 
 	/**
-	 * Converts an integer to a char.
-	 * This method is for {@link GUI} shapes.
-	 * @param slot Usually the slot from an inventory event.
-	 * @return The converted slot integer. This char is the key to what item the slot holds.
+	 * @param slot The slot(s) to remove. This will be converted through {@link GUI#convert(Object)}.
+	 *          If the returned character covers multiple slots, each of those slots will be cleared.
 	 */
-	public char convertSlot(int slot) {
-		if (slot < getRawShape().length())
-			return getRawShape().charAt(slot);
-		return ' ';
+	@Override
+	public void clear(int slot) {
+		char realSlot = convert(slot);
+		setItem(realSlot, new ItemStack(Material.AIR));
+		slots.remove(realSlot);
+		stealableSlots.remove(realSlot);
 	}
 
-	/**
-	 * The returned char is for the 'items' map.
-	 * @return The next available slot in this {@link GUI}
-	 */
-	public char nextSlot() {
-		for (char ch : rawShape.toCharArray()) {
-			if (!slots.containsKey(ch))
-				return ch;
+	public void clear(Object slot) {
+		char realSlot = convert(slot);
+		setItem(realSlot, new ItemStack(Material.AIR));
+		slots.remove(realSlot);
+		stealableSlots.remove(realSlot);
+	}
+
+	@Override
+	public void clear() {
+		inventory.clear();
+		slots.clear();
+		stealableSlots.clear();
+	}
+
+	@Override
+	@NotNull
+	public List<HumanEntity> getViewers() {
+		return inventory.getViewers();
+	}
+
+	@Override
+	@NotNull
+	public InventoryType getType() {
+		return inventory.getType();
+	}
+
+	@Override
+	public InventoryHolder getHolder() {
+		return inventory.getHolder();
+	}
+
+	@Override
+	@NotNull
+	public ListIterator<ItemStack> iterator() {
+		return inventory.iterator();
+	}
+
+	@Override
+	@NotNull
+	public ListIterator<ItemStack> iterator(int i) {
+		return inventory.iterator(i);
+	}
+
+	@Override
+	public Location getLocation() {
+		return inventory.getLocation();
+	}
+
+	private void changeInventory(int size, @Nullable String name) {
+		Inventory newInventory = InventoryUtils.newInventory(getType(), size, name);
+		newInventory.setContents(getContents());
+
+		Iterator<HumanEntity> viewerIterator = inventory.getViewers().iterator();
+		while (viewerIterator.hasNext()) {
+			HumanEntity viewer = viewerIterator.next();
+			ItemStack cursor = viewer.getItemOnCursor();
+			viewer.setItemOnCursor(null);
+			viewer.openInventory(newInventory);
+			viewer.setItemOnCursor(cursor);
+			viewerIterator.remove();
 		}
-		return 0;
-	}
 
-	/**
-	 * The returned char is for the 'items' map.
-	 * @return The newest slot that is filled in this {@link GUI}
-	 */
-	public char nextInvertedSlot() {
-		for (char ch2 : rawShape.toCharArray()) {
-			if (slots.containsKey(ch2))
-				return ch2;
-		}
-		return 0;
+		inventory = newInventory;
+		this.name = name;
 	}
 
 	/**
 	 * @param slot The object to convert to char form
 	 * @return A char that is usable in the item and slot maps.
 	 */
-	private char convert(Object slot) {
-		char ch;
-		if (slot instanceof Number)
-			ch = convertSlot(((Number) slot).intValue());
-		else if (slot instanceof String && !((String) slot).isEmpty())
-			ch = ((String) slot).charAt(0);
-		else if (slot instanceof Character)
-			ch = (Character) slot;
-		else { // It will get the next free slot
-			ch = nextSlot();
+	public char convert(Object slot) {
+		if (slot instanceof Number) {
+			int invSlot = ((Number) slot).intValue();
+			if (invSlot < rawShape.length())
+				return rawShape.charAt(invSlot);
+			return ' ';
 		}
-		return ch;
+
+		if (slot instanceof String && !((String) slot).isEmpty()) {
+			return ((String) slot).charAt(0);
+		}
+
+		if (slot instanceof Character) {
+			return (Character) slot;
+		}
+
+		return nextSlot();
 	}
 
 	/**
-	 * Clears all slots of the {@link GUI}
-	 * @return The modified {@link GUI}.
+	 * @return The next available slot in this GUI.
 	 */
-	public GUI clear() {
-		int x = -1;
+	public char nextSlot() {
 		for (char ch : rawShape.toCharArray()) {
-			if (++x < getInventory().getSize() && slots.containsKey(ch)) {
-				setItem(ch, new ItemStack(Material.AIR), null);
+			if (!slots.containsKey(ch)) {
+				return ch;
 			}
 		}
-		slots.clear();
-		stealableSlots.clear();
-		return this;
+		return 0;
 	}
 
 	/**
-	 * Clears the specified slots.
-	 * If the given char array is null or empty, nothing will happen.
-	 * @param chars The slots to clear. They will be converted by {@link GUI#convert(Object)}
-	 * @return The modified {@link GUI}.
+	 * @return The newest slot that has been filled in this GUI.
 	 */
-	@SuppressWarnings("null")
-	public GUI clearSlots(Object... chars) {
-		if (chars != null && chars.length > 0) {
-			for (Object ch : chars) {
-				char ch1 = convert(ch);
-				int x = -1;
-				for (char ch2 : rawShape.toCharArray()) {
-					if (++x < getInventory().getSize() && ch1 == ch2)
-						setItem(ch, new ItemStack(Material.AIR), null);
-				}
-				slots.remove(ch1);
-				stealableSlots.remove(ch1);
+	public char nextSlotInverted() {
+		return convert(firstEmpty());
+	}
+
+	/**
+	 * @param ch The slot in char form. It is assumed that this char was already converted through {@link GUI#convert(Object)}.
+	 * @return The slot's button consumer, or an emtpty consumer if it does not have one.
+	 */
+	@Nullable
+	public Consumer<InventoryClickEvent> getSlot(char ch) {
+		if (ch > 0 && slots.containsKey(ch)) {
+			return slots.get(ch);
+		}
+		return null;
+	}
+
+	/**
+	 * Sets a slot's item.
+	 * @param slot The slot to put the item in. It will be converted by {@link GUI#convert(Object)}.
+	 * @param item The {@link ItemStack} to put in the slot.
+	 * @param stealable Whether this {@link ItemStack} can be stolen.
+	 * @param consumer The {@link Consumer} that the slot will run when clicked. Put as null if the slot should not run anything when clicked.
+	 */
+	public void setItem(Object slot, @Nullable ItemStack item, boolean stealable, @Nullable Consumer<InventoryClickEvent> consumer) {
+		char ch = convert(slot);
+		if (ch == 0) {
+			return;
+		}
+		if (ch == '+' && rawShape.contains("+")) {
+			char ch2 = 'A';
+			while (rawShape.indexOf(ch2) >= 0)
+				ch2++;
+			rawShape = rawShape.replaceFirst("\\+", "" + ch2);
+			ch = ch2;
+		}
+		slots.put(ch, consumer);
+
+		if (stealable) {
+			stealableSlots.add(ch);
+		} else { // Just in case as we may be updating a slot.
+			stealableSlots.remove(ch);
+		}
+
+		int i = 0;
+		for (char ch1 : rawShape.toCharArray()) {
+			if (ch == ch1 && i < getSize()) {
+				inventory.setItem(i, item);
 			}
+			i++;
 		}
-		return this;
-	}
-
-	/*
-	 * GUI Properties Methods
-	 */
-
-	/**
-	 * Changes the name of this {@link GUI}.
-	 * If the {@link GUI} currently has viewers, it will be reopened for them to update the name.
-	 * @param newName The new name for this {@link GUI}
-	 * @return The modified {@link GUI}. No modifications will occur if the new name is null.
-	 * @see GUI#getName()
-	 */
-	public GUI setName(String newName) {
-		if (newName == null)
-			return this;
-
-		Inventory inv = InventoryUtils.newInventory(getInventory().getType(), getInventory().getSize() / 9, newName);
-		inv.setContents(getInventory().getContents());
-
-		// Create clone to avoid a CME
-		new ArrayList<>(getInventory().getViewers()).forEach(viewer -> {
-			ItemStack cursor = viewer.getItemOnCursor();
-			viewer.setItemOnCursor(null);
-			viewer.openInventory(inv);
-			viewer.setItemOnCursor(cursor);
-		});
-
-		guiInventory = inv;
-		getListener().setInventory(guiInventory);
-		this.name = newName;
-
-		return this;
 	}
 
 	/**
-	 * @return The name of this {@link GUI}.
-	 * @see GUI#setName(String)
+	 * @return The raw shape of this GUI.
 	 */
-	public String getName() {
-		return this.name;
-	}
-
-	/**
-	 * Changes the size of this {@link GUI}.
-	 * If the {@link GUI} currently has viewers, it will be reopened for them to update the size.
-	 * @param newSize The new size for this {@link GUI}
-	 * @return The modified {@link GUI}. If this GUI is not a chest GUI, no modifications will occur.
-	 * @see GUI#getSize()
-	 */
-	public GUI setSize(int newSize) {
-		if (getInventory().getType() != InventoryType.CHEST)
-			return this;
-		Inventory inv = InventoryUtils.newInventory(getInventory().getType(), newSize, getName());
-
-		// Check if the new inventory is smaller - avoid issues.
-		if (newSize < getSize()) {
-			for (int i = 0; i < inv.getSize(); i++)
-				inv.setItem(i, getInventory().getItem(i));
-			rawShape = rawShape.substring(0, inv.getSize());
-		} else {
-			inv.setContents(getInventory().getContents());
-		}
-
-		// Create clone to avoid a CME
-		new ArrayList<>(getInventory().getViewers()).forEach(viewer -> {
-			ItemStack cursor = viewer.getItemOnCursor();
-			viewer.setItemOnCursor(null);
-			viewer.openInventory(inv);
-			viewer.setItemOnCursor(cursor);
-		});
-
-		guiInventory = inv;
-		getListener().setInventory(guiInventory);
-
-		return this;
-	}
-
-	/**
-	 * @return The size of this {@link GUI}.
-	 * @see GUI#setSize(int)
-	 */
-	public int getSize() {
-		return getInventory().getSize();
+	public String getRawShape() {
+		return rawShape;
 	}
 
 	/**
 	 * The type of shape change to be applied
-	 * @see GUI#setShape(Boolean, ShapeMode, String...)
+	 * @see GUI#setShape(ShapeMode, String...)
 	 */
 	public enum ShapeMode {
 
@@ -298,278 +459,112 @@ public class GUI {
 	}
 
 	/**
+	 * Resets the shape of this {@link GUI}
+	 */
+	public void resetShape() {
+		StringBuilder sb = new StringBuilder();
+		for (char c = 'A'; c < getSize() + 'A'; c++) {
+			sb.append(c);
+		}
+		rawShape = sb.toString();
+	}
+
+	/**
 	 * Sets the shape of this {@link GUI}
-	 * @param defaultShape If true, the {@link GUI}'s shape will be reset to default
 	 * @param shapeMode If true, the shape will be changed for actions. If false, it will be changed for items.
 	 * @param shapes The new shape patterns for this {@link GUI}
-	 * @return The modified {@link GUI}
 	 * @see GUI#getRawShape()
 	 */
-	public GUI setShape(Boolean defaultShape, ShapeMode shapeMode, String... shapes) {
-		if (defaultShape) {
-			StringBuilder sb = new StringBuilder();
-			for (char c = 'A'; c < getSize() + 'A'; c++)
-				sb.append(c);
-			this.rawShape = sb.toString();
-		} else if (shapes.length > 0 && shapeMode != null) {
-			StringBuilder sb = new StringBuilder();
-			for (String shape : shapes)
-				sb.append(shape);
-			while (sb.length() < getSize())
-				sb.append(' ');
-			String newRawShape = sb.toString();
-			if (shapeMode == ShapeMode.ITEMS || shapeMode == ShapeMode.BOTH) // In case it's both, we MUST do this first.
-				updateShape(newRawShape);
-			if (shapeMode == ShapeMode.ACTIONS || shapeMode == ShapeMode.BOTH)
-				this.rawShape = newRawShape;
-		}
-		return this;
-	}
-
-	/**
-	 * Used to make the items match the new shape of the GUI.
-	 * @param newRawShape The new shape.
-	 * @see GUI#setShape(Boolean, ShapeMode, String...)
-	 */
-	private void updateShape(String newRawShape) {
-		// Get a map of the current shape for contents.
-		int x = 0;
-		Map<Character, ItemStack> items = new HashMap<>();
-		for (char ch : rawShape.toCharArray()) {
-			if (x >= getSize())
-				break;
-			items.put(ch, getInventory().getItem(x));
-			x++;
+	public void setShape(ShapeMode shapeMode, String... shapes) {
+		if (shapes.length == 0) {
+			return;
 		}
 
-		// Set the contents
-		ItemStack[] newContents = new ItemStack[getSize()];
-		x = 0;
-		for (char ch : newRawShape.toCharArray()) {
-			ItemStack item = items.get(ch);
-			if (item != null && x < getSize())
-				newContents[x] = item;
-			x++;
+		StringBuilder sb = new StringBuilder();
+		for (String shape : shapes) {
+			sb.append(shape);
+		}
+		while (sb.length() < getSize()) { // Fill it in if it's too small
+			sb.append(' ');
 		}
 
-		getInventory().setContents(newContents);
+		String newRawShape = sb.toString();
+		if (shapeMode == ShapeMode.ITEMS || shapeMode == ShapeMode.BOTH) { // In case it's both, we MUST do this first.
+			// Get a map of the current shape for contents.
+			int x = 0;
+			Map<Character, ItemStack> items = new HashMap<>();
+			for (char ch : rawShape.toCharArray()) {
+				if (x >= getSize())
+					break;
+				items.put(ch, getItem(x));
+				x++;
+			}
+
+			// Set the contents
+			ItemStack[] newContents = new ItemStack[getSize()];
+			x = 0;
+			for (char ch : newRawShape.toCharArray()) {
+				ItemStack item = items.get(ch);
+				if (item != null && x < getSize())
+					newContents[x] = item;
+				x++;
+			}
+
+			setContents(newContents);
+		}
+
+		if (shapeMode == ShapeMode.ACTIONS || shapeMode == ShapeMode.BOTH) {
+			rawShape = newRawShape;
+		}
 	}
 
 	/**
-	 * @return The raw shape of this {@link GUI}.
-	 * @see GUI#setShape(Boolean, ShapeMode, String...)
-	 */
-	public String getRawShape() {
-		return this.rawShape;
-	}
-
-	/**
-	 * @param stealable Whether items in this {@link GUI} should be stealable
-	 * @return The modified {@link GUI}
-	 * @see GUI#isStealable()
-	 */
-	public GUI setStealable(Boolean stealable) {
-		this.stealableItems = stealable;
-		return this;
-	}
-
-	/**
-	 * @return Whether the items in this {@link GUI} can be stolen.
-	 * @see GUI#setStealable(Boolean)
+	 * @return Whether the items in this GUI can be stolen.
 	 */
 	public boolean isStealable() {
-		return this.stealableItems;
+		return stealableItems;
 	}
 
 	/**
-	 * @return Whether the given slot in this {@link GUI} can be stolen.
+	 * @return Whether the given slot in this GUI can have its item stolen.
 	 */
 	public boolean isStealable(char slot) {
-		return this.stealableSlots.contains(slot);
-	}
-
-	/*
-	 * Action Methods
-	 */
-
-	/**
-	 * Sets the consumer to be run when this {@link GUI} is closed
-	 * @param consumer The {@link Consumer} to be run
-	 * @return The modified {@link GUI}
-	 * @see GUI#getOnClose()
-	 * @see GUI#hasOnClose()
-	 */
-	public GUI setOnClose(Consumer<InventoryCloseEvent> consumer) {
-		this.onClose = consumer;
-		return this;
+		return stealableSlots.contains(slot);
 	}
 
 	/**
-	 * @return The {@link Consumer} that will run when this {@link GUI} is closed.
-	 * @see GUI#setOnClose(Consumer)
-	 * @see GUI#hasOnClose()
+	 * @param stealableItems Whether items in this GUI should be stealable.
 	 */
-	@Nullable
-	public Consumer<InventoryCloseEvent> getOnClose() {
-		return this.onClose;
+	public void setStealableItems(Boolean stealableItems) {
+		this.stealableItems = stealableItems;
 	}
 
 	/**
-	 * @return Whether this {@link GUI} has a {@link Consumer} that will run when it is closed.
-	 * @see GUI#setOnClose(Consumer)
-	 * @see GUI#getOnClose()
+	 * Sets the consumer to be ran when this GUI is opened.
+	 * @param onOpen The consumer to be ran when this GUI is opened.
 	 */
-	public boolean hasOnClose() {
-		return this.onClose != null;
+	public void setOnOpen(Consumer<InventoryOpenEvent> onOpen) {
+		this.onOpen = onOpen;
 	}
 
 	/**
-	 * Set whether the GUI close event should be cancelled.
-	 * @param cancel Whether the close event should be cancelled.
-	 * @see GUI#isCloseCancelled
+	 * Sets the consumer to be ran when this GUI is closed.
+	 * @param onClose The consumer to be ran when this GUI is closed.
+	 */
+	public void setOnClose(Consumer<InventoryCloseEvent> onClose) {
+		this.onClose = onClose;
+	}
+
+	/**
+	 * Sets whether this GUI's close event should be cancelled.
+	 * @param cancel Whether this GUI's close event should be cancelled.
 	 */
 	public void setCloseCancelled(boolean cancel) {
-		this.closeCancelled = cancel;
+		closeCancelled = cancel;
 	}
 
-	/**
-	 * @return Whether the close event for this GUI is cancelled.
-	 * @see GUI#setCloseCancelled(boolean)
-	 */
-	public boolean isCloseCancelled() {
-		return this.closeCancelled;
-	}
-
-	/**
-	 * Sets a slot's item.
-	 * @param slot The slot to put the item in. It will be converted by {@link GUI#convert(Object)}.
-	 * @param item The {@link ItemStack} to put in the slot.
-	 * @param consumer The {@link Consumer} that the slot will run when clicked. Put as null if the slot should not run anything when clicked.
-	 * @return The modified {@link GUI}.
-	 */
-	public GUI setItem(Object slot, ItemStack item, @Nullable Consumer<InventoryClickEvent> consumer) {
-		return setItem(slot, item, false, consumer);
-	}
-
-	/**
-	 * Sets a slot's item.
-	 * @param slot The slot to put the item in. It will be converted by {@link GUI#convert(Object)}.
-	 * @param item The {@link ItemStack} to put in the slot.
-	 * @param stealable Whether this {@link ItemStack} can be stolen.
-	 * @param consumer The {@link Consumer} that the slot will run when clicked. Put as null if the slot should not run anything when clicked.
-	 * @return The modified {@link GUI}.
-	 */
-	public GUI setItem(Object slot, ItemStack item, boolean stealable, @Nullable Consumer<InventoryClickEvent> consumer) {
-		char ch = convert(slot);
-		if (consumer == null)
-			consumer = NULL_CONSUMER;
-		if (ch == 0)
-			return this;
-		if (ch == '+' && rawShape.contains("+")) {
-			char ch2 = 'A';
-			while (rawShape.indexOf(ch2) >= 0)
-				ch2++;
-			rawShape = rawShape.replaceFirst("\\+", "" + ch2);
-			ch = ch2;
-		}
-		slots.put(ch, consumer);
-
-		if (stealable) {
-			stealableSlots.add(ch);
-		} else { // Just in case - we may be updating a slot.
-			stealableSlots.remove(Character.valueOf(ch));
-		}
-
-		int x = 0;
-		for (char ch1 : rawShape.toCharArray()) {
-			if (ch == ch1 && x < getSize())
-				getInventory().setItem(x, item);
-			x++;
-		}
-
-		return this;
-	}
-
-	/**
-	 * @param slot The slot in integer form. It will be converted by {@link GUI#convert(Object)}.
-	 * @return The slot's {@link Consumer}, or {@link GUI#NULL_CONSUMER} if it does not have one.
-	 * @see GUI#getSlot(char)
-	 */
-	@Nullable
-	public Consumer<InventoryClickEvent> getSlot(int slot) {
-		return slot >= 0 ? getSlot(convertSlot(slot)) : NULL_CONSUMER;
-	}
-
-	/**
-	 * @param ch The slot in char form. It is assumed that this char was already converted.
-	 * @return The slot's {@link Consumer}, or {@link GUI#NULL_CONSUMER} if it does not have one.
-	 * @see GUI#getSlot(int)
-	 */
-	public Consumer<InventoryClickEvent> getSlot(char ch) {
-		if (ch > 0 && slots.containsKey(ch))
-			return slots.get(ch);
-		return NULL_CONSUMER;
-	}
-
-	public GUIListener getListener() {
-		if (listener == null) {
-			listener = new GUIListener(guiInventory) {
-				@Override
-				public void onClick(InventoryClickEvent e, int slot) {
-					char realSlot = convertSlot(slot);
-					Consumer<InventoryClickEvent> run = getSlot(realSlot);
-					// Cancel the event if this GUI slot runs something
-					// If it doesn't, check whether items are stealable in this GUI, or if the specific slot is stealable
-					e.setCancelled(run != NULL_CONSUMER || (!isStealable() && !isStealable(realSlot)));
-					if (run != null && slot == e.getSlot() && guiInventory.equals(e.getClickedInventory())) {
-						run.accept(e);
-					}
-				}
-
-				@Override
-				public void onOpen(InventoryOpenEvent e) {
-					SkriptGUI.getGUIManager().setGUI((Player) e.getPlayer(), GUI.this);
-				}
-
-				@Override
-				public void onClose(InventoryCloseEvent e) {
-					if (!hasOnClose()) { // No way this event will be "cancelled"
-						SkriptGUI.getGUIManager().removeGUI((Player) e.getPlayer());
-					} else {
-						SkriptGUI.getGUIManager().setGUIEvent(e, GUI.this);
-						if (getOnClose() != null) {
-							try {
-								getOnClose().accept(e);
-								if (isCloseCancelled()) {
-									new BukkitRunnable() {
-										@Override
-										public void run() {
-											e.getPlayer().openInventory(getInventory());
-											// Reset behavior (it shouldn't persist)
-											setCloseCancelled(false);
-										}
-									}.runTaskLater(SkriptGUI.getInstance(), 1);
-								} else { // Event isn't being "cancelled"
-									SkriptGUI.getGUIManager().removeGUI((Player) e.getPlayer());
-								}
-							} catch (Exception ex) {
-								throw Skript.exception(ex, "An error occurred while closing a GUI. If you are unsure why this occured, please report the error on the skript-gui GitHub.");
-							}
-						}
-					}
-				}
-
-				@Override
-				public void onDrag(InventoryDragEvent e, int slot) {
-					char realSlot = convertSlot(slot);
-					Consumer<InventoryClickEvent> run = getSlot(realSlot);
-					// Cancel the event if this GUI slot runs something
-					// If it doesn't, check whether items are stealable in this GUI, or if the specific slot is stealable
-					e.setCancelled(run != NULL_CONSUMER || (!isStealable() && !isStealable(realSlot)));
-				}
-			};
-		}
-		return listener;
+	public GUIEventHandler getEventHandler() {
+		return eventHandler;
 	}
 
 }

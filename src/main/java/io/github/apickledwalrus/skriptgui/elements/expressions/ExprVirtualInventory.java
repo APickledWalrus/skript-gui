@@ -15,6 +15,8 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.util.InventoryUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Name("Virtual Inventory")
 @Description("An expression to create inventories that can be used with GUIs.")
@@ -55,8 +57,9 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 	@Override
 	protected Inventory[] get(Event e) {
 		InventoryType type = inventoryType.getSingle(e);
-		if (type == null)
-			return new Inventory[]{};
+		if (type == null) {
+			return new Inventory[0];
+		}
 		Number size = this.size != null ? this.size.getSingle(e) : null;
 		String name = this.name != null ? this.name.getSingle(e) : null;
 		invName = name != null ? name : type.getDefaultTitle();
@@ -69,12 +72,14 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 	}
 
 	@Override
+	@NotNull
 	public Class<? extends Inventory> getReturnType() {
 		return Inventory.class;
 	}
 
 	@Override
-	public String toString(Event e, boolean debug) {
+	@NotNull
+	public String toString(@Nullable Event e, boolean debug) {
 		return "virtual " + inventoryType.toString(e, debug)
 			+ (name != null ? " with name" + name.toString(e, debug) : "")
 			+ (size != null ? " with " + size.toString(e, debug) + " rows" : "");
