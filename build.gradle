@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'io.github.apickledwalrus'
-version '1.3-alpha2'
+version '1.3-alpha3'
 
 compileJava.options.encoding = 'UTF-8'
 
