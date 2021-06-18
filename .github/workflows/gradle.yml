@@ -13,9 +13,10 @@ jobs:
         distribution: 'adopt'
         java-version: '8'
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew nightlyBuild
     - name: Upload Nightly Build
       uses: actions/upload-artifact@v2
       if: success()
       with:
         name: skript-gui-nightly
+        path: build/libs/skript-gui-nightly.jar

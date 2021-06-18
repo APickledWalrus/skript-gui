@@ -22,3 +22,8 @@ dependencies {
         transitive = false
     }
 }
+
+task nightlyBuild(type: Jar) {
+    from sourceSets.main.output
+    archiveFileName = 'skript-gui-nightly.jar'
+}
