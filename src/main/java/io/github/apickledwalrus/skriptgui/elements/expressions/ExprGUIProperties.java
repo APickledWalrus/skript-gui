@@ -119,7 +119,7 @@ public class ExprGUIProperties extends SimpleExpression<Object> {
 							gui.setName((String) delta[0]);
 							break;
 						case 1:
-							gui.setSize(((Number) delta[0]).intValue());
+							gui.setSize(((Number) delta[0]).intValue() * 9);
 							break;
 						case 2:
 							gui.setShape(shapeMode, (String[]) delta);

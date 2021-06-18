@@ -63,7 +63,7 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 		Number size = this.size != null ? this.size.getSingle(e) : null;
 		String name = this.name != null ? this.name.getSingle(e) : null;
 		invName = name != null ? name : type.getDefaultTitle();
-		return new Inventory[]{InventoryUtils.newInventory(type, (size != null ? size.intValue() : 0), name)};
+		return new Inventory[]{InventoryUtils.newInventory(type, (size != null ? size.intValue() * 9 : null), name)};
 	}
 
 	@Override

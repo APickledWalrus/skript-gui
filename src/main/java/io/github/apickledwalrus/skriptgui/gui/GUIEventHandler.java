@@ -99,7 +99,7 @@ public abstract class GUIEventHandler {
 
 	}
 
-	public void setGui(GUI gui) {
+	public void setGUI(GUI gui) {
 		this.gui = gui;
 	}
 
