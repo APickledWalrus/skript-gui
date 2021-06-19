@@ -39,8 +39,9 @@ public class ExprLastGUI extends SimpleExpression<GUI> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult) {
-		if (matchedPattern == 1)
+		if (matchedPattern == 1) {
 			id = (Expression<String>) exprs[0];
+		}
 		return true;
 	}
 

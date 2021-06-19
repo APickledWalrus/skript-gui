@@ -76,7 +76,7 @@ public class ExprGUIProperties extends SimpleExpression<Object> {
 				case 0:
 					return new String[]{gui.getName()};
 				case 1:
-					return new Number[]{gui.getInventory().getSize()};
+					return new Number[]{gui.getSize()};
 				case 2:
 					return new String[]{gui.getRawShape()};
 				case 3:
@@ -132,10 +132,10 @@ public class ExprGUIProperties extends SimpleExpression<Object> {
 				case RESET:
 					switch (pattern) {
 						case 0:
-							gui.setName(gui.getInventory().getType().getDefaultTitle());
+							gui.setName(gui.getType().getDefaultTitle());
 							break;
 						case 1:
-							gui.setSize(gui.getInventory().getType().getDefaultSize());
+							gui.setSize(gui.getType().getDefaultSize());
 							break;
 						case 2:
 							gui.resetShape();

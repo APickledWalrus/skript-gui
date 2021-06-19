@@ -30,9 +30,9 @@ public class InventoryClasses {
 				@Override
 				@NotNull
 				public String toString(GUI gui, int flags) {
-					return gui.getInventory().getType().getDefaultTitle().toLowerCase()
+					return gui.getType().getDefaultTitle().toLowerCase()
 							+ " gui named " + gui.getName() 
-							+ " with " + gui.getInventory().getSize() / 9 + " rows"
+							+ " with " + gui.getSize() / 9 + " rows"
 							+ " and shape " + gui.getRawShape();
 				}
 

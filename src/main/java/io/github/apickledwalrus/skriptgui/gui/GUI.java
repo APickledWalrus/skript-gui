@@ -27,7 +27,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class GUI implements Inventory {
+public class GUI extends LinkingCraftGUI implements Inventory {
 
 	private Inventory inventory;
 	private String name;
@@ -76,7 +76,7 @@ public class GUI implements Inventory {
 				onClose.accept(e);
 				if (closeCancelled) {
 					Bukkit.getScheduler().runTaskLater(SkriptGUI.getInstance(), () -> {
-						e.getPlayer().openInventory(getInventory());
+						e.getPlayer().openInventory(inventory);
 						// Reset behavior (it shouldn't persist)
 						setCloseCancelled(false);
 					}, 1);
@@ -109,14 +109,11 @@ public class GUI implements Inventory {
 	private boolean closeCancelled;
 
 	public GUI(Inventory inventory, boolean stealableItems, @Nullable String name) {
+		super(inventory);
 		this.inventory = inventory;
 		this.stealableItems = stealableItems;
 		this.name = name != null ? name : inventory.getType().getDefaultTitle();
 		getEventHandler().start();
-	}
-
-	public Inventory getInventory() {
-		return inventory;
 	}
 
 	@Override
@@ -401,7 +398,7 @@ public class GUI implements Inventory {
 	 * @param consumer The {@link Consumer} that the slot will run when clicked. Put as null if the slot should not run anything when clicked.
 	 */
 	public void setItem(Object slot, @Nullable ItemStack item, boolean stealable, @Nullable Consumer<InventoryClickEvent> consumer) {
-		char ch = convert(slot);
+		Character ch = convert(slot);
 		if (ch == 0) {
 			return;
 		}
