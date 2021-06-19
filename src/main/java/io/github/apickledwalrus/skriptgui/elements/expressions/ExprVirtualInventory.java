@@ -26,15 +26,20 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 
 	static {
 		Skript.registerExpression(ExprVirtualInventory.class, Inventory.class, ExpressionType.SIMPLE,
-				"virtual %inventorytype% [with size %-number%] [(named|with (name|title)) %-string%]",
-				"virtual %inventorytype% [with %-number% row[s]] [(named|with (name|title)) %-string%]",
-				"virtual %inventorytype% [(named|with (name|title)) %-string%] with size %-number%",
-				"virtual %inventorytype% [(named|with (name|title)) %-string%] with %-number% row[s]"
+				"virtual (1¦(crafting [table]|workbench)|2¦chest|3¦anvil|4¦hopper|5¦dropper|6¦dispenser|%-inventorytype%) [with size %-number%] [(named|with (name|title)) %-string%]",
+				"virtual (1¦(crafting [table]|workbench)|2¦chest|3¦anvil|4¦hopper|5¦dropper|6¦dispenser|%-inventorytype%) [with %-number% row[s]] [(named|with (name|title)) %-string%]",
+				"virtual (1¦(crafting [table]|workbench)|2¦chest|3¦anvil|4¦hopper|5¦dropper|6¦dispenser|%-inventorytype%) [(named|with (name|title)) %-string%] with size %-number%",
+				"virtual (1¦(crafting [table]|workbench)|2¦chest|3¦anvil|4¦hopper|5¦dropper|6¦dispenser|%-inventorytype%) [(named|with (name|title)) %-string%] with %-number% row[s]"
 		);
 	}
 
+	@Nullable
+	private InventoryType specifiedType;
+	@Nullable
 	private Expression<InventoryType> inventoryType;
+	@Nullable
 	private Expression<Number> size;
+	@Nullable
 	private Expression<String> name;
 
 	// The name of this inventory.
@@ -44,6 +49,29 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult) {
 		inventoryType = (Expression<InventoryType>) exprs[0];
+		if (inventoryType == null) { // They must be using a specific one
+			switch (parseResult.mark) {
+				case 1:
+					specifiedType = InventoryType.WORKBENCH;
+					break;
+				case 2:
+					specifiedType = InventoryType.CHEST;
+					break;
+				case 3:
+					specifiedType = InventoryType.ANVIL;
+					break;
+				case 4:
+					specifiedType = InventoryType.HOPPER;
+					break;
+				case 5:
+					specifiedType = InventoryType.DROPPER;
+					break;
+				case 6:
+					specifiedType = InventoryType.DISPENSER;
+					break;
+			}
+		}
+
 		if (matchedPattern > 1) {
 			name = (Expression<String>) exprs[1];
 			size = (Expression<Number>) exprs[2];
@@ -51,12 +79,13 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 			name = (Expression<String>) exprs[2];
 			size = (Expression<Number>) exprs[1];
 		}
+
 		return true;
 	}
 
 	@Override
 	protected Inventory[] get(Event e) {
-		InventoryType type = inventoryType.getSingle(e);
+		InventoryType type = inventoryType != null ? inventoryType.getSingle(e) : specifiedType;
 		if (type == null) {
 			return new Inventory[0];
 		}
@@ -80,7 +109,7 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 	@Override
 	@NotNull
 	public String toString(@Nullable Event e, boolean debug) {
-		return "virtual " + inventoryType.toString(e, debug)
+		return "virtual " + (inventoryType != null ? inventoryType.toString(e, debug) : specifiedType != null ? specifiedType.name().toLowerCase() : "unknown inventory type")
 			+ (name != null ? " with name" + name.toString(e, debug) : "")
 			+ (size != null ? " with " + size.toString(e, debug) + " rows" : "");
 	}
