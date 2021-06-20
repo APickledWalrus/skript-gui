@@ -28,7 +28,7 @@ public class ExprGUIIdentifiers extends SimpleExpression<String> {
 
 	static {
 		Skript.registerExpression(ExprGUIIdentifiers.class, String.class, ExpressionType.SIMPLE,
-				"[(all [[of] the]|the)] (global|registered) gui identifiers"
+				"[(all [[of] the]|the)] (global|registered) gui id(s|entifiers)"
 		);
 	}
 

@@ -21,8 +21,9 @@ import org.jetbrains.annotations.Nullable;
 
 @Name("Last GUI/GUI from id")
 @Description("It is used to return the last created gui or a gui from a string id.")
-@Examples({"open gui last gui for player",
-			"open gui (gui with id \"globalGUI\") for player"
+@Examples({
+		"open gui last gui for player",
+		"open gui (gui with id \"globalGUI\") for player"
 })
 @Since("1.0.0")
 public class ExprLastGUI extends SimpleExpression<GUI> {
@@ -30,7 +31,7 @@ public class ExprLastGUI extends SimpleExpression<GUI> {
 	static {
 		Skript.registerExpression(ExprLastGUI.class, GUI.class, ExpressionType.SIMPLE,
 				"[the] last[ly] [created] gui",
-				"[the] gui [with [the] id] %string%"
+				"[the] gui [with [the] id[entifier]] %string%"
 		);
 	}
 
@@ -56,17 +57,16 @@ public class ExprLastGUI extends SimpleExpression<GUI> {
 
 	@Override
 	public Class<?>[] acceptChange(final ChangeMode mode) {
-		if (mode == ChangeMode.DELETE && id != null)
-			return CollectionUtils.array(Object.class);
-		return null;
+		return (mode == ChangeMode.DELETE && id != null) ? CollectionUtils.array(Object.class) : null;
 	}
 
 	@Override
 	public void change(final Event e, Object @Nullable [] delta, ChangeMode mode){
 		String id = this.id.getSingle(e);
 		if (id != null) {
-			GUI gui = SkriptGUI.getGUIManager().removeGlobalGUI(id);
+			GUI gui = SkriptGUI.getGUIManager().getGlobalGUI(id);
 			if (gui != null) {
+				gui.setID(null);
 				gui.clear();
 			}
 		}

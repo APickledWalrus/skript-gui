@@ -23,16 +23,17 @@ import org.jetbrains.annotations.Nullable;
 
 @Name("Create / Edit GUI")
 @Description("The base of creating and editing GUIs.")
-@Examples({"create a gui with virtual chest inventory with 3 rows named \"My GUI\"",
-			"edit gui last gui:",
-			"\tset the gui-inventory-name to \"New GUI Name!\"",
+@Examples({
+		"create a gui with virtual chest inventory with 3 rows named \"My GUI\"",
+		"edit gui last gui:",
+		"\tset the gui-inventory-name to \"New GUI Name!\"",
 })
 @Since("1.0.0")
 public class SecCreateGUI extends EffectSection {
 
 	static {
 		Skript.registerCondition(SecCreateGUI.class,
-				"create [a] [new] gui [[with id] %-string%] with %inventory% [(1¦(and|with) (moveable|stealable) items)] [(and|with) shape %-strings%]",
+				"create [a] [new] gui [[with id[entifier]] %-string%] with %inventory% [(1¦(and|with) (moveable|stealable) items)] [(and|with) shape %-strings%]",
 				"(change|edit) [gui] %guiinventory%"
 		);
 	}
@@ -93,8 +94,9 @@ public class SecCreateGUI extends EffectSection {
 				}
 
 				String id = this.id != null ? this.id.getSingle(e) : null;
-				if (id != null && !id.isEmpty())
-					SkriptGUI.getGUIManager().addGlobalGUI(id, gui);
+				if (id != null && !id.isEmpty()) {
+					gui.setID(id);
+				}
 
 				SkriptGUI.getGUIManager().setGUIEvent(e, gui);
 			}
@@ -103,8 +105,9 @@ public class SecCreateGUI extends EffectSection {
 			SkriptGUI.getGUIManager().setGUIEvent(e, gui);
 		}
 
-		if (hasSection())
+		if (hasSection()) {
 			runSection(e);
+		}
 
 	}
 

@@ -108,12 +108,18 @@ public class GUI extends LinkingCraftGUI implements Inventory {
 	// Whether the inventory close event for this event handler is cancelled.
 	private boolean closeCancelled;
 
+	private String id;
+
 	public GUI(Inventory inventory, boolean stealableItems, @Nullable String name) {
 		super(inventory);
 		this.inventory = inventory;
 		this.stealableItems = stealableItems;
 		this.name = name != null ? name : inventory.getType().getDefaultTitle();
-		getEventHandler().start();
+		eventHandler.start();
+	}
+
+	public GUIEventHandler getEventHandler() {
+		return eventHandler;
 	}
 
 	@Override
@@ -560,8 +566,27 @@ public class GUI extends LinkingCraftGUI implements Inventory {
 		closeCancelled = cancel;
 	}
 
-	public GUIEventHandler getEventHandler() {
-		return eventHandler;
+	/**
+	 * @return The ID of this GUI if it is a global GUI
+	 * @see GUIManager
+	 */
+	@Nullable
+	public String getID() {
+		return id;
+	}
+
+	/**
+	 * Updates the ID of this GUI. Updates will be made in the {@link GUIManager} too.
+	 * @param id The new id for this GUI. If null, it will be removed from the {@link GUIManager}.
+	 */
+	public void setID(@Nullable String id) {
+		if (this.id != null) { // This GUI can be removed from the manager
+			SkriptGUI.getGUIManager().removeGlobalGUI(this.id);
+		}
+		this.id = id;
+		if (id != null) { // This GUI can be added to the manager
+			SkriptGUI.getGUIManager().addGlobalGUI(id, this);
+		}
 	}
 
 }
