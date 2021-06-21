@@ -19,18 +19,18 @@ import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@Name("Last GUI/GUI from id")
-@Description("It is used to return the last created gui or a gui from a string id.")
+@Name("Last GUI/GUI from ID")
+@Description("It is used to return the last created/edited gui or a gui from a string id.")
 @Examples({
-		"open gui last gui for player",
-		"open gui (gui with id \"globalGUI\") for player"
+		"open the created gui for player",
+		"open the gui with the id \"globalGUI\" for player"
 })
 @Since("1.0.0")
 public class ExprLastGUI extends SimpleExpression<GUI> {
 
 	static {
 		Skript.registerExpression(ExprLastGUI.class, GUI.class, ExpressionType.SIMPLE,
-				"[the] last[ly] [created] gui",
+				"[the] (last[ly] [(created|edited)]|(created|edited)) gui",
 				"[the] gui [with [the] id[entifier]] %string%"
 		);
 	}
@@ -86,7 +86,7 @@ public class ExprLastGUI extends SimpleExpression<GUI> {
 	@Override
 	@NotNull
 	public String toString(@Nullable Event e, boolean debug) {
-		return id == null ? "last gui" : "gui with id" + id.toString(e, debug);
+		return id == null ? "the last gui" : "the gui with the id " + id.toString(e, debug);
 	}
 
 }
