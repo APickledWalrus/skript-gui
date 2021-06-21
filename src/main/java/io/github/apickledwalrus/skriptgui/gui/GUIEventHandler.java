@@ -33,27 +33,29 @@ public abstract class GUIEventHandler {
 			if (clickedInv == null)
 				return;
 
+			Inventory guiInventory = gui.getInventory();
+
 			Inventory oppositeInv = InventoryUtils.getOppositeInventory(e.getView(), clickedInv);
-			if (oppositeInv == null || !clickedInv.equals(gui) && !oppositeInv.equals(gui))
+			if (oppositeInv == null || !clickedInv.equals(guiInventory) && !oppositeInv.equals(guiInventory))
 				return;
 
 			int slot = e.getSlot();
 
 			switch (e.getAction()) {
 				case MOVE_TO_OTHER_INVENTORY:
-					if (oppositeInv.equals(gui)) {
+					if (oppositeInv.equals(guiInventory)) {
 						clickedInv = oppositeInv;
 						slot = InventoryUtils.getSlotTo(oppositeInv, e.getCurrentItem());
 					}
 					break;
 				case COLLECT_TO_CURSOR:
-					clickedInv = gui;
+					clickedInv = guiInventory;
 					slot = InventoryUtils.getSlotTo(clickedInv, e.getCursor());
 					break;
 				case HOTBAR_SWAP:
 				case HOTBAR_MOVE_AND_READD:
-					if (gui.getType().equals(InventoryType.PLAYER)) {
-						clickedInv = gui;
+					if (gui.getInventory().getType().equals(InventoryType.PLAYER)) {
+						clickedInv = guiInventory;
 						slot = e.getHotbarButton();
 					}
 					break;
@@ -61,7 +63,7 @@ public abstract class GUIEventHandler {
 					break;
 			}
 
-			if (clickedInv.equals(gui))
+			if (clickedInv.equals(guiInventory))
 				onClick(e, slot);
 
 			return;
@@ -69,7 +71,7 @@ public abstract class GUIEventHandler {
 
 		if (event instanceof InventoryOpenEvent) {
 			InventoryOpenEvent e = (InventoryOpenEvent) event;
-			if (e.getInventory().equals(gui)) {
+			if (e.getInventory().equals(gui.getInventory())) {
 				onOpen(e);
 			}
 			return;
@@ -77,7 +79,7 @@ public abstract class GUIEventHandler {
 
 		if (event instanceof InventoryCloseEvent) {
 			InventoryCloseEvent e = (InventoryCloseEvent) event;
-			if (e.getInventory().equals(gui)) {
+			if (e.getInventory().equals(gui.getInventory())) {
 				if (e.getViewers().size() == 1) // Only stop the listener when there are no viewers remaining.
 					Bukkit.getScheduler().runTaskLater(SkriptGUI.getInstance(), this::stop, 1L);
 				onClose(e);
@@ -87,7 +89,7 @@ public abstract class GUIEventHandler {
 
 		if (event instanceof InventoryDragEvent) {
 			InventoryDragEvent e = (InventoryDragEvent) event;
-			if (e.getInventory().equals(gui)) {
+			if (e.getInventory().equals(gui.getInventory())) {
 				for (int slot : e.getRawSlots()) {
 					slot = e.getView().convertSlot(slot);
 					onDrag(e, slot);
@@ -112,7 +114,7 @@ public abstract class GUIEventHandler {
 
 	public void stop() { // TODO investigate comment
 		// In Global GUIs, someone can try to open a GUI really fast, so let's make sure first.
-		if (isStarted() && gui.getViewers().size() == 0) {
+		if (isStarted() && gui.getInventory().getViewers().size() == 0) {
 			SkriptGUIEvent.getInstance().unregister(this);
 			isStarted = false;
 		}

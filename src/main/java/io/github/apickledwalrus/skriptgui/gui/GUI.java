@@ -4,7 +4,6 @@ import ch.njol.skript.Skript;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.util.InventoryUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -12,9 +11,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,11 +20,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class GUI extends LinkingCraftGUI implements Inventory {
+public class GUI {
 
 	private Inventory inventory;
 	private String name;
@@ -111,34 +107,22 @@ public class GUI extends LinkingCraftGUI implements Inventory {
 	private String id;
 
 	public GUI(Inventory inventory, boolean stealableItems, @Nullable String name) {
-		super(inventory);
 		this.inventory = inventory;
 		this.stealableItems = stealableItems;
 		this.name = name != null ? name : inventory.getType().getDefaultTitle();
 		eventHandler.start();
 	}
 
+	public Inventory getInventory() {
+		return inventory;
+	}
+
 	public GUIEventHandler getEventHandler() {
 		return eventHandler;
 	}
 
-	@Override
-	public int getSize() {
-		return inventory.getSize();
-	}
-
 	public void setSize(int size) {
 		changeInventory(size, getName());
-	}
-
-	@Override
-	public int getMaxStackSize() {
-		return inventory.getMaxStackSize();
-	}
-
-	@Override
-	public void setMaxStackSize(int i) {
-		inventory.setMaxStackSize(i);
 	}
 
 	@NotNull
@@ -146,187 +130,27 @@ public class GUI extends LinkingCraftGUI implements Inventory {
 		return name;
 	}
 
-	@NotNull
-	public String getTitle() {
-		return name;
-	}
-
 	public void setName(@Nullable String name) {
-		changeInventory(getSize(), name);
-	}
-
-	@Override
-	public ItemStack getItem(int i) {
-		return inventory.getItem(i);
-	}
-
-	@Override
-	public void setItem(int i, @Nullable ItemStack itemStack) {
-		setItem(i, itemStack, false, null);
-	}
-
-	@Override
-	@NotNull
-	public HashMap<Integer, ItemStack> addItem(ItemStack... itemStacks) throws IllegalArgumentException {
-		return inventory.addItem(itemStacks);
-	}
-
-	@Override
-	@NotNull
-	public HashMap<Integer, ItemStack> removeItem(ItemStack... itemStacks) throws IllegalArgumentException {
-		return inventory.removeItem(itemStacks);
-	}
-
-	@Override
-	public ItemStack[] getContents() {
-		return inventory.getContents();
-	}
-
-	@Override
-	public void setContents(ItemStack[] itemStacks) throws IllegalArgumentException {
-		inventory.setContents(itemStacks);
-	}
-
-	@Override
-	public ItemStack[] getStorageContents() {
-		return inventory.getStorageContents();
-	}
-
-	@Override
-	public void setStorageContents(ItemStack[] itemStacks) throws IllegalArgumentException {
-		inventory.setStorageContents(itemStacks);
-	}
-
-	@Override
-	public boolean contains(@NotNull Material material) throws IllegalArgumentException {
-		return inventory.contains(material);
-	}
-
-	@Override
-	public boolean contains(@Nullable ItemStack itemStack) {
-		return inventory.contains(itemStack);
-	}
-
-	@Override
-	public boolean contains(@NotNull Material material, int i) throws IllegalArgumentException {
-		return inventory.contains(material, i);
-	}
-
-	@Override
-	public boolean contains(@Nullable ItemStack itemStack, int i) {
-		return inventory.contains(itemStack, i);
-	}
-
-	@Override
-	public boolean containsAtLeast(@Nullable ItemStack itemStack, int i) {
-		return inventory.containsAtLeast(itemStack, i);
-	}
-
-	@Override
-	@NotNull
-	public HashMap<Integer, ? extends ItemStack> all(@NotNull Material material) throws IllegalArgumentException {
-		return inventory.all(material);
-	}
-
-	@Override
-	@NotNull
-	public HashMap<Integer, ? extends ItemStack> all(@Nullable ItemStack itemStack) {
-		return inventory.all(itemStack);
-	}
-
-	@Override
-	public int first(@NotNull Material material) throws IllegalArgumentException {
-		return inventory.first(material);
-	}
-
-	@Override
-	public int first(@NotNull ItemStack itemStack) {
-		return inventory.first(itemStack);
-	}
-
-	@Override
-	public int firstEmpty() {
-		return inventory.firstEmpty();
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return inventory.isEmpty();
-	}
-
-	@Override
-	public void remove(@NotNull Material material) throws IllegalArgumentException {
-		inventory.remove(material);
-	}
-
-	@Override
-	public void remove(@NotNull ItemStack itemStack) {
-		inventory.remove(itemStack);
-	}
-
-	/**
-	 * @param slot The slot(s) to remove. This will be converted through {@link GUI#convert(Object)}.
-	 *          If the returned character covers multiple slots, each of those slots will be cleared.
-	 */
-	@Override
-	public void clear(int slot) {
-		char realSlot = convert(slot);
-		setItem(realSlot, new ItemStack(Material.AIR));
-		slots.remove(realSlot);
-		stealableSlots.remove(realSlot);
+		changeInventory(inventory.getSize(), name);
 	}
 
 	public void clear(Object slot) {
+		inventory.clear();
 		char realSlot = convert(slot);
-		setItem(realSlot, new ItemStack(Material.AIR));
+		setItem(realSlot, new ItemStack(Material.AIR), false, null); // It's okay to convert again (it won't really convert)
 		slots.remove(realSlot);
 		stealableSlots.remove(realSlot);
 	}
 
-	@Override
 	public void clear() {
 		inventory.clear();
 		slots.clear();
 		stealableSlots.clear();
 	}
 
-	@Override
-	@NotNull
-	public List<HumanEntity> getViewers() {
-		return inventory.getViewers();
-	}
-
-	@Override
-	@NotNull
-	public InventoryType getType() {
-		return inventory.getType();
-	}
-
-	@Override
-	public InventoryHolder getHolder() {
-		return inventory.getHolder();
-	}
-
-	@Override
-	@NotNull
-	public ListIterator<ItemStack> iterator() {
-		return inventory.iterator();
-	}
-
-	@Override
-	@NotNull
-	public ListIterator<ItemStack> iterator(int i) {
-		return inventory.iterator(i);
-	}
-
-	@Override
-	public Location getLocation() {
-		return inventory.getLocation();
-	}
-
 	private void changeInventory(int size, @Nullable String name) {
-		Inventory newInventory = InventoryUtils.newInventory(getType(), size, name);
-		newInventory.setContents(getContents());
+		Inventory newInventory = InventoryUtils.newInventory(inventory.getType(), size, name);
+		newInventory.setContents(inventory.getContents());
 
 		Iterator<HumanEntity> viewerIterator = inventory.getViewers().iterator();
 		while (viewerIterator.hasNext()) {
@@ -347,19 +171,20 @@ public class GUI extends LinkingCraftGUI implements Inventory {
 	 * @return A char that is usable in the item and slot maps.
 	 */
 	public char convert(Object slot) {
+		if (slot instanceof Character) {
+			return (Character) slot;
+		}
+
 		if (slot instanceof Number) {
 			int invSlot = ((Number) slot).intValue();
-			if (invSlot < rawShape.length())
+			if (invSlot < rawShape.length()) {
 				return rawShape.charAt(invSlot);
+			}
 			return ' ';
 		}
 
 		if (slot instanceof String && !((String) slot).isEmpty()) {
 			return ((String) slot).charAt(0);
-		}
-
-		if (slot instanceof Character) {
-			return (Character) slot;
 		}
 
 		return nextSlot();
@@ -381,7 +206,7 @@ public class GUI extends LinkingCraftGUI implements Inventory {
 	 * @return The newest slot that has been filled in this GUI.
 	 */
 	public char nextSlotInverted() {
-		return convert(firstEmpty());
+		return convert(inventory.firstEmpty() - 1);
 	}
 
 	/**
@@ -410,8 +235,9 @@ public class GUI extends LinkingCraftGUI implements Inventory {
 		}
 		if (ch == '+' && rawShape.contains("+")) {
 			char ch2 = 'A';
-			while (rawShape.indexOf(ch2) >= 0)
+			while (rawShape.indexOf(ch2) >= 0) {
 				ch2++;
+			}
 			rawShape = rawShape.replaceFirst("\\+", "" + ch2);
 			ch = ch2;
 		}
@@ -425,7 +251,7 @@ public class GUI extends LinkingCraftGUI implements Inventory {
 
 		int i = 0;
 		for (char ch1 : rawShape.toCharArray()) {
-			if (ch == ch1 && i < getSize()) {
+			if (ch == ch1 && i < inventory.getSize()) {
 				inventory.setItem(i, item);
 			}
 			i++;
@@ -466,7 +292,7 @@ public class GUI extends LinkingCraftGUI implements Inventory {
 	 */
 	public void resetShape() {
 		StringBuilder sb = new StringBuilder();
-		for (char c = 'A'; c < getSize() + 'A'; c++) {
+		for (char c = 'A'; c < inventory.getSize() + 'A'; c++) {
 			sb.append(c);
 		}
 		rawShape = sb.toString();
@@ -483,11 +309,13 @@ public class GUI extends LinkingCraftGUI implements Inventory {
 			return;
 		}
 
+		int size = inventory.getSize();
+
 		StringBuilder sb = new StringBuilder();
 		for (String shape : shapes) {
 			sb.append(shape);
 		}
-		while (sb.length() < getSize()) { // Fill it in if it's too small
+		while (sb.length() < size) { // Fill it in if it's too small
 			sb.append(' ');
 		}
 
@@ -497,23 +325,25 @@ public class GUI extends LinkingCraftGUI implements Inventory {
 			int x = 0;
 			Map<Character, ItemStack> items = new HashMap<>();
 			for (char ch : rawShape.toCharArray()) {
-				if (x >= getSize())
+				if (x >= size) {
 					break;
-				items.put(ch, getItem(x));
+				}
+				items.put(ch, inventory.getItem(x));
 				x++;
 			}
 
 			// Set the contents
-			ItemStack[] newContents = new ItemStack[getSize()];
+			ItemStack[] newContents = new ItemStack[size];
 			x = 0;
 			for (char ch : newRawShape.toCharArray()) {
 				ItemStack item = items.get(ch);
-				if (item != null && x < getSize())
+				if (item != null && x < size) {
 					newContents[x] = item;
+				}
 				x++;
 			}
 
-			setContents(newContents);
+			inventory.setContents(newContents);
 		}
 
 		if (shapeMode == ShapeMode.ACTIONS || shapeMode == ShapeMode.BOTH) {

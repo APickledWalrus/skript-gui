@@ -3,7 +3,6 @@ package io.github.apickledwalrus.skriptgui;
 import java.io.IOException;
 
 import ch.njol.skript.util.Version;
-import io.github.apickledwalrus.skriptgui.util.CraftRemapper;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,20 +29,14 @@ public class SkriptGUI extends JavaPlugin {
 			return;
 		}
 
-		// Remapping for CraftInventory usage
-		String packageName = this.getServer().getClass().getPackage().getName();
-		String version = packageName.substring(packageName.lastIndexOf('.') + 1);
-		final Class<?> superclass = CraftRemapper.remapGUIExtension(version + "/", this.getClassLoader());
-		assert superclass != null;
-		superclass.getName(); // Force load
-
 		instance = this;
 
 		SkriptAddon addon = Skript.registerAddon(this);
 		try {
 			addon.loadClasses("io.github.apickledwalrus.skriptgui.elements");
 			addon.setLanguageFileDirectory("lang");
-			new InventoryClasses(); // Register ClassInfos
+			new SkriptClasses(); // Register ClassInfos
+			new SkriptConverters(); // Register Converters
 		} catch (IOException e) {
 			getLogger().severe("An error occured while trying to load the addon's elements. The addon will be disabled.");
 			getLogger().severe("Printing StackTrace:");

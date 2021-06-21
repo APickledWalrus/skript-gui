@@ -11,9 +11,9 @@ import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class InventoryClasses {
+public class SkriptClasses {
 
-	public InventoryClasses() {
+	public SkriptClasses() {
 
 		Classes.registerClass(new ClassInfo<>(GUI.class, "guiinventory")
 			.user("gui inventor(y|ies)?")
@@ -30,9 +30,9 @@ public class InventoryClasses {
 				@Override
 				@NotNull
 				public String toString(GUI gui, int flags) {
-					return gui.getType().getDefaultTitle().toLowerCase()
+					return gui.getInventory().getType().getDefaultTitle().toLowerCase()
 							+ " gui named " + gui.getName() 
-							+ " with " + gui.getSize() / 9 + " rows"
+							+ " with " + gui.getInventory().getSize() / 9 + " rows"
 							+ " and shape " + gui.getRawShape();
 				}
 
