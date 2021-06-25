@@ -35,26 +35,26 @@ import org.jetbrains.annotations.Nullable;
 @Examples({
 		"create a gui with virtual chest inventory:",
 		"\tmake gui 10 with water bucket:",
-		"\t\tset the clicked-item to lava bucket"
+		"\t\tset the gui item to lava bucket"
 })
 @Since("1.0.0")
 public class ExprGUIValues extends SimpleExpression<Object> {
 
 	static {
 		Skript.registerExpression(ExprGUIValues.class, Object.class, ExpressionType.SIMPLE,
-				"gui(-| )slot",
-				"gui(-| )raw(-| )slot",
-				"gui(-| )hotbar(-| )slot",
-				"gui(-| )inventory",
-				"gui(-| )inventory(-| )action",
-				"gui(-| )click(-| )(type|action)",
-				"gui(-| )cursor[(-| )item]",
-				"gui(-| )[(clicked|current)(-| )]item",
-				"gui(-| )slot(-| )type",
-				"gui(-| )player",
-				"gui(-| )(viewer|player)s",
-				"gui(-| )slot(-| )id",
-				"gui"
+				"[the] gui slot",
+				"[the] gui raw slot",
+				"[the] gui hotbar slot",
+				"[the] gui inventory",
+				"[the] gui inventory action",
+				"[the] gui click (type|action)",
+				"[the] gui cursor [item]",
+				"[the] gui [(clicked|current)] item",
+				"[the] gui slot type",
+				"[the] gui player",
+				"[the] gui (viewer|player)s",
+				"[the] gui slot id",
+				"[the] gui"
 		);
 	}
 
@@ -66,12 +66,12 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		if (!EffectSection.isCurrentSection(SecMakeGUI.class, SecGUIOpenClose.class)) {
-			Skript.error("You can't use '" + parseResult.expr.replace("(-| )", " ") + "' outside of a GUI make or close section.");
+			Skript.error("You can't use '" + parseResult.expr + "' outside of a GUI make or close section.");
 			return false;
 		}
 		pattern = matchedPattern;
 		this.isDelayed = !isDelayed.isFalse(); // TRUE or UNKNOWN
-		toString = parseResult.expr.replace("(-| )", " ");
+		toString = parseResult.expr;
 		return true;
 	}
 
@@ -113,10 +113,14 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 		} else if (event instanceof InventoryCloseEvent) {
 			InventoryCloseEvent e = (InventoryCloseEvent) event;
 			switch (pattern) {
-				case 3: return new Inventory[]{e.getInventory()};
-				case 9: return new HumanEntity[]{(e.getPlayer())};
-				case 10: return (e.getViewers().toArray(new HumanEntity[0]));
-				case 12: return new GUI[]{gui};
+				case 3:
+					return new Inventory[]{e.getInventory()};
+				case 9:
+					return new HumanEntity[]{(e.getPlayer())};
+				case 10:
+					return (e.getViewers().toArray(new HumanEntity[0]));
+				case 12:
+					return new GUI[]{gui};
 			}
 		}
 		return new Object[0];
