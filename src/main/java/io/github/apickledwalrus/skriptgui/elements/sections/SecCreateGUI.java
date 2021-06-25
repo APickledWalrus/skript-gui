@@ -16,7 +16,6 @@ import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import io.github.apickledwalrus.skriptgui.gui.SkriptGUIEvent;
-import io.github.apickledwalrus.skriptgui.gui.GUI.ShapeMode;
 import io.github.apickledwalrus.skriptgui.util.EffectSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -90,7 +89,7 @@ public class SecCreateGUI extends EffectSection {
 				if (shape == null) {
 					gui.resetShape();
 				} else {
-					gui.setShape(ShapeMode.ACTIONS, shape.getArray(e));
+					gui.setShape(shape.getArray(e));
 				}
 
 				String id = this.id != null ? this.id.getSingle(e) : null;

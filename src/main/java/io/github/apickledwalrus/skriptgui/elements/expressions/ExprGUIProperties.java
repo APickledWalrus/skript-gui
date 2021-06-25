@@ -14,7 +14,6 @@ import ch.njol.util.coll.CollectionUtils;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecCreateGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
-import io.github.apickledwalrus.skriptgui.gui.GUI.ShapeMode;
 import io.github.apickledwalrus.skriptgui.util.EffectSection;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
@@ -140,7 +139,7 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 							gui.setSize(((Number) delta[0]).intValue() * 9);
 							break;
 						case SHAPE:
-							gui.setShape(ShapeMode.BOTH, (String[]) delta);
+							gui.setShape((String[]) delta);
 							break;
 						case LOCK_STATUS:
 							gui.setStealableItems(!(Boolean) delta[0]);

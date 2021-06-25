@@ -184,7 +184,8 @@ public class GUI {
 		}
 
 		if (slot instanceof String && !((String) slot).isEmpty()) {
-			return ((String) slot).charAt(0);
+			char strSlot = ((String) slot).charAt(0);
+			return rawShape.contains(Character.toString(strSlot)) ? strSlot : ' ';
 		}
 
 		return nextSlot();
@@ -230,7 +231,7 @@ public class GUI {
 	 */
 	public void setItem(Object slot, @Nullable ItemStack item, boolean stealable, @Nullable Consumer<InventoryClickEvent> consumer) {
 		Character ch = convert(slot);
-		if (ch == 0) {
+		if (ch == ' ') {
 			return;
 		}
 		if (ch == '+' && rawShape.contains("+")) {
@@ -259,6 +260,18 @@ public class GUI {
 	}
 
 	/**
+	 * @param slot The slot to get the item from. It will be converted.
+	 * @return The item at this slot, or AIR if the slot has no item, or the slot is not valid for this GUI.
+	 */
+	public ItemStack getItem(Object slot) {
+		char ch = convert(slot);
+		if (ch == 0) {
+			return new ItemStack(Material.AIR);
+		}
+		return inventory.getItem(rawShape.indexOf(ch));
+	}
+
+	/**
 	 * @return The raw shape of this GUI.
 	 */
 	public String getRawShape() {
@@ -266,45 +279,33 @@ public class GUI {
 	}
 
 	/**
-	 * The type of shape change to be applied
-	 * @see GUI#setShape(ShapeMode, String...)
-	 */
-	public enum ShapeMode {
-
-		/**
-		 * Update shape for items
-		 */
-		ITEMS,
-
-		/**
-		 * Update shape for actions
-		 */
-		ACTIONS,
-
-		/**
-		 * Update shape for items and actions
-		 */
-		BOTH
-	}
-
-	/**
 	 * Resets the shape of this {@link GUI}
 	 */
 	public void resetShape() {
+		int size = inventory.getSize();
+
+		String[] shape = new String[size / 9];
+
+		int position = 0;
 		StringBuilder sb = new StringBuilder();
-		for (char c = 'A'; c < inventory.getSize() + 'A'; c++) {
+		for (char c = 'A'; c < size + 'A'; c++) { // Create the default shape in String form.
 			sb.append(c);
+			if (sb.length() == 9) {
+				shape[position] = sb.toString();
+				sb = new StringBuilder();
+				position++;
+			}
 		}
-		rawShape = sb.toString();
+
+		setShape(shape);
 	}
 
 	/**
 	 * Sets the shape of this {@link GUI}
-	 * @param shapeMode If true, the shape will be changed for actions. If false, it will be changed for items.
 	 * @param shapes The new shape patterns for this {@link GUI}
 	 * @see GUI#getRawShape()
 	 */
-	public void setShape(ShapeMode shapeMode, String... shapes) {
+	public void setShape(String... shapes) {
 		if (shapes.length == 0) {
 			return;
 		}
@@ -320,35 +321,21 @@ public class GUI {
 		}
 
 		String newRawShape = sb.toString();
-		if (shapeMode == ShapeMode.ITEMS || shapeMode == ShapeMode.BOTH) { // In case it's both, we MUST do this first.
-			// Get a map of the current shape for contents.
-			int x = 0;
-			Map<Character, ItemStack> items = new HashMap<>();
-			for (char ch : rawShape.toCharArray()) {
-				if (x >= size) {
-					break;
-				}
-				items.put(ch, inventory.getItem(x));
-				x++;
-			}
 
-			// Set the contents
-			ItemStack[] newContents = new ItemStack[size];
-			x = 0;
-			for (char ch : newRawShape.toCharArray()) {
-				ItemStack item = items.get(ch);
-				if (item != null && x < size) {
-					newContents[x] = item;
-				}
-				x++;
+		// Get a map of the current shape for contents.
+		char lastChar = ' '; // Spaces are not valid for a shape
+		for (char ch : rawShape.toCharArray()) {
+			if (ch == lastChar) {
+				continue;
 			}
-
-			inventory.setContents(newContents);
+			setItem(ch, getItem(ch), isStealable(ch), slots.get(ch));
 		}
 
-		if (shapeMode == ShapeMode.ACTIONS || shapeMode == ShapeMode.BOTH) {
-			rawShape = newRawShape;
-		}
+		// Remove no longer valid characters
+		slots.keySet().removeIf(ch -> !rawShape.contains(ch.toString()));
+		stealableSlots.removeIf(ch -> !rawShape.contains(ch.toString()));
+
+		rawShape = newRawShape;
 	}
 
 	/**
