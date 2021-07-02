@@ -82,11 +82,16 @@ public class SkriptGUIEvent extends SkriptEvent {
 			ReflectionUtils.setField(SkriptEvent.class, this, "eventPriority", EventPriority.LOWEST); // Try to make sure these are called first
 
 			// Add this trigger to the beginning of the triggers list for each event so that it can be cancelled first
+			// Also add these events these events to the listenCancelled list so that they will still trigger for other listeners
 			assert triggers != null;
-			triggers.add(0, new NonNullPair<>(InventoryClickEvent.class, t));
-			triggers.add(0, new NonNullPair<>(InventoryDragEvent.class, t));
-			triggers.add(0, new NonNullPair<>(InventoryCloseEvent.class, t));
 			triggers.add(0, new NonNullPair<>(InventoryOpenEvent.class, t));
+			SkriptEventHandler.listenCancelled.add(InventoryOpenEvent.class);
+			triggers.add(0, new NonNullPair<>(InventoryCloseEvent.class, t));
+			SkriptEventHandler.listenCancelled.add(InventoryCloseEvent.class);
+			triggers.add(0, new NonNullPair<>(InventoryDragEvent.class, t));
+			SkriptEventHandler.listenCancelled.add(InventoryDragEvent.class);
+			triggers.add(0, new NonNullPair<>(InventoryClickEvent.class, t));
+			SkriptEventHandler.listenCancelled.add(InventoryClickEvent.class);
 
 			// Register these events with Skript
 			ReflectionUtils.invokeMethod(SkriptEventHandler.class, "registerBukkitEvents", null);
