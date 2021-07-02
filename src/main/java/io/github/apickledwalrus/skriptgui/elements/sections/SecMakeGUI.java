@@ -1,25 +1,28 @@
 package io.github.apickledwalrus.skriptgui.elements.sections;
 
-import org.bukkit.event.Event;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-
 import ch.njol.skript.Skript;
 import ch.njol.skript.aliases.ItemType;
+import ch.njol.skript.config.SectionNode;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
+import ch.njol.skript.lang.EffectSection;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.skript.lang.Trigger;
+import ch.njol.skript.lang.TriggerItem;
 import ch.njol.util.Kleenean;
-
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
-import io.github.apickledwalrus.skriptgui.util.EffectSection;
 import io.github.apickledwalrus.skriptgui.util.VariableUtils;
+import org.bukkit.event.Event;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 @Name("Set GUI Slots")
 @Description("Set or clear GUI slots.")
@@ -34,14 +37,16 @@ import org.jetbrains.annotations.Nullable;
 public class SecMakeGUI extends EffectSection {
 
 	static {
-		Skript.registerCondition(SecMakeGUI.class,
+		Skript.registerSection(SecMakeGUI.class,
 				"(make|format) [the] next gui [slot] (with|to) [(1¦(moveable|stealable))] %itemtype%",
 				"(make|format) gui [slot[s]] %strings/numbers% (with|to) [(1¦(moveable|stealable))] %itemtype%",
 				"(un(make|format)|remove) [the] next gui [slot]",
 				"(un(make|format)|remove) gui [slot[s]] %strings/numbers%",
-				"(un(make|format)|remove) all [of the] gui [slots]"
+				"(un(make|format)|remove) all [[of] the] gui [slots]"
 		);
 	}
+
+	private Trigger trigger;
 
 	private Expression<Object> slots; // Can be number or a string
 	private Expression<ItemType> item;
@@ -51,11 +56,8 @@ public class SecMakeGUI extends EffectSection {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult) {
-		if (checkIfCondition())
-			return false;
-
-		if (!isCurrentSection(SecCreateGUI.class)) {
+	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult, @Nullable SectionNode sectionNode, @Nullable List<TriggerItem> items) {
+		if (!getParser().isCurrentSection(SecCreateGUI.class)) {
 			Skript.error("You can't make a GUI slot outside of a GUI creation or editing section.");
 			return false;
 		}
@@ -71,19 +73,20 @@ public class SecMakeGUI extends EffectSection {
 		stealable = parseResult.mark == 1;
 
 		if (hasSection()) {
-			loadSection("gui effect", false, InventoryClickEvent.class);
+			assert sectionNode != null;
+			trigger = loadCode(sectionNode, "inventory click", InventoryClickEvent.class);
 		}
 
 		return true;
 	}
 
 	@Override
-	public void execute(Event e) {
-
+	public TriggerItem walk(Event e) {
 		GUI gui = SkriptGUI.getGUIManager().getGUIEvent(e);
 
-		if (gui == null)
-			return;
+		if (gui == null) { // We aren't going to do anything with this section
+			return getNext();
+		}
 
 		switch (pattern) {
 			case 0: // Set the next slot
@@ -92,22 +95,26 @@ public class SecMakeGUI extends EffectSection {
 				if (itemType == null)
 					break;
 				ItemStack item = itemType.getRandom();
-				for (Object slot : slots != null ? slots.getArray(e) : new Object[]{gui.nextSlot()}) {
-					if (hasSection()) {
-						Object variables = VariableUtils.getInstance().copyVariables(e);
-						if (variables != null) {
+				if (hasSection()) {
+					Object variables = VariableUtils.getInstance().copyVariables(e);
+					if (variables != null) {
+						for (Object slot : slots != null ? slots.getArray(e) : new Object[]{gui.nextSlot()}) {
 							gui.setItem(slot, item, stealable, event -> {
 								VariableUtils.getInstance().pasteVariables(event, variables);
 								SkriptGUI.getGUIManager().setGUIEvent(event, gui);
-								runSection(event);
-							});
-						} else { // Don't paste variables if there are none copied
-							gui.setItem(slot, item, stealable, event -> {
-								SkriptGUI.getGUIManager().setGUIEvent(event, gui);
-								runSection(event);
+								trigger.execute(event);
 							});
 						}
-					} else {
+					} else { // Don't paste variables if there are none to paste
+						for (Object slot : slots != null ? slots.getArray(e) : new Object[]{gui.nextSlot()}) {
+							gui.setItem(slot, item, stealable, event -> {
+								SkriptGUI.getGUIManager().setGUIEvent(event, gui);
+								trigger.execute(event);
+							});
+						}
+					}
+				} else {
+					for (Object slot : slots != null ? slots.getArray(e) : new Object[]{gui.nextSlot()}) {
 						gui.setItem(slot, item, stealable, null);
 					}
 				}
@@ -124,6 +131,9 @@ public class SecMakeGUI extends EffectSection {
 				gui.clear();
 				break;
 		}
+
+		// We don't want to execute this section
+		return getNext();
 	}
 
 	@Override

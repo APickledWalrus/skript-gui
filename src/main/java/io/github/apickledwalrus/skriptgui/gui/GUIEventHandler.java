@@ -80,8 +80,6 @@ public abstract class GUIEventHandler {
 		if (event instanceof InventoryCloseEvent) {
 			InventoryCloseEvent e = (InventoryCloseEvent) event;
 			if (e.getInventory().equals(gui.getInventory())) {
-				if (e.getViewers().size() == 1) // Only stop the listener when there are no viewers remaining.
-					Bukkit.getScheduler().runTaskLater(SkriptGUI.getInstance(), this::stop, 1L);
 				onClose(e);
 			}
 			return;
@@ -112,12 +110,9 @@ public abstract class GUIEventHandler {
 		}
 	}
 
-	public void stop() { // TODO investigate comment
-		// In Global GUIs, someone can try to open a GUI really fast, so let's make sure first.
-		if (isStarted() && gui.getInventory().getViewers().size() == 0) {
-			SkriptGUIEvent.getInstance().unregister(this);
-			isStarted = false;
-		}
+	public void stop() {
+		SkriptGUIEvent.getInstance().unregister(this);
+		isStarted = false;
 	}
 
 	public boolean isStarted() {

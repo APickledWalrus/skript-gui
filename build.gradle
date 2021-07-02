@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
     id 'java'
 }
@@ -18,12 +20,32 @@ dependencies {
     implementation group: 'org.jetbrains', name: 'annotations', version: '16.0.2'
     implementation group: 'com.google.code.findbugs', name: 'findbugs', version: '3.0.1'
     implementation group: 'org.spigotmc', name: 'spigot-api', version: '1.16.5-R0.1-SNAPSHOT'
-    implementation (group: 'com.github.SkriptLang.Skript', name: 'Skript', version: '2.6-alpha1') {
+    //implementation (group: 'com.github.SkriptLang.Skript', name: 'Skript', version: '2.6-beta2') {
+    //    transitive = false
+    //}
+    implementation ('com.github.APickledWalrus:Skript:c0bda90f1c') { // Temporary for Section API expansion PR
         transitive = false
     }
 }
 
+processResources {
+    filter ReplaceTokens, tokens: [
+            'version': version
+    ]
+}
+
+task nightlyResources(type: ProcessResources) {
+    from 'src/main/resources', {
+        include '**'
+        filter ReplaceTokens, tokens: [
+                'version' : project.property('version') + '-nightly-' + 'git rev-parse --short HEAD'.execute().text.trim()
+        ]
+    }
+    into 'build/resources/main'
+}
+
 task nightlyBuild(type: Jar) {
+    dependsOn nightlyResources
     from sourceSets.main.output
     archiveFileName = 'skript-gui-nightly.jar'
 }

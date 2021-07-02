@@ -51,7 +51,7 @@ public class SkriptClasses {
 		);
 
 		if (Classes.getExactClassInfo(SlotType.class) == null) {
-			@SuppressWarnings("NullableProblems") EnumUtils<SlotType> slotTypes = new EnumUtils<>(SlotType.class, "slot types");
+			EnumUtils<SlotType> slotTypes = new EnumUtils<>(SlotType.class, "slot types");
 			Classes.registerClass(new ClassInfo<>(SlotType.class, "slottype")
 				.user("slot types?")
 				.name("Slot Types")

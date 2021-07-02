@@ -17,7 +17,6 @@ import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecMakeGUI;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecGUIOpenClose;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
-import io.github.apickledwalrus.skriptgui.util.EffectSection;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.ClickType;
@@ -63,9 +62,8 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 	private String toString = "gui values";
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		if (!EffectSection.isCurrentSection(SecMakeGUI.class, SecGUIOpenClose.class)) {
+		if (!getParser().isCurrentSection(SecMakeGUI.class, SecGUIOpenClose.class)) {
 			Skript.error("You can't use '" + parseResult.expr + "' outside of a GUI make or close section.");
 			return false;
 		}
@@ -76,7 +74,7 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 	}
 
 	@Override
-	protected Object[] get(Event event) {
+	protected Object @NotNull [] get(Event event) {
 		GUI gui = SkriptGUI.getGUIManager().getGUIEvent(event);
 		if (event instanceof InventoryClickEvent) {
 			InventoryClickEvent e = (InventoryClickEvent) event;
@@ -88,7 +86,8 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 				case 2:
 					return new Number[]{e.getHotbarButton()};
 				case 3:
-					return new Inventory[]{e.getClickedInventory()};
+					Inventory clicked = e.getClickedInventory();
+					return clicked != null ? new Inventory[]{clicked} : new Inventory[0];
 				case 4:
 					return new InventoryAction[]{e.getAction()};
 				case 5:
@@ -126,6 +125,7 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 		return new Object[0];
 	}
 
+	@Override
 	public Class<?>[] acceptChange(final ChangeMode mode) {
 		if (isDelayed) {
 			Skript.error("You can't set the '" + toString + "' when the event is already passed.");
@@ -139,6 +139,7 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 		return null;
 	}
 
+	@Override
 	public void change(final Event event, Object @Nullable [] delta, ChangeMode mode) {
 		if (delta == null || !(event instanceof InventoryClickEvent))
 			return;

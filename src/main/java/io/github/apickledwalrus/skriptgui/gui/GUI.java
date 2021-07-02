@@ -30,7 +30,7 @@ public class GUI {
 	private final GUIEventHandler eventHandler = new GUIEventHandler(this) {
 		@Override
 		public void onClick(InventoryClickEvent e, int slot) {
-			char realSlot = convert(slot);
+			Character realSlot = convert(slot);
 			Consumer<InventoryClickEvent> run = getSlot(realSlot);
 			/*
 			 * Cancel the event if this GUI slot is a button (it runs a consumer)
@@ -44,7 +44,7 @@ public class GUI {
 
 		@Override
 		public void onDrag(InventoryDragEvent e, int slot) {
-			char realSlot = convert(slot);
+			Character realSlot = convert(slot);
 			Consumer<InventoryClickEvent> run = getSlot(realSlot);
 			/*
 			 * Cancel the event if this GUI slot is a button (it runs a consumer)
@@ -72,9 +72,10 @@ public class GUI {
 				onClose.accept(e);
 				if (closeCancelled) {
 					Bukkit.getScheduler().runTaskLater(SkriptGUI.getInstance(), () -> {
-						e.getPlayer().openInventory(inventory);
 						// Reset behavior (it shouldn't persist)
 						setCloseCancelled(false);
+
+						e.getPlayer().openInventory(inventory);
 					}, 1);
 				} else { // Event isn't being "cancelled"
 					SkriptGUI.getGUIManager().removeGUI((Player) e.getPlayer());
@@ -86,6 +87,7 @@ public class GUI {
 	};
 
 	private final Map<Character, Consumer<InventoryClickEvent>> slots = new HashMap<>();
+	@Nullable
 	private String rawShape;
 
 	// Whether all items of this GUI (excluding buttons) can be taken.
@@ -136,7 +138,7 @@ public class GUI {
 
 	public void clear(Object slot) {
 		inventory.clear();
-		char realSlot = convert(slot);
+		Character realSlot = convert(slot);
 		setItem(realSlot, new ItemStack(Material.AIR), false, null); // It's okay to convert again (it won't really convert)
 		slots.remove(realSlot);
 		stealableSlots.remove(realSlot);
@@ -167,17 +169,17 @@ public class GUI {
 	}
 
 	/**
-	 * @param slot The object to convert to char form
-	 * @return A char that is usable in the item and slot maps.
+	 * @param slot The object to convert to Character form
+	 * @return A Character that is usable in the item and slot maps.
 	 */
-	public char convert(Object slot) {
+	public Character convert(Object slot) {
 		if (slot instanceof Character) {
 			return (Character) slot;
 		}
 
 		if (slot instanceof Number) {
 			int invSlot = ((Number) slot).intValue();
-			if (invSlot < rawShape.length()) {
+			if (rawShape != null && invSlot < rawShape.length()) {
 				return rawShape.charAt(invSlot);
 			}
 			return ' ';
@@ -185,7 +187,7 @@ public class GUI {
 
 		if (slot instanceof String && !((String) slot).isEmpty()) {
 			char strSlot = ((String) slot).charAt(0);
-			return rawShape.contains(Character.toString(strSlot)) ? strSlot : ' ';
+			return (rawShape != null && rawShape.contains(Character.toString(strSlot))) ? strSlot : ' ';
 		}
 
 		return nextSlot();
@@ -194,10 +196,12 @@ public class GUI {
 	/**
 	 * @return The next available slot in this GUI.
 	 */
-	public char nextSlot() {
-		for (char ch : rawShape.toCharArray()) {
-			if (!slots.containsKey(ch)) {
-				return ch;
+	public Character nextSlot() {
+		if (rawShape != null) {
+			for (char ch : rawShape.toCharArray()) {
+				if (!slots.containsKey(ch)) {
+					return ch;
+				}
 			}
 		}
 		return 0;
@@ -206,16 +210,16 @@ public class GUI {
 	/**
 	 * @return The newest slot that has been filled in this GUI.
 	 */
-	public char nextSlotInverted() {
+	public Character nextSlotInverted() {
 		return convert(inventory.firstEmpty() - 1);
 	}
 
 	/**
-	 * @param ch The slot in char form. It is assumed that this char was already converted through {@link GUI#convert(Object)}.
+	 * @param ch The slot in Character form. It is assumed that this Character was already converted through {@link GUI#convert(Object)}.
 	 * @return The slot's button consumer, or an emtpty consumer if it does not have one.
 	 */
 	@Nullable
-	public Consumer<InventoryClickEvent> getSlot(char ch) {
+	public Consumer<InventoryClickEvent> getSlot(Character ch) {
 		if (ch > 0 && slots.containsKey(ch)) {
 			return slots.get(ch);
 		}
@@ -230,6 +234,11 @@ public class GUI {
 	 * @param consumer The {@link Consumer} that the slot will run when clicked. Put as null if the slot should not run anything when clicked.
 	 */
 	public void setItem(Object slot, @Nullable ItemStack item, boolean stealable, @Nullable Consumer<InventoryClickEvent> consumer) {
+		if (rawShape == null) {
+			SkriptGUI.getInstance().getLogger().warning("Unable to set the item in a gui named '" + getName() + "' as it has a null shape.");
+			return;
+		}
+
 		Character ch = convert(slot);
 		if (ch == ' ') {
 			return;
@@ -264,7 +273,10 @@ public class GUI {
 	 * @return The item at this slot, or AIR if the slot has no item, or the slot is not valid for this GUI.
 	 */
 	public ItemStack getItem(Object slot) {
-		char ch = convert(slot);
+		if (rawShape == null) {
+			return new ItemStack(Material.AIR);
+		}
+		Character ch = convert(slot);
 		if (ch == 0) {
 			return new ItemStack(Material.AIR);
 		}
@@ -272,8 +284,10 @@ public class GUI {
 	}
 
 	/**
-	 * @return The raw shape of this GUI.
+	 * @return The raw shape of this GUI. May be null if the shape has not yet been initialized.
+	 * @see #setShape(String...) 
 	 */
+	@Nullable
 	public String getRawShape() {
 		return rawShape;
 	}
@@ -282,9 +296,9 @@ public class GUI {
 	 * Resets the shape of this {@link GUI}
 	 */
 	public void resetShape() {
-		int size = inventory.getSize();
+		int size = 54; // Max inventory size
 
-		String[] shape = new String[size / 9];
+		String[] shape = new String[size];
 
 		int position = 0;
 		StringBuilder sb = new StringBuilder();
@@ -323,17 +337,19 @@ public class GUI {
 		String newRawShape = sb.toString();
 
 		// Get a map of the current shape for contents.
-		char lastChar = ' '; // Spaces are not valid for a shape
-		for (char ch : rawShape.toCharArray()) {
-			if (ch == lastChar) {
-				continue;
+		if (rawShape != null) {
+			char lastChar = ' '; // Spaces are not valid for a shape
+			for (char ch : rawShape.toCharArray()) {
+				if (ch == lastChar) {
+					continue;
+				}
+				setItem(ch, getItem(ch), isStealable(ch), slots.get(ch));
 			}
-			setItem(ch, getItem(ch), isStealable(ch), slots.get(ch));
-		}
 
-		// Remove no longer valid characters
-		slots.keySet().removeIf(ch -> !rawShape.contains(ch.toString()));
-		stealableSlots.removeIf(ch -> !rawShape.contains(ch.toString()));
+			// Remove invalid characters
+			slots.keySet().removeIf(ch -> !rawShape.contains(ch.toString()));
+			stealableSlots.removeIf(ch -> !rawShape.contains(ch.toString()));
+		}
 
 		rawShape = newRawShape;
 	}
@@ -348,7 +364,7 @@ public class GUI {
 	/**
 	 * @return Whether the given slot in this GUI can have its item stolen.
 	 */
-	public boolean isStealable(char slot) {
+	public boolean isStealable(Character slot) {
 		return stealableSlots.contains(slot);
 	}
 

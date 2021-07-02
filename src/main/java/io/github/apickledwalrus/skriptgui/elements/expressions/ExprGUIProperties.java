@@ -14,7 +14,6 @@ import ch.njol.util.coll.CollectionUtils;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecCreateGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
-import io.github.apickledwalrus.skriptgui.util.EffectSection;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,15 +31,14 @@ import org.jetbrains.annotations.Nullable;
 public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 
 	static {
-		register(ExprGUIProperties.class, Object.class, "(name[s]|(size[s]|rows)|shape[s]|lock status[es])", "guis");
+		register(ExprGUIProperties.class, Object.class, "(name[s]|(size[s]|rows)|shape[s]|lock status[es])", "guiinventorys");
 	}
 
 	private Property property;
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		if (!EffectSection.isCurrentSection(SecCreateGUI.class)) {
+		if (!getParser().isCurrentSection(SecCreateGUI.class)) {
 			Skript.error("You can't change or get the GUI properties outside of a GUI creation or editing section.");
 			return false;
 		}

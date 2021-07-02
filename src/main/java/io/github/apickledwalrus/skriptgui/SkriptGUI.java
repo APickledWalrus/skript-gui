@@ -20,11 +20,11 @@ public class SkriptGUI extends JavaPlugin {
 	public void onEnable() {
 		Plugin skript = getServer().getPluginManager().getPlugin("Skript");
 		if (skript == null || !skript.isEnabled()) {
-			getLogger().severe("[skript-gui] Could not find Skript! Make sure you have it installed and that it properly loaded. Disabling...");
+			getLogger().severe("Could not find Skript! Make sure you have it installed and that it properly loaded. Disabling...");
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		} else if (!Skript.getVersion().isLargerThan(new Version(2, 5, 3))) { // Skript is not any version after 2.5.3 (aka 2.6)
-			getLogger().severe("[skript-gui] You are running an unsupported version of Skript. Please update to at least Skript 2.6-alpha1. Disabling...");
+			getLogger().severe("You are running an unsupported version of Skript. Please update to at least Skript 2.6-alpha1. Disabling...");
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
