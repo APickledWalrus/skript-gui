@@ -16,6 +16,7 @@ import io.github.apickledwalrus.skriptgui.elements.expressions.ExprVirtualInvent
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import io.github.apickledwalrus.skriptgui.gui.SkriptGUIEvent;
 import org.bukkit.event.Event;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -77,6 +78,12 @@ public class SecCreateGUI extends EffectSection {
 		if (exprGUI == null) { // Creating a new GUI.
 			Inventory inv = this.inv.getSingle(e);
 			if (inv != null) {
+
+				InventoryType invType = inv.getType();
+				if (invType == InventoryType.CRAFTING || invType == InventoryType.PLAYER) { // We don't want to run this section as this is an invalid GUI type
+					SkriptGUI.getInstance().getLogger().warning("Unable to create an inventory of type: " + invType.name());
+					return getNext();
+				}
 
 				GUI gui;
 				if (this.inv instanceof ExprVirtualInventory) { // Try to set the name

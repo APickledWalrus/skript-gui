@@ -88,6 +88,8 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 		InventoryType type = inventoryType != null ? inventoryType.getSingle(e) : specifiedType;
 		if (type == null) {
 			return new Inventory[0];
+		} else if (type == InventoryType.CRAFTING) { // Make it a valid inventory. It's not the same, but it's likely what the user wants.
+			type = InventoryType.WORKBENCH;
 		}
 		Number size = this.size != null ? this.size.getSingle(e) : null;
 		String name = this.name != null ? this.name.getSingle(e) : null;

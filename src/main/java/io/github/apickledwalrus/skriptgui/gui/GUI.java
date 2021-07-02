@@ -298,7 +298,7 @@ public class GUI {
 	public void resetShape() {
 		int size = 54; // Max inventory size
 
-		String[] shape = new String[size];
+		String[] shape = new String[size / 9];
 
 		int position = 0;
 		StringBuilder sb = new StringBuilder();
