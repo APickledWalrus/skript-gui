@@ -1,11 +1,13 @@
 package io.github.apickledwalrus.skriptgui.gui;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptEventHandler;
 import ch.njol.skript.lang.Literal;
 import ch.njol.skript.lang.SkriptEvent;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.Trigger;
 import ch.njol.util.NonNullPair;
+import com.destroystokyo.paper.event.player.PlayerRecipeBookClickEvent;
 import io.github.apickledwalrus.skriptgui.util.ReflectionUtils;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -21,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SkriptGUIEvent extends SkriptEvent {
+
+	public static final boolean HAS_RECIPE_EVENT = Skript.classExists("com.destroystokyo.paper.event.player.PlayerRecipeBookClickEvent");
 
 	private static SkriptGUIEvent instance;
 	private final List<NonNullPair<Class<? extends Event>, Trigger>> triggers = ReflectionUtils.getField(SkriptEventHandler.class, null, "triggers");
@@ -84,6 +88,10 @@ public class SkriptGUIEvent extends SkriptEvent {
 			// Add this trigger to the beginning of the triggers list for each event so that it can be cancelled first
 			// Also add these events these events to the listenCancelled list so that they will still trigger for other listeners
 			assert triggers != null;
+			if (HAS_RECIPE_EVENT) {
+				triggers.add(0, new NonNullPair<>(PlayerRecipeBookClickEvent.class, t));
+				SkriptEventHandler.listenCancelled.add(PlayerRecipeBookClickEvent.class);
+			}
 			triggers.add(0, new NonNullPair<>(InventoryOpenEvent.class, t));
 			SkriptEventHandler.listenCancelled.add(InventoryOpenEvent.class);
 			triggers.add(0, new NonNullPair<>(InventoryCloseEvent.class, t));

@@ -1,5 +1,6 @@
 package io.github.apickledwalrus.skriptgui.gui;
 
+import com.destroystokyo.paper.event.player.PlayerRecipeBookClickEvent;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.util.InventoryUtils;
 import org.bukkit.Bukkit;
@@ -94,6 +95,15 @@ public abstract class GUIEventHandler {
 					if (e.isCancelled())
 						break;
 				}
+			}
+			return;
+		}
+
+		if (SkriptGUIEvent.HAS_RECIPE_EVENT && event instanceof PlayerRecipeBookClickEvent) {
+			PlayerRecipeBookClickEvent e = (PlayerRecipeBookClickEvent) event;
+			if (e.getPlayer().getOpenInventory().getTopInventory().equals(gui.getInventory())) {
+				// We don't want this event going through (see https://github.com/APickledWalrus/skript-gui/issues/33)
+				((PlayerRecipeBookClickEvent) event).setCancelled(true);
 			}
 		}
 
