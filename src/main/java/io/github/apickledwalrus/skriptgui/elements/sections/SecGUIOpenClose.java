@@ -11,10 +11,10 @@ import ch.njol.skript.lang.Section;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.Trigger;
 import ch.njol.skript.lang.TriggerItem;
+import ch.njol.skript.variables.Variables;
 import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
-import io.github.apickledwalrus.skriptgui.util.VariableUtils;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -69,11 +69,11 @@ public class SecGUIOpenClose extends Section {
 	public TriggerItem walk(Event e) {
 		GUI gui = SkriptGUI.getGUIManager().getGUIEvent(e);
 		if (gui != null) {
-			Object variables = VariableUtils.getInstance().copyVariables(e);
+			Object variables = Variables.copyLocalVariables(e);
 			if (close) {
 				if (variables != null) {
 					gui.setOnClose(event -> {
-						VariableUtils.getInstance().pasteVariables(event, variables);
+						Variables.setLocalVariables(event, variables);
 						trigger.execute(event);
 					});
 				} else {
@@ -82,7 +82,7 @@ public class SecGUIOpenClose extends Section {
 			} else {
 				if (variables != null) {
 					gui.setOnOpen(event -> {
-						VariableUtils.getInstance().pasteVariables(event, variables);
+						Variables.setLocalVariables(event, variables);
 						trigger.execute(event);
 					});
 				} else {

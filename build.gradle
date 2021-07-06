@@ -23,7 +23,7 @@ dependencies {
     //implementation (group: 'com.github.SkriptLang.Skript', name: 'Skript', version: '2.6-beta2') {
     //    transitive = false
     //}
-    implementation ('com.github.APickledWalrus:Skript:c0bda90f1c') { // Temporary for Section API expansion PR
+    implementation ('com.github.APickledWalrus:Skript:f2af79e67d') { // Temporary for Section API expansion PR
         transitive = false
     }
 }

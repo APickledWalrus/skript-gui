@@ -12,10 +12,10 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.Trigger;
 import ch.njol.skript.lang.TriggerItem;
+import ch.njol.skript.variables.Variables;
 import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
-import io.github.apickledwalrus.skriptgui.util.VariableUtils;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -96,12 +96,12 @@ public class SecMakeGUI extends EffectSection {
 					break;
 				ItemStack item = itemType.getRandom();
 				if (hasSection()) {
-					Object variables = VariableUtils.getInstance().copyVariables(e);
+					Object variables = Variables.copyLocalVariables(e);
 					if (variables != null) {
 						for (Object slot : slots != null ? slots.getArray(e) : new Object[]{gui.nextSlot()}) {
 							gui.setItem(slot, item, stealable, event -> {
-								VariableUtils.getInstance().pasteVariables(event, variables);
 								SkriptGUI.getGUIManager().setGUIEvent(event, gui);
+								Variables.setLocalVariables(event, variables);
 								trigger.execute(event);
 							});
 						}
