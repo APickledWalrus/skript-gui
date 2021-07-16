@@ -9,6 +9,8 @@ import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.EffectSection;
 import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.SectionSkriptEvent;
+import ch.njol.skript.lang.SkriptEvent;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.Trigger;
 import ch.njol.skript.lang.TriggerItem;
@@ -58,8 +60,12 @@ public class SecMakeGUI extends EffectSection {
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult, @Nullable SectionNode sectionNode, @Nullable List<TriggerItem> items) {
 		if (!getParser().isCurrentSection(SecCreateGUI.class)) {
-			Skript.error("You can't make a GUI slot outside of a GUI creation or editing section.");
-			return false;
+			SkriptEvent skriptEvent = getParser().getCurrentSkriptEvent();
+			// This check allows users to use a make section in a make section or a open/close section
+			if (!(skriptEvent instanceof SectionSkriptEvent) || !((SectionSkriptEvent) skriptEvent).isSection(SecMakeGUI.class, SecGUIOpenClose.class)) {
+				Skript.error("You can't make a GUI slot outside of a GUI creation or editing section.");
+				return false;
+			}
 		}
 
 		pattern = matchedPattern;

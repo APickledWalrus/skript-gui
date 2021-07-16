@@ -9,6 +9,8 @@ import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
+import ch.njol.skript.lang.SectionSkriptEvent;
+import ch.njol.skript.lang.SkriptEvent;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
@@ -63,7 +65,8 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		if (!getParser().isCurrentSection(SecMakeGUI.class, SecGUIOpenClose.class)) {
+		SkriptEvent skriptEvent = getParser().getCurrentSkriptEvent();
+		if (!(skriptEvent instanceof SectionSkriptEvent) || !((SectionSkriptEvent) skriptEvent).isSection(SecMakeGUI.class, SecGUIOpenClose.class)) {
 			Skript.error("You can't use '" + parseResult.expr + "' outside of a GUI make or close section.");
 			return false;
 		}

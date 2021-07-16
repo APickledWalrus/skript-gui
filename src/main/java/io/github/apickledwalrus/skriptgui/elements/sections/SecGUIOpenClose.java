@@ -73,6 +73,7 @@ public class SecGUIOpenClose extends Section {
 			if (close) {
 				if (variables != null) {
 					gui.setOnClose(event -> {
+						SkriptGUI.getGUIManager().setGUIEvent(event, gui);
 						Variables.setLocalVariables(event, variables);
 						trigger.execute(event);
 					});
@@ -82,6 +83,7 @@ public class SecGUIOpenClose extends Section {
 			} else {
 				if (variables != null) {
 					gui.setOnOpen(event -> {
+						SkriptGUI.getGUIManager().setGUIEvent(event, gui);
 						Variables.setLocalVariables(event, variables);
 						trigger.execute(event);
 					});
