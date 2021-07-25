@@ -105,7 +105,7 @@ public class GUI {
 	 * @return The converted slot integer. This char is the key to what item the slot holds.
 	 */
 	public char convertSlot(int slot) {
-		if (slot < getRawShape().length())
+		if (slot > -1 && slot < getRawShape().length())
 			return getRawShape().charAt(slot);
 		return ' ';
 	}
