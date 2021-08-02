@@ -180,7 +180,7 @@ public class GUI {
 		if (slot instanceof Number) {
 			int invSlot = ((Number) slot).intValue();
 			// Due to client bug slot may be -1 if not properly detected.
-			if (rawShape != null && invSlot != -1 && invSlot < rawShape.length()) {
+			if (rawShape != null && invSlot >= 0 && invSlot < rawShape.length()) {
 				return rawShape.charAt(invSlot);
 			}
 			return ' ';
