@@ -1,9 +1,7 @@
 package io.github.apickledwalrus.skriptgui.gui;
 
 import com.destroystokyo.paper.event.player.PlayerRecipeBookClickEvent;
-import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.util.InventoryUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;

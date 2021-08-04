@@ -1,8 +1,7 @@
 package io.github.apickledwalrus.skriptgui.util;
 
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -34,22 +33,6 @@ public class ReflectionUtils {
 			m.setAccessible(true);
 
 			return (T) m.invoke(instance, parameters);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	/**
-	 * @param clazz The class to create the instance of.
-	 * @return A instance object of the given class.
-	 */
-	@Nullable
-	public static <T> T newInstance(Class<T> clazz) {
-		try {
-			Constructor<T> c = clazz.getDeclaredConstructor();
-			c.setAccessible(true);
-			return c.newInstance();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

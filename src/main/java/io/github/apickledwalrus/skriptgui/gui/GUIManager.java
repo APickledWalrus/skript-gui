@@ -2,7 +2,7 @@ package io.github.apickledwalrus.skriptgui.gui;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +19,7 @@ public class GUIManager {
 
 	private final Map<UUID, GUI> players = new HashMap<>();
 
+	@Nullable
 	public GUI getGUIEvent(Event e) {
 		return eventGUIs.get(e);
 	}

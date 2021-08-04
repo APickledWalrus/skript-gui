@@ -15,8 +15,7 @@ import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecCreateGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 @Name("GUI Properties")
 @Description("Different properties of a GUI. They can be modified.")
@@ -31,10 +30,11 @@ import org.jetbrains.annotations.Nullable;
 public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 
 	static {
-		register(ExprGUIProperties.class, Object.class, "(name[s]|(size[s]|rows)|shape[s]|lock status[es])", "guiinventorys");
+		register(ExprGUIProperties.class, Object.class, "(0¦name[s]|1¦(size[s]|rows)|2¦shape[s]|3¦lock status[es])", "guiinventorys");
 	}
 
-	private Property property;
+	private static final int NAME = 0, ROWS = 1, SHAPE = 2, LOCK_STATUS = 3;
+	private int property;
 
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
@@ -42,51 +42,12 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 			Skript.error("You can't change or get the GUI properties outside of a GUI creation or editing section.");
 			return false;
 		}
-
-		switch (matchedPattern) {
-			case 1:
-			case 2:
-			case 3:
-				property = Property.NAME;
-				break;
-			case 4:
-			case 5:
-			case 6:
-				property = Property.ROWS;
-				break;
-			case 7:
-			case 8:
-			case 9:
-				property = Property.SHAPE;
-				break;
-			case 10:
-			case 11:
-			case 12:
-				property = Property.LOCK_STATUS;
-				break;
-		}
-
+		property = parseResult.mark;
 		return super.init(exprs, matchedPattern, isDelayed, parseResult);
 	}
 
 	@Override
-	@NotNull
-	protected String getPropertyName() {
-		switch (property) {
-			case NAME:
-				return "name";
-			case ROWS:
-				return "size";
-			case SHAPE:
-				return "shape";
-			case LOCK_STATUS:
-				return "lock status";
-			default:
-				return "property";
-		}
-	}
-
-	@Override
+	@Nullable
 	public Object convert(GUI gui) {
 		switch (property) {
 			case NAME:
@@ -103,8 +64,7 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 
 	@Override
 	@Nullable
-	@SuppressWarnings("NullableProblems")
-	public Class<?>[] acceptChange(final ChangeMode mode) {
+	public Class<?>[] acceptChange(ChangeMode mode) {
 		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
 			switch (property) {
 				case NAME:
@@ -121,7 +81,7 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 	}
 
 	@Override
-	public void change(final Event e, Object @Nullable [] delta, ChangeMode mode) {
+	public void change(Event e, Object @Nullable [] delta, ChangeMode mode) {
 		if (delta == null || (mode != ChangeMode.SET && mode != ChangeMode.RESET)) {
 			return;
 		}
@@ -167,7 +127,6 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 	}
 
 	@Override
-	@NotNull
 	public Class<?> getReturnType() {
 		switch (property) {
 			case NAME:
@@ -183,27 +142,19 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 	}
 
 	@Override
-	@NotNull
-	public String toString(@Nullable Event e, boolean debug) {
+	protected String getPropertyName() {
 		switch (property) {
 			case NAME:
-				return "the name of " + getExpr().toString(e, debug);
+				return "name";
 			case ROWS:
-				return "the rows of " + getExpr().toString(e, debug);
+				return "size";
 			case SHAPE:
-				return "the shape of " + getExpr().toString(e, debug);
+				return "shape";
 			case LOCK_STATUS:
-				return "the lock status of "  + getExpr().toString(e, debug);
+				return "lock status";
 			default:
-				return "gui properties";
+				return "property";
 		}
-	}
-
-	private enum Property {
-		NAME,
-		ROWS,
-		SHAPE,
-		LOCK_STATUS
 	}
 
 }

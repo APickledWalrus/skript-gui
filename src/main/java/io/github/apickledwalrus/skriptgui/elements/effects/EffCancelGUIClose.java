@@ -14,8 +14,7 @@ import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecGUIOpenClose;
 import org.bukkit.event.Event;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 @Name("Cancel GUI Close")
 @Description({
@@ -56,7 +55,6 @@ public class EffCancelGUIClose extends Effect {
 	}
 
 	@Override
-	@NotNull
 	public String toString(@Nullable Event e, boolean debug) {
 		return (cancel ? "cancel" : "uncancel") + " the gui closing";
 	}

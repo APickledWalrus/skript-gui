@@ -6,8 +6,7 @@ import ch.njol.skript.lang.SelfRegisteringSkriptEvent;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.Trigger;
 import org.bukkit.event.Event;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 import java.util.ArrayList;
 
@@ -16,6 +15,7 @@ import java.util.ArrayList;
  */
 public class TriggerUnregisterListener extends SelfRegisteringSkriptEvent {
 
+	@Nullable
 	private Trigger t;
 
 	public TriggerUnregisterListener() {
@@ -48,7 +48,6 @@ public class TriggerUnregisterListener extends SelfRegisteringSkriptEvent {
 	}
 
 	@Override
-	@NotNull
 	public String toString(@Nullable Event e, boolean debug) {
 		return getClass().getName();
 	}

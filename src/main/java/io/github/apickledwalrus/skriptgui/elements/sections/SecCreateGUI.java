@@ -18,8 +18,7 @@ import io.github.apickledwalrus.skriptgui.gui.SkriptGUIEvent;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 import java.util.List;
 
@@ -40,11 +39,14 @@ public class SecCreateGUI extends EffectSection {
 		);
 	}
 
-	private Expression<GUI> exprGUI;
+	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<Inventory> inv;
+	@Nullable
 	private Expression<String> shape, id;
-
 	private boolean stealableItems;
+
+	@Nullable
+	private Expression<GUI> exprGUI;
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -74,6 +76,7 @@ public class SecCreateGUI extends EffectSection {
 	}
 
 	@Override
+	@Nullable
 	public TriggerItem walk(Event e) {
 		if (exprGUI == null) { // Creating a new GUI.
 			Inventory inv = this.inv.getSingle(e);
@@ -82,7 +85,7 @@ public class SecCreateGUI extends EffectSection {
 				InventoryType invType = inv.getType();
 				if (invType == InventoryType.CRAFTING || invType == InventoryType.PLAYER) { // We don't want to run this section as this is an invalid GUI type
 					SkriptGUI.getInstance().getLogger().warning("Unable to create an inventory of type: " + invType.name());
-					return getNext();
+					return walk(e, false);
 				}
 
 				GUI gui;
@@ -115,7 +118,6 @@ public class SecCreateGUI extends EffectSection {
 	}
 
 	@Override
-	@NotNull
 	public String toString(@Nullable Event e, boolean debug) {
 		return exprGUI != null ? "edit GUI " + exprGUI.toString(e, debug) : "create gui";
 	}

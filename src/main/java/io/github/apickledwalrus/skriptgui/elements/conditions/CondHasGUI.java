@@ -14,8 +14,7 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 @Name("Has GUI")
 @Description("Checks whether the given player(s) has/have a GUI open.")
@@ -34,6 +33,7 @@ public class CondHasGUI extends Condition {
 		);
 	}
 
+	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<Player> players;
 
 	@Override
@@ -50,7 +50,6 @@ public class CondHasGUI extends Condition {
 	}
 
 	@Override
-	@NotNull
 	public String toString(@Nullable Event e, boolean debug) {
 		return players.toString(e, debug) + (!isNegated() ? " has/have " : " do not/don't have ") + " a gui open";
 	}

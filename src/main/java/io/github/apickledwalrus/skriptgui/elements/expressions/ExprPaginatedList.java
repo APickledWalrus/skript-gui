@@ -12,8 +12,7 @@ import ch.njol.skript.lang.UnparsedLiteral;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import org.bukkit.event.Event;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +30,11 @@ public class ExprPaginatedList extends SimpleExpression<Object> {
 		);
 	}
 
+	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<Number> pages;
+	@Nullable
 	private Expression<?> contents;
+	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<Number> lines;
 
 	@Override
@@ -59,6 +61,7 @@ public class ExprPaginatedList extends SimpleExpression<Object> {
 			return new Object[0];
 		}
 
+		assert contents != null;
 		Object[] contents = this.contents.getAll(e).clone();
 		if (contents.length == 0) {
 			return new Object[0];
@@ -96,14 +99,13 @@ public class ExprPaginatedList extends SimpleExpression<Object> {
 	}
 
 	@Override
-	@NotNull
 	public Class<?> getReturnType() {
 		return Object.class;
 	}
 
 	@Override
-	@NotNull
 	public String toString(@Nullable Event e, boolean debug) {
+		assert contents != null;
 		return "page(s) " + pages.toString(e, debug) + " of " + contents.toString(e, debug) + " with " + lines.toString(e, debug) + " lines";
 	}
 

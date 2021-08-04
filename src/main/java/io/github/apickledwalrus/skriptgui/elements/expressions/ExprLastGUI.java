@@ -16,8 +16,7 @@ import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 @Name("Last GUI/GUI from ID")
 @Description("It is used to return the last created/edited gui or a gui from a string id.")
@@ -35,6 +34,7 @@ public class ExprLastGUI extends SimpleExpression<GUI> {
 		);
 	}
 
+	@Nullable
 	private Expression<String> id;
 
 	@Override
@@ -56,18 +56,24 @@ public class ExprLastGUI extends SimpleExpression<GUI> {
 	}
 
 	@Override
-	public Class<?>[] acceptChange(final ChangeMode mode) {
-		return (mode == ChangeMode.DELETE && id != null) ? CollectionUtils.array(Object.class) : null;
+	@Nullable
+	public Class<?>[] acceptChange(ChangeMode mode) {
+		if (mode == ChangeMode.DELETE && id != null) {
+			return CollectionUtils.array(Object.class);
+		}
+		return null;
 	}
 
 	@Override
-	public void change(final Event e, Object @Nullable [] delta, ChangeMode mode){
-		String id = this.id.getSingle(e);
+	public void change(Event e, Object @Nullable [] delta, ChangeMode mode) {
 		if (id != null) {
-			GUI gui = SkriptGUI.getGUIManager().getGlobalGUI(id);
-			if (gui != null) {
-				gui.setID(null);
-				gui.clear();
+			String id = this.id.getSingle(e);
+			if (id != null) {
+				GUI gui = SkriptGUI.getGUIManager().getGlobalGUI(id);
+				if (gui != null) {
+					gui.setID(null);
+					gui.clear();
+				}
 			}
 		}
 	}
@@ -78,13 +84,11 @@ public class ExprLastGUI extends SimpleExpression<GUI> {
 	}
 
 	@Override
-	@NotNull
 	public Class<? extends GUI> getReturnType() {
 		return GUI.class;
 	}
 
 	@Override
-	@NotNull
 	public String toString(@Nullable Event e, boolean debug) {
 		return id == null ? "the last gui" : "the gui with the id " + id.toString(e, debug);
 	}

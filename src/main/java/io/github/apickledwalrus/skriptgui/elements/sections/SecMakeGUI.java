@@ -21,8 +21,7 @@ import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 import java.util.List;
 
@@ -48,9 +47,12 @@ public class SecMakeGUI extends EffectSection {
 		);
 	}
 
+	@Nullable
 	private Trigger trigger;
 
+	@Nullable
 	private Expression<Object> slots; // Can be number or a string
+	@Nullable
 	private Expression<ItemType> item;
 
 	private int pattern;
@@ -87,21 +89,24 @@ public class SecMakeGUI extends EffectSection {
 	}
 
 	@Override
+	@Nullable
 	public TriggerItem walk(Event e) {
 		GUI gui = SkriptGUI.getGUIManager().getGUIEvent(e);
 
 		if (gui == null) { // We aren't going to do anything with this section
-			return getNext();
+			return walk(e, false);
 		}
 
 		switch (pattern) {
 			case 0: // Set the next slot
 			case 1: // Set the input slots
-				ItemType itemType = this.item.getSingle(e);
+				assert item != null;
+				ItemType itemType = item.getSingle(e);
 				if (itemType == null)
 					break;
 				ItemStack item = itemType.getRandom();
 				if (hasSection()) {
+					assert trigger != null;
 					Object variables = Variables.copyLocalVariables(e);
 					if (variables != null) {
 						for (Object slot : slots != null ? slots.getArray(e) : new Object[]{gui.nextSlot()}) {
@@ -129,6 +134,7 @@ public class SecMakeGUI extends EffectSection {
 				gui.clear(gui.nextSlotInverted());
 				break;
 			case 3: // Clear the input slots
+				assert slots != null;
 				for (Object slot : slots.getArray(e)) {
 					gui.clear(slot);
 				}
@@ -139,20 +145,22 @@ public class SecMakeGUI extends EffectSection {
 		}
 
 		// We don't want to execute this section
-		return getNext();
+		return walk(e, false);
 	}
 
 	@Override
-	@NotNull
 	public String toString(@Nullable Event e, boolean debug) {
 		switch (pattern) {
 			case 0:
+				assert item != null;
 				return "make next gui slot with " + item.toString(e, debug);
 			case 1:
+				assert slots != null && item != null;
 				return "make gui slot(s) " + slots.toString(e, debug) + " with " + item.toString(e, debug);
 			case 2:
 				return "remove the next gui slot";
 			case 3:
+				assert slots != null;
 				return "remove gui slot(s) " + slots.toString(e, debug);
 			case 4:
 				return "remove all of the gui slots";

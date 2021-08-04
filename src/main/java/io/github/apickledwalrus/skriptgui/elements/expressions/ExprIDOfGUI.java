@@ -9,8 +9,7 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.util.coll.CollectionUtils;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 @Name("ID of GUI")
 @Description({
@@ -36,6 +35,7 @@ public class ExprIDOfGUI extends SimplePropertyExpression<GUI, String> {
 	}
 
 	@Override
+	@Nullable
 	public Class<?>[] acceptChange(ChangeMode mode) {
 		return mode == ChangeMode.SET ? CollectionUtils.array(String.class) : null;
 	}
@@ -55,15 +55,13 @@ public class ExprIDOfGUI extends SimplePropertyExpression<GUI, String> {
 	}
 
 	@Override
-	@NotNull
-	protected String getPropertyName() {
-		return "id";
+	public Class<? extends String> getReturnType() {
+		return String.class;
 	}
 
 	@Override
-	@NotNull
-	public Class<? extends String> getReturnType() {
-		return String.class;
+	protected String getPropertyName() {
+		return "id";
 	}
 
 }

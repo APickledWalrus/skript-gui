@@ -18,8 +18,7 @@ import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 import java.util.List;
 
@@ -43,6 +42,7 @@ public class SecGUIOpenClose extends Section {
 		);
 	}
 
+	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Trigger trigger;
 
 	private boolean close;
@@ -66,6 +66,7 @@ public class SecGUIOpenClose extends Section {
 	}
 
 	@Override
+	@Nullable
 	public TriggerItem walk(Event e) {
 		GUI gui = SkriptGUI.getGUIManager().getGUIEvent(e);
 		if (gui != null) {
@@ -94,11 +95,10 @@ public class SecGUIOpenClose extends Section {
 		}
 
 		// We don't want to execute this section
-		return getNext();
+		return walk(e, false);
 	}
 
 	@Override
-	@NotNull
 	public String toString(@Nullable Event e, boolean debug) {
 		return "run on gui " + (close ? "close" : "open");
 	}

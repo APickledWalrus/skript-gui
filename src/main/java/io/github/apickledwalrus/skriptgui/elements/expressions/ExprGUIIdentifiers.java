@@ -12,8 +12,7 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import org.bukkit.event.Event;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 @Name("Global GUI Identifiers")
 @Description("A list of the identifiers of all registered global GUIs.")
@@ -48,13 +47,11 @@ public class ExprGUIIdentifiers extends SimpleExpression<String> {
 	}
 
 	@Override
-	@NotNull
 	public Class<? extends String> getReturnType() {
 		return String.class;
 	}
 
 	@Override
-	@NotNull
 	public String toString(@Nullable Event e, boolean debug) {
 		return "all of the registered gui identifiers";
 	}

@@ -16,8 +16,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +25,7 @@ public class SkriptGUIEvent extends SkriptEvent {
 
 	public static final boolean HAS_RECIPE_EVENT = Skript.classExists("com.destroystokyo.paper.event.player.PlayerRecipeBookClickEvent");
 
+	@Nullable
 	private static SkriptGUIEvent instance;
 	private final List<NonNullPair<Class<? extends Event>, Trigger>> triggers = ReflectionUtils.getField(SkriptEventHandler.class, null, "triggers");
 
@@ -59,7 +59,6 @@ public class SkriptGUIEvent extends SkriptEvent {
 	}
 
 	@Override
-	@NotNull
 	public String toString(@Nullable Event e, boolean debug) {
 		return e != null ? "gui event: " + e.getEventName() : "gui event";
 	}
@@ -87,7 +86,6 @@ public class SkriptGUIEvent extends SkriptEvent {
 
 			// Add this trigger to the beginning of the triggers list for each event so that it can be cancelled first
 			// Also add these events these events to the listenCancelled list so that they will still trigger for other listeners
-			assert triggers != null;
 			if (HAS_RECIPE_EVENT) {
 				triggers.add(0, new NonNullPair<>(PlayerRecipeBookClickEvent.class, t));
 				SkriptEventHandler.listenCancelled.add(PlayerRecipeBookClickEvent.class);
@@ -120,7 +118,7 @@ public class SkriptGUIEvent extends SkriptEvent {
 	 * Removes all currently open {@link GUI}s.
 	 */
 	public void unregisterAll(){
-		if (listeners.size() != 0) { //
+		if (listeners.size() != 0) { // https://github.com/APickledWalrus/skript-gui/issues/23
 			listeners.forEach(GUIEventHandler::finalize);
 			listeners.clear();
 		}

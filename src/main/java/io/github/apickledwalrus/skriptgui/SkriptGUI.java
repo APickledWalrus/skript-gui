@@ -12,6 +12,7 @@ import io.github.apickledwalrus.skriptgui.gui.GUIManager;
 
 public class SkriptGUI extends JavaPlugin {
 
+	@SuppressWarnings("NotNullFieldNotInitialized")
 	private static SkriptGUI instance;
 
 	private static final GUIManager manager = new GUIManager();

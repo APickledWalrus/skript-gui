@@ -8,8 +8,7 @@ import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.util.EnumUtils;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.inventory.InventoryType.SlotType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 public class SkriptClasses {
 
@@ -28,7 +27,6 @@ public class SkriptClasses {
 				}
 
 				@Override
-				@NotNull
 				public String toString(GUI gui, int flags) {
 					return gui.getInventory().getType().getDefaultTitle().toLowerCase()
 							+ " gui named " + gui.getName() 
@@ -37,13 +35,11 @@ public class SkriptClasses {
 				}
 
 				@Override
-				@NotNull
 				public String toVariableNameString(GUI gui) {
 					return toString(gui, 0);
 				}
 
 				@Override
-				@NotNull
 				public String getVariableNamePattern() {
 					return ".+";
 				}
@@ -71,19 +67,16 @@ public class SkriptClasses {
 					}
 
 					@Override
-					@NotNull
 					public String toString(SlotType type, int flags) {
 						return slotTypes.toString(type, flags);
 					}
 
 					@Override
-					@NotNull
 					public String toVariableNameString(SlotType type) {
 						return "slottype:" + type.name();
 					}
 
 					@Override
-					@NotNull
 					public String getVariableNamePattern() {
 						return "slottype:\\S+";
 					}

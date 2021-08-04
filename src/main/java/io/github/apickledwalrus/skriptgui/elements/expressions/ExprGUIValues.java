@@ -28,8 +28,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 @Name("GUI Values")
 @Description("Different utility values for a GUI. Some are available in vanilla Skript. Not all values are available for the GUI close section.")
@@ -77,8 +76,7 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 	}
 
 	@Override
-	protected Object @NotNull [] get(Event event) {
-		GUI gui = SkriptGUI.getGUIManager().getGUIEvent(event);
+	protected Object[] get(Event event) {
 		if (event instanceof InventoryClickEvent) {
 			InventoryClickEvent e = (InventoryClickEvent) event;
 			switch (pattern) {
@@ -108,9 +106,12 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 				case 10:
 					return e.getViewers().toArray(new HumanEntity[0]);
 				case 11:
-					return new String[]{"" + gui.convert(e.getSlot())};
 				case 12:
-					return new GUI[]{gui};
+					GUI gui = SkriptGUI.getGUIManager().getGUIEvent(event);
+					if (pattern == 11) {
+						return gui != null ? new String[]{"" + gui.convert(e.getSlot())} : new GUI[0];
+					}
+					return gui != null ? new GUI[]{gui} : new GUI[0];
 			}
 		} else if (event instanceof InventoryCloseEvent) {
 			InventoryCloseEvent e = (InventoryCloseEvent) event;
@@ -122,14 +123,16 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 				case 10:
 					return (e.getViewers().toArray(new HumanEntity[0]));
 				case 12:
-					return new GUI[]{gui};
+					GUI gui = SkriptGUI.getGUIManager().getGUIEvent(event);
+					return gui != null ? new GUI[]{gui} : new GUI[0];
 			}
 		}
 		return new Object[0];
 	}
 
 	@Override
-	public Class<?>[] acceptChange(final ChangeMode mode) {
+	@Nullable
+	public Class<?>[] acceptChange(ChangeMode mode) {
 		if (isDelayed) {
 			Skript.error("You can't set the '" + toString + "' when the event is already passed.");
 			return null;
@@ -144,8 +147,9 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 
 	@Override
 	public void change(final Event event, Object @Nullable [] delta, ChangeMode mode) {
-		if (delta == null || !(event instanceof InventoryClickEvent))
+		if (delta == null || !(event instanceof InventoryClickEvent)) {
 			return;
+		}
 
 		InventoryClickEvent e = (InventoryClickEvent) event;
 
@@ -160,7 +164,6 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 	}
 
 	@Override
-	@NotNull
 	public Class<?> getReturnType() {
 		switch (pattern) {
 			case 0:
@@ -192,7 +195,6 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 	}
 
 	@Override
-	@NotNull
 	public String toString(@Nullable Event e, boolean debug) {
 		return toString;
 	}

@@ -15,8 +15,7 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.util.InventoryUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 @Name("Virtual Inventory")
 @Description("An expression to create inventories that can be used with GUIs.")
@@ -43,6 +42,7 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 	private Expression<String> name;
 
 	// The name of this inventory.
+	@Nullable
 	private String invName;
 
 	@Override
@@ -103,13 +103,11 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 	}
 
 	@Override
-	@NotNull
 	public Class<? extends Inventory> getReturnType() {
 		return Inventory.class;
 	}
 
 	@Override
-	@NotNull
 	public String toString(@Nullable Event e, boolean debug) {
 		return "virtual " + (inventoryType != null ? inventoryType.toString(e, debug) : specifiedType != null ? specifiedType.name().toLowerCase() : "unknown inventory type")
 			+ (name != null ? " with name" + name.toString(e, debug) : "")
@@ -117,10 +115,11 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 	}
 
 	/**
-	 * @return The name of this inventory.
+	 * @return The name of this inventory. If {@link #invName} is null
+	 * when this method is called, an empty string will be returned.
 	 */
 	public String getName() {
-		return invName;
+		return invName != null ? invName : "";
 	}
 
 }

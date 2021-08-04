@@ -13,8 +13,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -100,12 +99,15 @@ public class GUI {
 	private final List<Character> stealableSlots = new ArrayList<>();
 
 	// To be ran when this inventory is opened.
+	@Nullable
 	private Consumer<InventoryOpenEvent> onOpen;
 	// To be ran when this inventory is closed.
+	@Nullable
 	private Consumer<InventoryCloseEvent> onClose;
 	// Whether the inventory close event for this event handler is cancelled.
 	private boolean closeCancelled;
 
+	@Nullable
 	private String id;
 
 	public GUI(Inventory inventory, boolean stealableItems, @Nullable String name) {
@@ -127,7 +129,6 @@ public class GUI {
 		changeInventory(size, getName());
 	}
 
-	@NotNull
 	public String getName() {
 		return name;
 	}
@@ -151,6 +152,10 @@ public class GUI {
 	}
 
 	private void changeInventory(int size, @Nullable String name) {
+		if (name == null) {
+			name = inventory.getType().getDefaultTitle();
+		}
+
 		Inventory newInventory = InventoryUtils.newInventory(inventory.getType(), size, name);
 		newInventory.setContents(inventory.getContents());
 
@@ -276,11 +281,12 @@ public class GUI {
 		if (rawShape == null) {
 			return new ItemStack(Material.AIR);
 		}
-		Character ch = convert(slot);
+		char ch = convert(slot);
 		if (ch == 0) {
 			return new ItemStack(Material.AIR);
 		}
-		return inventory.getItem(rawShape.indexOf(ch));
+		ItemStack item = inventory.getItem(rawShape.indexOf(ch));
+		return item != null ? item : new ItemStack(Material.AIR);
 	}
 
 	/**
