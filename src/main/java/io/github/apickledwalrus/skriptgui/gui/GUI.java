@@ -184,7 +184,8 @@ public class GUI {
 
 		if (slot instanceof Number) {
 			int invSlot = ((Number) slot).intValue();
-			if (rawShape != null && invSlot < rawShape.length()) {
+			// Make sure inventory slot is at least 0 (see https://github.com/APickledWalrus/skript-gui/issues/48)
+			if (rawShape != null && invSlot >= 0 && invSlot < rawShape.length()) {
 				return rawShape.charAt(invSlot);
 			}
 			return ' ';

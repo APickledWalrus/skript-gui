@@ -1,6 +1,5 @@
 package io.github.apickledwalrus.skriptgui.elements.expressions;
 
-import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
@@ -12,7 +11,6 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
-import io.github.apickledwalrus.skriptgui.elements.sections.SecCreateGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,10 +36,6 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		if (!getParser().isCurrentSection(SecCreateGUI.class)) {
-			Skript.error("You can't change or get the GUI properties outside of a GUI creation or editing section.");
-			return false;
-		}
 		property = parseResult.mark;
 		return super.init(exprs, matchedPattern, isDelayed, parseResult);
 	}
