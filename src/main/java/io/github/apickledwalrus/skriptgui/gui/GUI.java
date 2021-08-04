@@ -30,7 +30,7 @@ public class GUI {
 		@Override
 		public void onClick(InventoryClickEvent e, int slot) {
 			Character realSlot = convert(slot);
-			Consumer<InventoryClickEvent> run = getSlot(realSlot);
+			Consumer<InventoryClickEvent> run = slots.get(realSlot);
 			/*
 			 * Cancel the event if this GUI slot is a button (it runs a consumer)
 			 * If it isn't, check whether items are stealable in this GUI, or if the specific slot is stealable
@@ -44,7 +44,7 @@ public class GUI {
 		@Override
 		public void onDrag(InventoryDragEvent e, int slot) {
 			Character realSlot = convert(slot);
-			Consumer<InventoryClickEvent> run = getSlot(realSlot);
+			Consumer<InventoryClickEvent> run = slots.get(realSlot);
 			/*
 			 * Cancel the event if this GUI slot is a button (it runs a consumer)
 			 * If it isn't, check whether items are stealable in this GUI, or if the specific slot is stealable
@@ -138,11 +138,8 @@ public class GUI {
 	}
 
 	public void clear(Object slot) {
-		inventory.clear();
 		Character realSlot = convert(slot);
-		setItem(realSlot, new ItemStack(Material.AIR), false, null); // It's okay to convert again (it won't really convert)
-		slots.remove(realSlot);
-		stealableSlots.remove(realSlot);
+		setItem(realSlot, new ItemStack(Material.AIR), false, null);
 	}
 
 	public void clear() {
@@ -221,18 +218,6 @@ public class GUI {
 	}
 
 	/**
-	 * @param ch The slot in Character form. It is assumed that this Character was already converted through {@link GUI#convert(Object)}.
-	 * @return The slot's button consumer, or an emtpty consumer if it does not have one.
-	 */
-	@Nullable
-	public Consumer<InventoryClickEvent> getSlot(Character ch) {
-		if (ch > 0 && slots.containsKey(ch)) {
-			return slots.get(ch);
-		}
-		return null;
-	}
-
-	/**
 	 * Sets a slot's item.
 	 * @param slot The slot to put the item in. It will be converted by {@link GUI#convert(Object)}.
 	 * @param item The {@link ItemStack} to put in the slot.
@@ -257,11 +242,15 @@ public class GUI {
 			rawShape = rawShape.replaceFirst("\\+", "" + ch2);
 			ch = ch2;
 		}
-		slots.put(ch, consumer);
+		if (consumer != null) {
+			slots.put(ch, consumer);
+		} else { // Just in case as we may be updating a slot
+			slots.remove(ch);
+		}
 
 		if (stealable) {
 			stealableSlots.add(ch);
-		} else { // Just in case as we may be updating a slot.
+		} else { // Just in case as we may be updating a slot
 			stealableSlots.remove(ch);
 		}
 
