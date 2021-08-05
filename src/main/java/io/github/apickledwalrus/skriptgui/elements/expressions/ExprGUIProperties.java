@@ -79,7 +79,7 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 		if (delta == null || (mode != ChangeMode.SET && mode != ChangeMode.RESET)) {
 			return;
 		}
-		GUI gui = SkriptGUI.getGUIManager().getGUIEvent(e);
+		GUI gui = SkriptGUI.getGUIManager().getGUI(e);
 		if (gui != null) {
 			switch (mode) {
 				case SET:

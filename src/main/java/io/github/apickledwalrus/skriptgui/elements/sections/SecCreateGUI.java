@@ -14,7 +14,6 @@ import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.elements.expressions.ExprVirtualInventory;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
-import io.github.apickledwalrus.skriptgui.gui.SkriptGUIEvent;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -46,7 +45,7 @@ public class SecCreateGUI extends EffectSection {
 	private boolean stealableItems;
 
 	@Nullable
-	private Expression<GUI> exprGUI;
+	private Expression<GUI> gui;
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -56,7 +55,7 @@ public class SecCreateGUI extends EffectSection {
 				Skript.error("You can't edit a gui inventory using an empty section, you need to change at least a slot or a property.");
 				return false;
 			}
-			exprGUI = (Expression<GUI>) exprs[0];
+			gui = (Expression<GUI>) exprs[0];
 		} else {
 			id = (Expression<String>) exprs[0];
 			inv = (Expression<Inventory>) exprs[1];
@@ -69,16 +68,13 @@ public class SecCreateGUI extends EffectSection {
 			loadOptionalCode(sectionNode);
 		}
 
-		// Just a safe check, to make sure the listener was registered when this is loaded
-		SkriptGUIEvent.getInstance().register();
-
 		return true;
 	}
 
 	@Override
 	@Nullable
 	public TriggerItem walk(Event e) {
-		if (exprGUI == null) { // Creating a new GUI.
+		if (gui == null) { // Creating a new GUI.
 			Inventory inv = this.inv.getSingle(e);
 			if (inv != null) {
 
@@ -106,11 +102,11 @@ public class SecCreateGUI extends EffectSection {
 					gui.setID(id);
 				}
 
-				SkriptGUI.getGUIManager().setGUIEvent(e, gui);
+				SkriptGUI.getGUIManager().setGUI(e, gui);
 			}
 		} else { // Editing the given GUI.
-			GUI gui = exprGUI.getSingle(e);
-			SkriptGUI.getGUIManager().setGUIEvent(e, gui);
+			GUI gui = this.gui.getSingle(e);
+			SkriptGUI.getGUIManager().setGUI(e, gui);
 		}
 
 		// 'first' will be null if no section is present
@@ -119,7 +115,22 @@ public class SecCreateGUI extends EffectSection {
 
 	@Override
 	public String toString(@Nullable Event e, boolean debug) {
-		return exprGUI != null ? "edit GUI " + exprGUI.toString(e, debug) : "create gui";
+		if (gui != null) {
+			return "edit gui " + gui.toString(e, debug);
+		} else {
+			StringBuilder creation = new StringBuilder("create a gui");
+			if (id != null) {
+				creation.append(" with id ").append(id.toString(e, debug));
+			}
+			creation.append(" with ").append(inv.toString(e, debug));
+			if (stealableItems) {
+				creation.append(" with stealable items");
+			}
+			if (shape != null) {
+				creation.append(" and shape ").append(shape.toString(e, debug));
+			}
+			return creation.toString();
+		}
 	}
 
 }

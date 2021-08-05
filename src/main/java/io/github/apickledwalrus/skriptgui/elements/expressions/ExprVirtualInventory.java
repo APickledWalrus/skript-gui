@@ -1,9 +1,5 @@
 package io.github.apickledwalrus.skriptgui.elements.expressions;
 
-import org.bukkit.event.Event;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
-
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
@@ -14,7 +10,10 @@ import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
-import io.github.apickledwalrus.skriptgui.util.InventoryUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.event.Event;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.eclipse.jdt.annotation.Nullable;
 
 @Name("Virtual Inventory")
@@ -37,7 +36,7 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 	@Nullable
 	private Expression<InventoryType> inventoryType;
 	@Nullable
-	private Expression<Number> size;
+	private Expression<Number> rows;
 	@Nullable
 	private Expression<String> name;
 
@@ -74,10 +73,10 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 
 		if (matchedPattern > 1) {
 			name = (Expression<String>) exprs[1];
-			size = (Expression<Number>) exprs[2];
+			rows = (Expression<Number>) exprs[2];
 		} else {
 			name = (Expression<String>) exprs[2];
-			size = (Expression<Number>) exprs[1];
+			rows = (Expression<Number>) exprs[1];
 		}
 
 		return true;
@@ -91,10 +90,31 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 		} else if (type == InventoryType.CRAFTING) { // Make it a valid inventory. It's not the same, but it's likely what the user wants.
 			type = InventoryType.WORKBENCH;
 		}
-		Number size = this.size != null ? this.size.getSingle(e) : null;
+
 		String name = this.name != null ? this.name.getSingle(e) : null;
 		invName = name != null ? name : type.getDefaultTitle();
-		return new Inventory[]{InventoryUtils.newInventory(type, (size != null ? size.intValue() * 9 : null), name)};
+
+		Inventory inventory;
+		if (type == InventoryType.CHEST) {
+			int size = -1;
+			if (rows != null) {
+				Number rows = this.rows.getSingle(e);
+				if (rows != null) {
+					size = rows.intValue();
+					if (size <= 6) {
+						size *= 9;
+					}
+				}
+			}
+			if (size == 0 || size % 9 != 0) { // Invalid inventory size
+				size = type.getDefaultSize();
+			}
+			inventory = Bukkit.getServer().createInventory(null, size, invName);
+		} else {
+			inventory = Bukkit.getServer().createInventory(null, type, invName);
+		}
+
+		return new Inventory[]{inventory};
 	}
 
 	@Override
@@ -111,7 +131,7 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 	public String toString(@Nullable Event e, boolean debug) {
 		return "virtual " + (inventoryType != null ? inventoryType.toString(e, debug) : specifiedType != null ? specifiedType.name().toLowerCase() : "unknown inventory type")
 			+ (name != null ? " with name" + name.toString(e, debug) : "")
-			+ (size != null ? " with " + size.toString(e, debug) + " rows" : "");
+			+ (rows != null ? " with " + rows.toString(e, debug) + " rows" : "");
 	}
 
 	/**

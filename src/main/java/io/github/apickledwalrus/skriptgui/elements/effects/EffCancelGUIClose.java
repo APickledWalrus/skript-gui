@@ -13,6 +13,7 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecGUIOpenClose;
+import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -51,7 +52,10 @@ public class EffCancelGUIClose extends Effect {
 
 	@Override
 	protected void execute(Event e) {
-		SkriptGUI.getGUIManager().getGUIEvent(e).setCloseCancelled(cancel);
+		GUI gui = SkriptGUI.getGUIManager().getGUI(e);
+		if (gui != null) {
+			gui.setCloseCancelled(cancel);
+		}
 	}
 
 	@Override

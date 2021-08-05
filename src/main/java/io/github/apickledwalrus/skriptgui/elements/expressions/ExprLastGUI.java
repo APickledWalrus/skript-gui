@@ -50,9 +50,9 @@ public class ExprLastGUI extends SimpleExpression<GUI> {
 	protected GUI[] get(Event e) {
 		if (id != null) {
 			String id = this.id.getSingle(e);
-			return id != null ? new GUI[]{SkriptGUI.getGUIManager().getGlobalGUI(id)} : new GUI[0];
+			return id != null ? new GUI[]{SkriptGUI.getGUIManager().getGUI(id)} : new GUI[0];
 		}
-		return new GUI[]{SkriptGUI.getGUIManager().getGUIEvent(e)};
+		return new GUI[]{SkriptGUI.getGUIManager().getGUI(e)};
 	}
 
 	@Override
@@ -69,10 +69,9 @@ public class ExprLastGUI extends SimpleExpression<GUI> {
 		if (id != null) {
 			String id = this.id.getSingle(e);
 			if (id != null) {
-				GUI gui = SkriptGUI.getGUIManager().getGlobalGUI(id);
+				GUI gui = SkriptGUI.getGUIManager().getGUI(id);
 				if (gui != null) {
 					gui.setID(null);
-					gui.clear();
 				}
 			}
 		}

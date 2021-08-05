@@ -11,8 +11,12 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
+import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Name("Global GUI Identifiers")
 @Description("A list of the identifiers of all registered global GUIs.")
@@ -38,7 +42,13 @@ public class ExprGUIIdentifiers extends SimpleExpression<String> {
 
 	@Override
 	protected String[] get(Event e) {
-		return SkriptGUI.getGUIManager().getGlobalIdentifiers();
+		List<String> identifiers = new ArrayList<>();
+		for (GUI gui : SkriptGUI.getGUIManager().getTrackedGUIs()) {
+			if (gui.getID() != null) {
+				identifiers.add(gui.getID());
+			}
+		}
+		return identifiers.toArray(new String[0]);
 	}
 
 	@Override

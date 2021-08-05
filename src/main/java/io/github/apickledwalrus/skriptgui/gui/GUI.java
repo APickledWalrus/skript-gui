@@ -2,15 +2,14 @@ package io.github.apickledwalrus.skriptgui.gui;
 
 import ch.njol.skript.Skript;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
-import io.github.apickledwalrus.skriptgui.util.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,48 +25,47 @@ public class GUI {
 
 	private Inventory inventory;
 	private String name;
-	private final GUIEventHandler eventHandler = new GUIEventHandler(this) {
+	private final GUIEventHandler eventHandler = new GUIEventHandler() {
 		@Override
-		public void onClick(InventoryClickEvent e, int slot) {
-			Character realSlot = convert(slot);
+		public void onClick(InventoryClickEvent e) {
+			Character realSlot = convert(e.getSlot());
 			Consumer<InventoryClickEvent> run = slots.get(realSlot);
 			/*
 			 * Cancel the event if this GUI slot is a button (it runs a consumer)
 			 * If it isn't, check whether items are stealable in this GUI, or if the specific slot is stealable
 			 */
 			e.setCancelled(run != null || (!isStealable() && !isStealable(realSlot)));
-			if (run != null && slot == e.getSlot()) {
+			if (run != null) {
+				SkriptGUI.getGUIManager().setGUI(e, GUI.this);
 				run.accept(e);
 			}
 		}
 
 		@Override
-		public void onDrag(InventoryDragEvent e, int slot) {
-			Character realSlot = convert(slot);
-			Consumer<InventoryClickEvent> run = slots.get(realSlot);
-			/*
-			 * Cancel the event if this GUI slot is a button (it runs a consumer)
-			 * If it isn't, check whether items are stealable in this GUI, or if the specific slot is stealable
-			 */
-			e.setCancelled(run != null || (!isStealable() && !isStealable(realSlot)));
+		public void onDrag(InventoryDragEvent e) {
+			for (int slot : e.getRawSlots()) {
+				Character realSlot = convert(slot);
+				/*
+				 * Cancel the event if this GUI slot is a button (it runs a consumer)
+				 * If it isn't, check whether items are stealable in this GUI, or if the specific slot is stealable
+				 */
+				e.setCancelled(slots.get(realSlot) != null || (!isStealable() && !isStealable(realSlot)));
+				break;
+			}
 		}
 
 		@Override
 		public void onOpen(InventoryOpenEvent e) {
-			SkriptGUI.getGUIManager().setGUI((Player) e.getPlayer(), GUI.this);
-			if (onOpen != null)
+			if (onOpen != null) {
+				SkriptGUI.getGUIManager().setGUI(e, GUI.this);
 				onOpen.accept(e);
+			}
 		}
 
 		@Override
 		public void onClose(InventoryCloseEvent e) {
-			if (onClose == null) { // If this GUI does not run anything when it is closed, it will not be able to cancel its closing
-				SkriptGUI.getGUIManager().removeGUI((Player) e.getPlayer());
-				return;
-			}
-
-			SkriptGUI.getGUIManager().setGUIEvent(e, GUI.this);
-			try {
+			if (onClose != null) {
+				SkriptGUI.getGUIManager().setGUI(e, GUI.this);
 				onClose.accept(e);
 				if (closeCancelled) {
 					Bukkit.getScheduler().runTaskLater(SkriptGUI.getInstance(), () -> {
@@ -76,11 +74,12 @@ public class GUI {
 
 						e.getPlayer().openInventory(inventory);
 					}, 1);
-				} else { // Event isn't being "cancelled"
-					SkriptGUI.getGUIManager().removeGUI((Player) e.getPlayer());
+					return;
 				}
-			} catch (Exception ex) {
-				throw Skript.exception(ex, "An error occurred while closing a GUI. If you are unsure why this occurred, please report the error on the skript-gui GitHub.");
+			}
+
+			if (id == null && inventory.getViewers().size() == 1) { // Only stop tracking if it isn't a global GUI
+				SkriptGUI.getGUIManager().unregister(GUI.this);
 			}
 		}
 	};
@@ -114,7 +113,7 @@ public class GUI {
 		this.inventory = inventory;
 		this.stealableItems = stealableItems;
 		this.name = name != null ? name : inventory.getType().getDefaultTitle();
-		eventHandler.start();
+		SkriptGUI.getGUIManager().register(this);
 	}
 
 	public Inventory getInventory() {
@@ -153,7 +152,13 @@ public class GUI {
 			name = inventory.getType().getDefaultTitle();
 		}
 
-		Inventory newInventory = InventoryUtils.newInventory(inventory.getType(), size, name);
+		Inventory newInventory;
+		if (inventory.getType() == InventoryType.CHEST) {
+			newInventory = Bukkit.getServer().createInventory(null, size, name);
+		} else {
+			newInventory = Bukkit.getServer().createInventory(null, inventory.getType(), name);
+		}
+
 		newInventory.setContents(inventory.getContents());
 
 		Iterator<HumanEntity> viewerIterator = inventory.getViewers().iterator();
@@ -406,15 +411,13 @@ public class GUI {
 
 	/**
 	 * Updates the ID of this GUI. Updates will be made in the {@link GUIManager} too.
-	 * @param id The new id for this GUI. If null, it will be removed from the {@link GUIManager}.
+	 * @param id The new id for this GUI. If null, it will be removed from the {@link GUIManager} and cleared unless it has viewers.
 	 */
 	public void setID(@Nullable String id) {
-		if (this.id != null) { // This GUI can be removed from the manager
-			SkriptGUI.getGUIManager().removeGlobalGUI(this.id);
-		}
 		this.id = id;
-		if (id != null) { // This GUI can be added to the manager
-			SkriptGUI.getGUIManager().addGlobalGUI(id, this);
+		if (id == null && inventory.getViewers().size() == 0) {
+			SkriptGUI.getGUIManager().unregister(this);
+			clear();
 		}
 	}
 

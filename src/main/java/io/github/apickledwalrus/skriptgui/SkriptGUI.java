@@ -3,6 +3,8 @@ package io.github.apickledwalrus.skriptgui;
 import java.io.IOException;
 
 import ch.njol.skript.util.Version;
+import io.github.apickledwalrus.skriptgui.gui.events.GUIEvents;
+import io.github.apickledwalrus.skriptgui.gui.events.RecipeEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -14,8 +16,8 @@ public class SkriptGUI extends JavaPlugin {
 
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private static SkriptGUI instance;
-
-	private static final GUIManager manager = new GUIManager();
+	@SuppressWarnings("NotNullFieldNotInitialized")
+	private static GUIManager manager;
 
 	@Override
 	public void onEnable() {
@@ -44,6 +46,15 @@ public class SkriptGUI extends JavaPlugin {
 			e.printStackTrace();
 			getServer().getPluginManager().disablePlugin(this);
 		}
+
+		// Register manager and events
+		manager = new GUIManager();
+		getServer().getPluginManager().registerEvents(new GUIEvents(), this);
+		if (Skript.classExists("com.destroystokyo.paper.event.player.PlayerRecipeBookClickEvent")) {
+			// We need to track this event (see https://github.com/APickledWalrus/skript-gui/issues/33)
+			getServer().getPluginManager().registerEvents(new RecipeEvent(), this);
+		}
+
 	}
 
 	public static SkriptGUI getInstance() {

@@ -107,7 +107,7 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 					return e.getViewers().toArray(new HumanEntity[0]);
 				case 11:
 				case 12:
-					GUI gui = SkriptGUI.getGUIManager().getGUIEvent(event);
+					GUI gui = SkriptGUI.getGUIManager().getGUI(event);
 					if (pattern == 11) {
 						return gui != null ? new String[]{"" + gui.convert(e.getSlot())} : new GUI[0];
 					}
@@ -123,7 +123,7 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 				case 10:
 					return (e.getViewers().toArray(new HumanEntity[0]));
 				case 12:
-					GUI gui = SkriptGUI.getGUIManager().getGUIEvent(event);
+					GUI gui = SkriptGUI.getGUIManager().getGUI(event);
 					return gui != null ? new GUI[]{gui} : new GUI[0];
 			}
 		}

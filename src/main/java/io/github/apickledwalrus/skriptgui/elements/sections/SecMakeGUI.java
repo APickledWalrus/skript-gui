@@ -91,7 +91,7 @@ public class SecMakeGUI extends EffectSection {
 	@Override
 	@Nullable
 	public TriggerItem walk(Event e) {
-		GUI gui = SkriptGUI.getGUIManager().getGUIEvent(e);
+		GUI gui = SkriptGUI.getGUIManager().getGUI(e);
 
 		if (gui == null) { // We aren't going to do anything with this section
 			return walk(e, false);
@@ -111,7 +111,6 @@ public class SecMakeGUI extends EffectSection {
 					if (variables != null) {
 						for (Object slot : slots != null ? slots.getArray(e) : new Object[]{gui.nextSlot()}) {
 							gui.setItem(slot, item, stealable, event -> {
-								SkriptGUI.getGUIManager().setGUIEvent(event, gui);
 								Variables.setLocalVariables(event, variables);
 								trigger.execute(event);
 							});
@@ -119,7 +118,6 @@ public class SecMakeGUI extends EffectSection {
 					} else { // Don't paste variables if there are none to paste
 						for (Object slot : slots != null ? slots.getArray(e) : new Object[]{gui.nextSlot()}) {
 							gui.setItem(slot, item, stealable, event -> {
-								SkriptGUI.getGUIManager().setGUIEvent(event, gui);
 								trigger.execute(event);
 							});
 						}
