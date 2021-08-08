@@ -26,10 +26,7 @@ dependencies {
     implementation group: 'org.eclipse.jdt', name: 'org.eclipse.jdt.annotation', version: '2.2.600'
     implementation group: 'com.google.code.findbugs', name: 'findbugs', version: '3.0.1'
     implementation group: 'com.destroystokyo.paper', name: 'paper-api', version: '1.16.5-R0.1-SNAPSHOT'
-    //implementation (group: 'com.github.SkriptLang.Skript', name: 'Skript', version: '2.6-beta2') {
-    //    transitive = false
-    //}
-    implementation ('com.github.APickledWalrus:Skript:1c27fc906e') { // Temporary for Section API expansion PR
+    implementation (group: 'com.github.SkriptLang', name: 'Skript', version: '79367dec95') {
         transitive = false
     }
 }

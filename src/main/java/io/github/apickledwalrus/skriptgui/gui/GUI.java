@@ -1,10 +1,10 @@
 package io.github.apickledwalrus.skriptgui.gui;
 
-import ch.njol.skript.Skript;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -81,6 +81,9 @@ public class GUI {
 			if (id == null && inventory.getViewers().size() == 1) { // Only stop tracking if it isn't a global GUI
 				SkriptGUI.getGUIManager().unregister(GUI.this);
 			}
+
+			// To combat issues like https://github.com/APickledWalrus/skript-gui/issues/60
+			Bukkit.getScheduler().runTaskLater(SkriptGUI.getInstance(), () -> ((Player) e.getPlayer()).updateInventory(), 1);
 		}
 	};
 
