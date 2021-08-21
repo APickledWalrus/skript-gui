@@ -250,11 +250,9 @@ public class GUI {
 			rawShape = rawShape.replaceFirst("\\+", "" + ch2);
 			ch = ch2;
 		}
-		if (consumer != null) {
-			slots.put(ch, consumer);
-		} else { // Just in case as we may be updating a slot
-			slots.remove(ch);
-		}
+
+		// Although we may be adding null consumers, it lets us track what slots have been set
+		slots.put(ch, consumer);
 
 		if (stealable) {
 			stealableSlots.add(ch);
