@@ -25,6 +25,8 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -60,24 +62,50 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 
 	private int pattern;
 	private boolean isDelayed;
+	// Whether the expression is being used in an open/close section
+	private boolean openClose;
+
 	private String toString = "gui values";
 
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		SkriptEvent skriptEvent = getParser().getCurrentSkriptEvent();
-		if (!(skriptEvent instanceof SectionSkriptEvent) || !((SectionSkriptEvent) skriptEvent).isSection(SecMakeGUI.class, SecGUIOpenClose.class)) {
-			Skript.error("You can't use '" + parseResult.expr + "' outside of a GUI make or close section.");
+		if (!(skriptEvent instanceof SectionSkriptEvent) || !(((SectionSkriptEvent) skriptEvent).isSection(SecMakeGUI.class, SecGUIOpenClose.class))) {
+			Skript.error("You can't use '" + parseResult.expr + "' outside of a GUI make or open/close section.");
 			return false;
 		}
+
+		openClose = ((SectionSkriptEvent) skriptEvent).isSection(SecGUIOpenClose.class);
+
 		pattern = matchedPattern;
+		if (openClose && matchedPattern != 3 && matchedPattern != 9 && matchedPattern != 10 && matchedPattern != 12) {
+			Skript.error("You can't use '" + parseResult.expr + "' in a GUI open/close section.");
+			return false;
+		}
+
 		this.isDelayed = !isDelayed.isFalse(); // TRUE or UNKNOWN
 		toString = parseResult.expr;
+
 		return true;
 	}
 
 	@Override
 	protected Object[] get(Event event) {
-		if (event instanceof InventoryClickEvent) {
+		if (openClose) {
+			InventoryEvent e = (InventoryEvent) event;
+			switch (pattern) {
+				case 3:
+					return new Inventory[]{e.getInventory()};
+				case 9:
+					// Ugly but oh well
+					return new HumanEntity[]{(event instanceof InventoryCloseEvent ? ((InventoryCloseEvent) e).getPlayer() : ((InventoryOpenEvent) e).getPlayer())};
+				case 10:
+					return (e.getViewers().toArray(new HumanEntity[0]));
+				case 12:
+					GUI gui = SkriptGUI.getGUIManager().getGUI(event);
+					return gui != null ? new GUI[]{gui} : new GUI[0];
+			}
+		} else {
 			InventoryClickEvent e = (InventoryClickEvent) event;
 			switch (pattern) {
 				case 0:
@@ -113,19 +141,6 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 					}
 					return gui != null ? new GUI[]{gui} : new GUI[0];
 			}
-		} else if (event instanceof InventoryCloseEvent) {
-			InventoryCloseEvent e = (InventoryCloseEvent) event;
-			switch (pattern) {
-				case 3:
-					return new Inventory[]{e.getInventory()};
-				case 9:
-					return new HumanEntity[]{(e.getPlayer())};
-				case 10:
-					return (e.getViewers().toArray(new HumanEntity[0]));
-				case 12:
-					GUI gui = SkriptGUI.getGUIManager().getGUI(event);
-					return gui != null ? new GUI[]{gui} : new GUI[0];
-			}
 		}
 		return new Object[0];
 	}
@@ -150,12 +165,7 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 		if (delta == null || !(event instanceof InventoryClickEvent)) {
 			return;
 		}
-
-		InventoryClickEvent e = (InventoryClickEvent) event;
-
-		if (pattern == 7) {
-			e.setCurrentItem(((ItemType) delta[0]).getRandom());
-		}
+		((InventoryClickEvent) event).setCurrentItem(((ItemType) delta[0]).getRandom());
 	}
 
 	@Override
@@ -185,9 +195,8 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 			case 10:
 				return HumanEntity.class;
 			case 11:
-			case 12:
 				return String.class;
-			case 13:
+			case 12:
 				return GUI.class;
 			default:
 				return Object.class;
