@@ -106,7 +106,7 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 					}
 				}
 			}
-			if (size == 0 || size % 9 != 0) { // Invalid inventory size
+			if (size < 9 || size > 54 || size % 9 != 0) { // Invalid inventory size
 				size = type.getDefaultSize();
 			}
 			inventory = Bukkit.getServer().createInventory(null, size, invName);

@@ -16,7 +16,6 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -25,9 +24,15 @@ public class GUI {
 
 	private Inventory inventory;
 	private String name;
+
 	private final GUIEventHandler eventHandler = new GUIEventHandler() {
 		@Override
 		public void onClick(InventoryClickEvent e) {
+			if (isPaused() || isPaused((Player) e.getWhoClicked())) {
+				e.setCancelled(true); // Just in case
+				return;
+			}
+
 			Character realSlot = convert(e.getSlot());
 			Consumer<InventoryClickEvent> run = slots.get(realSlot);
 			/*
@@ -43,6 +48,11 @@ public class GUI {
 
 		@Override
 		public void onDrag(InventoryDragEvent e) {
+			if (isPaused() || isPaused((Player) e.getWhoClicked())) {
+				e.setCancelled(true); // Just in case
+				return;
+			}
+
 			for (int slot : e.getRawSlots()) {
 				Character realSlot = convert(slot);
 				/*
@@ -56,6 +66,10 @@ public class GUI {
 
 		@Override
 		public void onOpen(InventoryOpenEvent e) {
+			if (isPaused() || isPaused((Player) e.getPlayer())) {
+				return;
+			}
+
 			if (onOpen != null) {
 				SkriptGUI.getGUIManager().setGUI(e, GUI.this);
 				onOpen.accept(e);
@@ -64,6 +78,10 @@ public class GUI {
 
 		@Override
 		public void onClose(InventoryCloseEvent e) {
+			if (isPaused() || isPaused((Player) e.getPlayer())) {
+				return;
+			}
+
 			if (onClose != null) {
 				SkriptGUI.getGUIManager().setGUI(e, GUI.this);
 				onClose.accept(e);
@@ -72,7 +90,10 @@ public class GUI {
 						// Reset behavior (it shouldn't persist)
 						setCloseCancelled(false);
 
-						e.getPlayer().openInventory(inventory);
+						Player closer = (Player) e.getPlayer();
+						pause(closer); // Avoid calling any open sections
+						closer.openInventory(inventory);
+						resume(closer);
 					}, 1);
 					return;
 				}
@@ -153,6 +174,14 @@ public class GUI {
 	private void changeInventory(int size, @Nullable String name) {
 		if (name == null) {
 			name = inventory.getType().getDefaultTitle();
+		} else if (size < 9 ) { // Minimum size
+			size = 9;
+		} else if (size > 54) { // Maximum size
+			size = 54;
+		}
+
+		if (size == inventory.getSize() && name.equals(this.name)) { // Nothing is actually changing
+			return;
 		}
 
 		Inventory newInventory;
@@ -162,20 +191,29 @@ public class GUI {
 			newInventory = Bukkit.getServer().createInventory(null, inventory.getType(), name);
 		}
 
-		newInventory.setContents(inventory.getContents());
+		if (size >= inventory.getSize()) {
+			newInventory.setContents(inventory.getContents());
+		} else { // The inventory is shrinking
+			ItemStack[] oldContents = inventory.getContents();
+			ItemStack[] contents = new ItemStack[size];
+			for (int slot = 0; slot < size; slot++) {
+				contents[slot] = oldContents[slot];
+			}
+			newInventory.setContents(contents);
+		}
 
-		Iterator<HumanEntity> viewerIterator = inventory.getViewers().iterator();
-		while (viewerIterator.hasNext()) {
-			HumanEntity viewer = viewerIterator.next();
+		eventHandler.pause(); // Don't process any events as we transfer data and players
+
+		for (HumanEntity viewer : new ArrayList<>(inventory.getViewers())) {
 			ItemStack cursor = viewer.getItemOnCursor();
 			viewer.setItemOnCursor(null);
 			viewer.openInventory(newInventory);
 			viewer.setItemOnCursor(cursor);
-			viewerIterator.remove();
 		}
-
 		inventory = newInventory;
 		this.name = name;
+
+		eventHandler.resume(); // It is safe to resume operations
 	}
 
 	/**
