@@ -79,7 +79,7 @@ public class GUI {
 			}
 
 			if (id == null && inventory.getViewers().size() == 1) { // Only stop tracking if it isn't a global GUI
-				SkriptGUI.getGUIManager().unregister(GUI.this);
+				Bukkit.getScheduler().runTaskLater(SkriptGUI.getInstance(), () -> SkriptGUI.getGUIManager().unregister(GUI.this), 1);
 			}
 
 			// To combat issues like https://github.com/APickledWalrus/skript-gui/issues/60
