@@ -99,12 +99,16 @@ public class SecCreateGUI extends EffectSection {
 
 				String id = this.id != null ? this.id.getSingle(e) : null;
 				if (id != null && !id.isEmpty()) {
+					GUI old = SkriptGUI.getGUIManager().getGUI(id);
+					if (old != null) { // We are making a new GUI with this ID (see https://github.com/APickledWalrus/skript-gui/issues/72)
+						SkriptGUI.getGUIManager().unregister(old);
+					}
 					gui.setID(id);
 				}
 
 				SkriptGUI.getGUIManager().setGUI(e, gui);
 			}
-		} else { // Editing the given GUI.
+		} else { // Editing the given GUI
 			GUI gui = this.gui.getSingle(e);
 			SkriptGUI.getGUIManager().setGUI(e, gui);
 		}

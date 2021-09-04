@@ -1,5 +1,6 @@
 package io.github.apickledwalrus.skriptgui.gui;
 
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.Inventory;
@@ -32,9 +33,12 @@ public class GUIManager {
 
 	/**
 	 * Unregisters a GUI from the manager. This disables event processing for the given GUI.
+	 * This method will also clear the GUI and remove its viewers.
 	 * @param gui The GUI to unregister.
 	 */
 	public void unregister(GUI gui) {
+		new ArrayList<>(gui.getInventory().getViewers()).forEach(HumanEntity::closeInventory);
+		gui.clear();
 		guis.remove(gui);
 		// Just remove them from the event GUIs list now
 		eventGUIs.values().removeIf(eventGUI -> eventGUI == gui);
