@@ -395,7 +395,8 @@ public class GUI {
 	}
 
 	/**
-	 * @return Whether the items in this GUI can be stolen.
+	 * @return Whether the items in this GUI can be stolen by default.
+	 * It's important to note that items with consumers can <b>never</b> be stolen, regardless of this setting.
 	 */
 	public boolean isStealable() {
 		return stealableItems;
@@ -403,15 +404,16 @@ public class GUI {
 
 	/**
 	 * @return Whether the given slot in this GUI can have its item stolen.
+	 * Will return true if {@link #isStealable()} is true and the slot does not have a click event consumer associated with it.
 	 */
 	public boolean isStealable(Character slot) {
-		return stealableSlots.contains(slot);
+		return stealableSlots.contains(slot) || (stealableItems && slots.get(slot) != null);
 	}
 
 	/**
-	 * @param stealableItems Whether items in this GUI should be stealable.
+	 * @param stealableItems Whether items in this GUI should be stealable by default.
 	 */
-	public void setStealableItems(Boolean stealableItems) {
+	public void setStealable(boolean stealableItems) {
 		this.stealableItems = stealableItems;
 	}
 

@@ -94,7 +94,7 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 							gui.setShape((String[]) delta);
 							break;
 						case LOCK_STATUS:
-							gui.setStealableItems(!(Boolean) delta[0]);
+							gui.setStealable(!(boolean) delta[0]);
 							break;
 					}
 					break;
@@ -110,7 +110,7 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 							gui.resetShape();
 							break;
 						case LOCK_STATUS:
-							gui.setStealableItems(false);
+							gui.setStealable(false);
 							break;
 					}
 					break;
