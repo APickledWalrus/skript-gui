@@ -1,6 +1,7 @@
 name: skript-gui
 main: io.github.apickledwalrus.skriptgui.SkriptGUI
 version: @version@
+api-version: 1.13
 authors: [APickledWalrus, Tuke_Nuke]
 description: Enables the easy creation of advanced and organized GUIs with Skript.
 website: https://github.com/APickledWalrus/skript-gui
