@@ -16,6 +16,7 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
+import io.github.apickledwalrus.skriptgui.elements.sections.SecCreateGUI;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecMakeGUI;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecGUIOpenClose;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
@@ -70,12 +71,12 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		SkriptEvent skriptEvent = getParser().getCurrentSkriptEvent();
-		if (!(skriptEvent instanceof SectionSkriptEvent) || !((SectionSkriptEvent) skriptEvent).isSection(SecMakeGUI.class, SecGUIOpenClose.class)) {
+		if (!(matchedPattern == 12 && getParser().isCurrentSection(SecCreateGUI.class)) && !(skriptEvent instanceof SectionSkriptEvent && ((SectionSkriptEvent) skriptEvent).isSection(SecMakeGUI.class, SecGUIOpenClose.class))) {
 			Skript.error("You can't use '" + parseResult.expr + "' outside of a GUI make or open/close section.");
 			return false;
 		}
 
-		openClose = ((SectionSkriptEvent) skriptEvent).isSection(SecGUIOpenClose.class);
+		openClose = skriptEvent != null && ((SectionSkriptEvent) skriptEvent).isSection(SecGUIOpenClose.class);
 
 		pattern = matchedPattern;
 		if (openClose && matchedPattern != 3 && matchedPattern != 9 && matchedPattern != 10 && matchedPattern != 12) {
@@ -91,6 +92,11 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 
 	@Override
 	protected Object[] get(Event event) {
+		if (pattern == 12) {
+			GUI gui = SkriptGUI.getGUIManager().getGUI(event);
+			return gui != null ? new GUI[]{gui} : new GUI[0];
+		}
+
 		if (openClose) {
 			InventoryEvent e = (InventoryEvent) event;
 			switch (pattern) {
@@ -134,12 +140,8 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 				case 10:
 					return e.getViewers().toArray(new HumanEntity[0]);
 				case 11:
-				case 12:
 					GUI gui = SkriptGUI.getGUIManager().getGUI(event);
-					if (pattern == 11) {
-						return gui != null ? new String[]{"" + gui.convert(e.getSlot())} : new GUI[0];
-					}
-					return gui != null ? new GUI[]{gui} : new GUI[0];
+					return gui != null ? new String[]{"" + gui.convert(e.getSlot())} : new GUI[0];
 			}
 		}
 		return new Object[0];
