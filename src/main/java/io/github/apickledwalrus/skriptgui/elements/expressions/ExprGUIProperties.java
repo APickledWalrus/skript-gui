@@ -91,7 +91,14 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 							gui.setSize(((Number) delta[0]).intValue() * 9);
 							break;
 						case SHAPE:
-							gui.setShape((String[]) delta);
+							String[] newShape = new String[delta.length];
+							for (int i = 0; i < delta.length; i++) {
+								if (!(delta[i] instanceof String)) {
+									return;
+								}
+								newShape[i] = (String) delta[i];
+							}
+							gui.setShape(newShape);
 							break;
 						case LOCK_STATUS:
 							gui.setStealable(!(boolean) delta[0]);

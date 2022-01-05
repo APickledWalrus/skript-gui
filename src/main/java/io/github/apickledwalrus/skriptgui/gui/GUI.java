@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 public class GUI {
@@ -382,24 +383,41 @@ public class GUI {
 			sb.append(' ');
 		}
 
-		String newRawShape = sb.toString();
+		String newShape = sb.toString();
+		Map<Character, ItemStack> movedCharacters = new HashMap<>();
 
-		// Get a map of the current shape for contents.
 		if (rawShape != null) {
-			char lastChar = ' '; // Spaces are not valid for a shape
+			int pos = 0;
 			for (char ch : rawShape.toCharArray()) {
-				if (ch == lastChar) {
-					continue;
+				if (rawShape.indexOf(ch) == pos) { // Only check a character once
+					if (newShape.indexOf(ch) == -1) { // This character IS NOT in the new shape
+						clear(ch);
+					} else { // This character IS in the new shape
+						movedCharacters.put(ch, getItem(ch));
+					}
 				}
-				setItem(ch, getItem(ch), isStealable(ch), slots.get(ch));
+				pos++;
 			}
-
-			// Remove invalid characters
-			slots.keySet().removeIf(ch -> !rawShape.contains(ch.toString()));
-			stealableSlots.removeIf(ch -> !rawShape.contains(ch.toString()));
 		}
 
-		rawShape = newRawShape;
+		// Clear out the slots of characters that are new to the shape (just in case they were occupied before)
+		// We only need to clear the slot of the item as actions (clicking, stealing, etc.) will already have been changed
+		if (rawShape != null) {
+			for (int i = 0; i < inventory.getSize(); i++) {
+				if (rawShape.indexOf(newShape.charAt(i)) == -1) { // This character was NOT in the old shape
+					inventory.clear(i);
+				}
+			}
+		}
+
+		rawShape = newShape;
+
+		// Move around items for the moved characters
+		for (Entry<Character, ItemStack> movedCharacter : movedCharacters.entrySet()) {
+			Character ch = movedCharacter.getKey();
+			setItem(ch, movedCharacter.getValue(), isStealable(ch), slots.get(ch));
+		}
+
 	}
 
 	/**
