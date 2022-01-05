@@ -163,6 +163,7 @@ public class GUI {
 	public void clear(Object slot) {
 		Character realSlot = convert(slot);
 		setItem(realSlot, new ItemStack(Material.AIR), false, null);
+		slots.remove(realSlot);
 	}
 
 	public void clear() {
@@ -260,7 +261,14 @@ public class GUI {
 	 * @return The newest slot that has been filled in this GUI.
 	 */
 	public Character nextSlotInverted() {
-		return convert(inventory.firstEmpty() - 1);
+		if (rawShape != null) {
+			for (char ch : rawShape.toCharArray()) {
+				if (slots.containsKey(ch)) {
+					return ch;
+				}
+			}
+		}
+		return 0;
 	}
 
 	/**
