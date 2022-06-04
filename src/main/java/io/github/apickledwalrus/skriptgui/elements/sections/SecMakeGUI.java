@@ -39,8 +39,8 @@ public class SecMakeGUI extends EffectSection {
 
 	static {
 		Skript.registerSection(SecMakeGUI.class,
-				"(make|format) [the] next gui [slot] (with|to) [(1¦(moveable|stealable))] %itemtype%",
-				"(make|format) gui [slot[s]] %strings/numbers% (with|to) [(1¦(moveable|stealable))] %itemtype%",
+				"(make|format) [the] next gui [slot] (with|to) [(1¦([re]moveable|stealable))] %itemtype%",
+				"(make|format) gui [slot[s]] %strings/numbers% (with|to) [(1¦([re]moveable|stealable))] %itemtype%",
 				"(un(make|format)|remove) [the] next gui [slot]",
 				"(un(make|format)|remove) gui [slot[s]] %strings/numbers%",
 				"(un(make|format)|remove) all [[of] the] gui [slots]"

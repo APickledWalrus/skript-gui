@@ -38,11 +38,6 @@ public class SkriptClasses {
 				public String toVariableNameString(GUI gui) {
 					return toString(gui, 0);
 				}
-
-				@Override
-				public String getVariableNamePattern() {
-					return ".+";
-				}
 			})
 		);
 
@@ -74,11 +69,6 @@ public class SkriptClasses {
 					@Override
 					public String toVariableNameString(SlotType type) {
 						return "slottype:" + type.name();
-					}
-
-					@Override
-					public String getVariableNamePattern() {
-						return "slottype:\\S+";
 					}
 				})
 				.serializer(new EnumSerializer<>(SlotType.class)

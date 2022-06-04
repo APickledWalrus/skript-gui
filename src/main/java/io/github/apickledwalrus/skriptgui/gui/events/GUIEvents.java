@@ -3,6 +3,7 @@ package io.github.apickledwalrus.skriptgui.gui.events;
 import ch.njol.skript.SkriptEventHandler;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
+import io.github.apickledwalrus.skriptgui.gui.GUI.SlotData;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -66,7 +67,7 @@ public class GUIEvents implements Listener {
 
 						if (!guiInventory.contains(clicked.getType())) {
 							int firstEmpty = guiInventory.firstEmpty();
-							if (firstEmpty != -1 && gui.isStealable(gui.convert(firstEmpty))) { // Safe to be moved into the GUI
+							if (firstEmpty != -1 && gui.isRemovable(gui.convert(firstEmpty))) { // Safe to be moved into the GUI
 								return;
 							}
 						}
@@ -76,7 +77,7 @@ public class GUIEvents implements Listener {
 						for (int slot = 0; slot < size; slot++) {
 							ItemStack item = guiInventory.getItem(slot);
 							if (item != null && item.getType() != Material.AIR && item.isSimilar(clicked)) {
-								if (!gui.isStealable(gui.convert(slot))) {
+								if (!gui.isRemovable(gui.convert(slot))) {
 									if (item.getAmount() == 64) { // It wouldn't be able to combine
 										continue;
 									}
@@ -92,7 +93,7 @@ public class GUIEvents implements Listener {
 						}
 
 						int firstEmpty = guiInventory.firstEmpty();
-						if (firstEmpty != -1 && gui.isStealable(gui.convert(firstEmpty))) { // Safe to be moved into the GUI
+						if (firstEmpty != -1 && gui.isRemovable(gui.convert(firstEmpty))) { // Safe to be moved into the GUI
 							return;
 						}
 
@@ -109,7 +110,7 @@ public class GUIEvents implements Listener {
 					ItemStack cursor = event.getWhoClicked().getItemOnCursor();
 					for (int slot = 0; slot < size; slot++) {
 						ItemStack item = guiInventory.getItem(slot);
-						if (item != null && item.isSimilar(cursor) && !gui.isStealable(gui.convert(slot))) {
+						if (item != null && item.isSimilar(cursor) && !gui.isRemovable(gui.convert(slot))) {
 							event.setCancelled(true);
 							break;
 						}

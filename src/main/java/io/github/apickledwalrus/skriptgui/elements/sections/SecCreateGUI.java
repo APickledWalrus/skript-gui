@@ -33,7 +33,7 @@ public class SecCreateGUI extends EffectSection {
 
 	static {
 		Skript.registerSection(SecCreateGUI.class,
-				"create [a] [new] gui [[with id[entifier]] %-string%] with %inventory% [(1¦(and|with) (moveable|stealable) items)] [(and|with) shape %-strings%]",
+				"create [a] [new] gui [[with id[entifier]] %-string%] with %inventory% [(removable:(and|with) ([re]moveable|stealable) items)] [(and|with) shape %-strings%]",
 				"(change|edit) [gui] %guiinventory%"
 		);
 	}
@@ -42,7 +42,7 @@ public class SecCreateGUI extends EffectSection {
 	private Expression<Inventory> inv;
 	@Nullable
 	private Expression<String> shape, id;
-	private boolean stealableItems;
+	private boolean removableItems;
 
 	@Nullable
 	private Expression<GUI> gui;
@@ -60,7 +60,7 @@ public class SecCreateGUI extends EffectSection {
 			id = (Expression<String>) exprs[0];
 			inv = (Expression<Inventory>) exprs[1];
 			shape = (Expression<String>) exprs[2];
-			stealableItems = parseResult.mark == 1;
+			removableItems = parseResult.hasTag("removable");
 		}
 
 		if (hasSection()) {
@@ -86,9 +86,9 @@ public class SecCreateGUI extends EffectSection {
 
 				GUI gui;
 				if (this.inv instanceof ExprVirtualInventory) { // Try to set the name
-					gui = new GUI(inv, stealableItems, ((ExprVirtualInventory) this.inv).getName());
+					gui = new GUI(inv, removableItems, ((ExprVirtualInventory) this.inv).getName());
 				} else {
-					gui = new GUI(inv, stealableItems, null);
+					gui = new GUI(inv, removableItems, null);
 				}
 
 				if (shape == null) {
@@ -127,8 +127,8 @@ public class SecCreateGUI extends EffectSection {
 				creation.append(" with id ").append(id.toString(e, debug));
 			}
 			creation.append(" with ").append(inv.toString(e, debug));
-			if (stealableItems) {
-				creation.append(" with stealable items");
+			if (removableItems) {
+				creation.append(" with removable items");
 			}
 			if (shape != null) {
 				creation.append(" and shape ").append(shape.toString(e, debug));

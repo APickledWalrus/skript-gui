@@ -51,7 +51,7 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 			case SHAPE:
 				return gui.getRawShape();
 			case LOCK_STATUS:
-				return !gui.isStealable(); // Not stealable = locked
+				return !gui.isRemovable(); // Not removable = locked
 		}
 		return null;
 	}
@@ -101,7 +101,7 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 							gui.setShape(newShape);
 							break;
 						case LOCK_STATUS:
-							gui.setStealable(!(boolean) delta[0]);
+							gui.setRemovable(!(boolean) delta[0]);
 							break;
 					}
 					break;
@@ -117,7 +117,7 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 							gui.resetShape();
 							break;
 						case LOCK_STATUS:
-							gui.setStealable(false);
+							gui.setRemovable(false);
 							break;
 					}
 					break;

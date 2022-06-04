@@ -16,7 +16,6 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
@@ -35,16 +34,18 @@ public class GUI {
 			}
 
 			Character realSlot = convert(e.getSlot());
-			Consumer<InventoryClickEvent> run = slots.get(realSlot);
-			/*
-			 * Cancel the event if this GUI slot is a button (it runs a consumer)
-			 * If it isn't, check whether items are stealable in this GUI, or if the specific slot is stealable
-			 */
-			e.setCancelled(run != null || (!isStealable() && !isStealable(realSlot)));
-			if (run != null) {
-				SkriptGUI.getGUIManager().setGUI(e, GUI.this);
-				run.accept(e);
+
+			SlotData slotData = slots.get(realSlot);
+			if (slotData != null) {
+				Consumer<InventoryClickEvent> runOnClick = slotData.getRunOnClick();
+				// Cancel if this slot OR all slots are removable from this GUI IFF this slot doesn't have a click consumer
+				e.setCancelled(runOnClick != null || (!isRemovable() && !slotData.isRemovable()));
+				if (runOnClick != null) {
+					SkriptGUI.getGUIManager().setGUI(e, GUI.this);
+					runOnClick.accept(e);
+				}
 			}
+
 		}
 
 		@Override
@@ -56,11 +57,12 @@ public class GUI {
 
 			for (int slot : e.getRawSlots()) {
 				Character realSlot = convert(slot);
-				/*
-				 * Cancel the event if this GUI slot is a button (it runs a consumer)
-				 * If it isn't, check whether items are stealable in this GUI, or if the specific slot is stealable
-				 */
-				e.setCancelled(slots.get(realSlot) != null || (!isStealable() && !isStealable(realSlot)));
+				SlotData slotData = slots.get(realSlot);
+				if (slotData != null) { // Cancel if this slot OR all slots are removable from this GUI IFF this slot doesn't have a click consumer
+					e.setCancelled(slotData.getRunOnClick() != null || (!isRemovable() && !slotData.isRemovable()));
+				} else { // If there is no data, we only care about global settings
+					e.setCancelled(!isRemovable());
+				}
 				break;
 			}
 		}
@@ -109,18 +111,12 @@ public class GUI {
 		}
 	};
 
-	private final Map<Character, Consumer<InventoryClickEvent>> slots = new HashMap<>();
+	private final Map<Character, SlotData> slots = new HashMap<>();
 	@Nullable
 	private String rawShape;
 
 	// Whether all items of this GUI (excluding buttons) can be taken.
-	private boolean stealableItems;
-	/*
-	 * The individual slots of this GUI that can be stolen.
-	 * Even if stealableItems is false, slots in this list will be stealable.
-	 * Ignored if 'stealableItems' is true.
-	 */
-	private final List<Character> stealableSlots = new ArrayList<>();
+	private boolean removableItems;
 
 	// To be ran when this inventory is opened.
 	@Nullable
@@ -136,7 +132,7 @@ public class GUI {
 
 	public GUI(Inventory inventory, boolean stealableItems, @Nullable String name) {
 		this.inventory = inventory;
-		this.stealableItems = stealableItems;
+		this.removableItems = stealableItems;
 		this.name = name != null ? name : inventory.getType().getDefaultTitle();
 		SkriptGUI.getGUIManager().register(this);
 	}
@@ -170,7 +166,6 @@ public class GUI {
 	public void clear() {
 		inventory.clear();
 		slots.clear();
-		stealableSlots.clear();
 	}
 
 	private void changeInventory(int size, @Nullable String name) {
@@ -276,10 +271,10 @@ public class GUI {
 	 * Sets a slot's item.
 	 * @param slot The slot to put the item in. It will be converted by {@link GUI#convert(Object)}.
 	 * @param item The {@link ItemStack} to put in the slot.
-	 * @param stealable Whether this {@link ItemStack} can be stolen.
+	 * @param removable Whether this {@link ItemStack} can be removed from its slot.
 	 * @param consumer The {@link Consumer} that the slot will run when clicked. Put as null if the slot should not run anything when clicked.
 	 */
-	public void setItem(Object slot, @Nullable ItemStack item, boolean stealable, @Nullable Consumer<InventoryClickEvent> consumer) {
+	public void setItem(Object slot, @Nullable ItemStack item, boolean removable, @Nullable Consumer<InventoryClickEvent> consumer) {
 		if (rawShape == null) {
 			SkriptGUI.getInstance().getLogger().warning("Unable to set the item in a gui named '" + getName() + "' as it has a null shape.");
 			return;
@@ -299,13 +294,7 @@ public class GUI {
 		}
 
 		// Although we may be adding null consumers, it lets us track what slots have been set
-		slots.put(ch, consumer);
-
-		if (stealable) {
-			stealableSlots.add(ch);
-		} else { // Just in case as we may be updating a slot
-			stealableSlots.remove(ch);
-		}
+		slots.put(ch, new SlotData(consumer, removable));
 
 		int i = 0;
 		for (char ch1 : rawShape.toCharArray()) {
@@ -415,32 +404,38 @@ public class GUI {
 		// Move around items for the moved characters
 		for (Entry<Character, ItemStack> movedCharacter : movedCharacters.entrySet()) {
 			Character ch = movedCharacter.getKey();
-			setItem(ch, movedCharacter.getValue(), isStealable(ch), slots.get(ch));
+			SlotData slotData = slots.get(ch);
+			setItem(ch, movedCharacter.getValue(), slotData.isRemovable(), slotData.getRunOnClick());
 		}
 
 	}
 
 	/**
-	 * @return Whether the items in this GUI can be stolen by default.
-	 * It's important to note that items with consumers can <b>never</b> be stolen, regardless of this setting.
+	 * @return Whether the items in this GUI can be removed by default.
+	 * It's important to note that items with consumers/click triggers can <b>never</b> be removed, regardless of this setting.
 	 */
-	public boolean isStealable() {
-		return stealableItems;
+	public boolean isRemovable() {
+		return removableItems;
 	}
 
 	/**
-	 * @return Whether the given slot in this GUI can have its item stolen.
-	 * Will return true if {@link #isStealable()} is true and the slot does not have a click event consumer associated with it.
+	 * @return Whether the given slot in this GUI can have its item removed.
+	 * Will always return true if {@link #isRemovable()}} is true and the slot does not have a click consumer associated with it.
 	 */
-	public boolean isStealable(Character slot) {
-		return stealableSlots.contains(slot) || (stealableItems && slots.get(slot) != null);
+	public boolean isRemovable(Character slot) {
+		SlotData slotData = slots.get(slot);
+		if (slotData != null) {
+			// Removable IF all GUI items are removable and this item does not have a click consumer OR if the SlotData is marked as removable
+			return (removableItems && slotData.getRunOnClick() == null) || slotData.isRemovable();
+		}
+		return removableItems;
 	}
 
 	/**
-	 * @param stealableItems Whether items in this GUI should be stealable by default.
+	 * @param stealableItems Whether items in this GUI can be removed by default.
 	 */
-	public void setStealable(boolean stealableItems) {
-		this.stealableItems = stealableItems;
+	public void setRemovable(boolean stealableItems) {
+		this.removableItems = stealableItems;
 	}
 
 	/**
@@ -486,6 +481,64 @@ public class GUI {
 			SkriptGUI.getGUIManager().unregister(this);
 			clear();
 		}
+	}
+
+	/**
+	 * Returns the SlotData for the provided slot. SlotData contains properties of a GUI slot.
+	 * @param slot The slot to find data for.
+	 * @return The SlotData for the provided slot, or null if no SlotData exists.
+	 */
+	public SlotData getSlotData(Character slot) {
+		return slots.get(slot);
+	}
+
+	/**
+	 * SlotData contains the properties of a GUI slot.
+	 */
+	public static final class SlotData {
+
+		@Nullable
+		private Consumer<InventoryClickEvent> runOnClick;
+		private boolean removable;
+
+		public SlotData(@Nullable Consumer<InventoryClickEvent> runOnClick, boolean removable) {
+			this.runOnClick = runOnClick;
+			this.removable = removable;
+		}
+
+		/**
+		 * @return The consumer to run when a slot with this data is clicked.
+		 */
+		@Nullable
+		public Consumer<InventoryClickEvent> getRunOnClick() {
+			return runOnClick;
+		}
+
+		/**
+		 * Updates the consumer to run when a slot with this data is clicked. A null value may be used to remove the consumer.
+		 * @param runOnClick The consumer to run when a slot with this data is clicked.
+		 */
+		public void setRunOnClick(@Nullable Consumer<InventoryClickEvent> runOnClick) {
+			this.runOnClick = runOnClick;
+		}
+
+		/**
+		 * @return Whether this item can be removed from its slot, regardless of {@link GUI#isRemovable()}.
+		 * 	Please note that if {@link #getRunOnClick()} returns a non-null value, this method will <b>always</b> return false.
+		 */
+		public boolean isRemovable() {
+			return runOnClick != null && removable;
+		}
+
+		/**
+		 * Updates whether this item can be removed from its slot.
+		 * Please note that if {@link #getRunOnClick()} returns a non-null value, this method will have no effect.
+		 * @param removable Whether this item can be removed from its slot.
+		 */
+		public void setRemovable(boolean removable) {
+			this.removable = removable;
+		}
+
 	}
 
 }
