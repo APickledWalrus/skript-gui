@@ -74,7 +74,8 @@ public class SecCreateGUI extends EffectSection {
 	@Override
 	@Nullable
 	public TriggerItem walk(Event e) {
-		if (gui == null) { // Creating a new GUI.
+		GUI gui;
+		if (this.gui == null) { // Creating a new GUI.
 			Inventory inv = this.inv.getSingle(e);
 			if (inv != null) {
 
@@ -84,7 +85,6 @@ public class SecCreateGUI extends EffectSection {
 					return walk(e, false);
 				}
 
-				GUI gui;
 				if (this.inv instanceof ExprVirtualInventory) { // Try to set the name
 					gui = new GUI(inv, removableItems, ((ExprVirtualInventory) this.inv).getName());
 				} else {
@@ -105,16 +105,39 @@ public class SecCreateGUI extends EffectSection {
 					}
 					gui.setID(id);
 				}
-
-				SkriptGUI.getGUIManager().setGUI(e, gui);
+			} else {
+				return walk(e, false); // Don't run the section if the GUI can't be created
 			}
+
 		} else { // Editing the given GUI
-			GUI gui = this.gui.getSingle(e);
-			SkriptGUI.getGUIManager().setGUI(e, gui);
+			gui = this.gui.getSingle(e);
 		}
 
-		// 'first' will be null if no section is present
-		return walk(e, true);
+		if (!(hasSection())) { // Don't bother updating the "current" event GUI - we'd end up switching right back to the old one
+			return walk(e, false);
+		}
+
+		// We need to switch the event GUI for the creation section
+		GUI currentGUI = SkriptGUI.getGUIManager().getGUI(e);
+
+		SkriptGUI.getGUIManager().setGUI(e, gui);
+		if (currentGUI == null) { // We're not within another creation section
+			return walk(e, true);
+		}
+
+		assert first != null && last != null;
+		TriggerItem lastNext = last.getNext();
+		last.setNext(null);
+		TriggerItem.walk(first, e);
+		last.setNext(lastNext);
+
+		// Switch back to the old GUI since we are returning to the previous GUI section
+		// TODO the downside here is that "open last gui" may not work as expected!
+		// Unsurprisingly, creation section inception is annoying!
+		SkriptGUI.getGUIManager().setGUI(e, currentGUI);
+
+		// Don't run the section, we ran it above if needed
+		return walk(e, false);
 	}
 
 	@Override
