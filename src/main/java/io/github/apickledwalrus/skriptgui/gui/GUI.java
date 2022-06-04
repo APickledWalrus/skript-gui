@@ -191,12 +191,9 @@ public class GUI {
 		if (size >= inventory.getSize()) {
 			newInventory.setContents(inventory.getContents());
 		} else { // The inventory is shrinking
-			ItemStack[] oldContents = inventory.getContents();
-			ItemStack[] contents = new ItemStack[size];
 			for (int slot = 0; slot < size; slot++) {
-				contents[slot] = oldContents[slot];
+				newInventory.setItem(slot, inventory.getItem(slot));
 			}
-			newInventory.setContents(contents);
 		}
 
 		eventHandler.pause(); // Don't process any events as we transfer data and players

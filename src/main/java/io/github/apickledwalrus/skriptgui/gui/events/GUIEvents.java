@@ -3,7 +3,6 @@ package io.github.apickledwalrus.skriptgui.gui.events;
 import ch.njol.skript.SkriptEventHandler;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
-import io.github.apickledwalrus.skriptgui.gui.GUI.SlotData;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

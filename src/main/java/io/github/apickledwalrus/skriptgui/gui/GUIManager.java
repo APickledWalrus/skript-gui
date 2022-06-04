@@ -108,7 +108,7 @@ public class GUIManager {
 	@Nullable
 	public GUI getGUI(String id) {
 		for (GUI gui : guis) {
-			if (gui.getID() != null && gui.getID().equals(id)) {
+			if (id.equals(gui.getID())) {
 				return gui;
 			}
 		}
