@@ -3,6 +3,8 @@ package io.github.apickledwalrus.skriptgui.gui.events;
 import ch.njol.skript.SkriptEventHandler;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,8 +27,11 @@ public class GUIEvents implements Listener {
 		SkriptEventHandler.listenCancelled.add(InventoryCloseEvent.class);
 	}
 
-	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onInventoryClick(InventoryClickEvent event) {
+		if (!event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR) && event.isCancelled()) {
+			return;
+		}
 		// Don't handle this event if it's from an unsupported click type
 		switch (event.getClick()) {
 			case WINDOW_BORDER_RIGHT:
