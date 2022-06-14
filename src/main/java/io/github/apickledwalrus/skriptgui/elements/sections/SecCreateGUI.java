@@ -113,12 +113,14 @@ public class SecCreateGUI extends EffectSection {
 			gui = this.gui.getSingle(e);
 		}
 
-		if (!(hasSection())) { // Don't bother updating the "current" event GUI - we'd end up switching right back to the old one
-			return walk(e, false);
-		}
-
 		// We need to switch the event GUI for the creation section
 		GUI currentGUI = SkriptGUI.getGUIManager().getGUI(e);
+
+		if (!(hasSection())) { // Don't bother updating the "current" event GUI - we'd end up switching right back to the old one
+			if (currentGUI == null) // We do need to set event GUI if we AREN'T in another creation section though
+				SkriptGUI.getGUIManager().setGUI(e, gui);
+			return walk(e, false);
+		}
 
 		SkriptGUI.getGUIManager().setGUI(e, gui);
 		if (currentGUI == null) { // We're not within another creation section

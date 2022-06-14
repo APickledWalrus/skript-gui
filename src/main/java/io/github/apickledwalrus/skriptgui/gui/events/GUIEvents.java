@@ -24,9 +24,11 @@ public class GUIEvents implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onInventoryClick(InventoryClickEvent event) {
-		if (!event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR) && event.isCancelled()) {
+		// Process this event if it's cancelled ONLY if the clicker is in Spectator Mode
+		if (event.getWhoClicked().getGameMode() != GameMode.SPECTATOR && event.isCancelled()) {
 			return;
 		}
+
 		// Don't handle this event if it's from an unsupported click type
 		switch (event.getClick()) {
 			case WINDOW_BORDER_RIGHT:
