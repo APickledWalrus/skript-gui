@@ -16,53 +16,64 @@ import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
+import org.eclipse.jdt.annotation.Nullable;
 
-@Name("Last GUI/GUI from id")
-@Description("It is used to return the last created gui or a gui from a string id.")
-@Examples({"open gui last gui for player",
-			"open gui (gui with id \"globalGUI\") for player"
+@Name("Last GUI/GUI from ID")
+@Description("It is used to return the last created/edited gui or a gui from a string id.")
+@Examples({
+		"open the created gui for player",
+		"open the gui with the id \"globalGUI\" for player"
 })
 @Since("1.0.0")
 public class ExprLastGUI extends SimpleExpression<GUI> {
 
 	static {
 		Skript.registerExpression(ExprLastGUI.class, GUI.class, ExpressionType.SIMPLE,
-				"[the] last[ly] [created] gui",
-				"[the] gui [with [the] id] %string%"
+				"[the] (last[ly] [(created|edited)]|(created|edited)) gui",
+				"[the] gui [with [the] id[entifier]] %string%"
 		);
 	}
 
+	@Nullable
 	private Expression<String> id;
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult) {
-		if (matchedPattern == 1)
+		if (matchedPattern == 1) {
 			id = (Expression<String>) exprs[0];
+		}
 		return true;
 	}
 
 	@Override
 	protected GUI[] get(Event e) {
-		if (id != null)
-			return new GUI[]{SkriptGUI.getGUIManager().getGlobalGUI(id.getSingle(e))};
-		return new GUI[]{SkriptGUI.getGUIManager().getGUIEvent(e)};
+		if (id != null) {
+			String id = this.id.getSingle(e);
+			return id != null ? new GUI[]{SkriptGUI.getGUIManager().getGUI(id)} : new GUI[0];
+		}
+		return new GUI[]{SkriptGUI.getGUIManager().getGUI(e)};
 	}
 
 	@Override
-	public Class<?>[] acceptChange(final ChangeMode mode) {
-		if (mode == ChangeMode.DELETE && id != null)
+	@Nullable
+	public Class<?>[] acceptChange(ChangeMode mode) {
+		if (mode == ChangeMode.DELETE && id != null) {
 			return CollectionUtils.array(Object.class);
+		}
 		return null;
 	}
 
 	@Override
-	public void change(final Event e, Object[] delta, ChangeMode mode){
-		String id = this.id.getSingle(e);
+	public void change(Event e, Object @Nullable [] delta, ChangeMode mode) {
 		if (id != null) {
-			GUI gui = SkriptGUI.getGUIManager().removeGlobalGUI(id);
-			if (gui != null)
-				gui.clear();
+			String id = this.id.getSingle(e);
+			if (id != null) {
+				GUI gui = SkriptGUI.getGUIManager().getGUI(id);
+				if (gui != null) {
+					gui.setID(null);
+				}
+			}
 		}
 	}
 
@@ -77,8 +88,8 @@ public class ExprLastGUI extends SimpleExpression<GUI> {
 	}
 
 	@Override
-	public String toString(Event e, boolean debug) {
-		return id == null ? "last gui" : "gui with id" + id.toString(e, debug);
+	public String toString(@Nullable Event e, boolean debug) {
+		return id == null ? "the last gui" : "the gui with the id " + id.toString(e, debug);
 	}
 
 }

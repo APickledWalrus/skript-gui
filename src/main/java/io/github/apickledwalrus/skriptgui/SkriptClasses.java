@@ -1,20 +1,18 @@
 package io.github.apickledwalrus.skriptgui;
 
-import org.bukkit.event.inventory.InventoryType.SlotType;
-import org.eclipse.jdt.annotation.Nullable;
-
 import ch.njol.skript.classes.ClassInfo;
 import ch.njol.skript.classes.EnumSerializer;
 import ch.njol.skript.classes.Parser;
 import ch.njol.skript.lang.ParseContext;
 import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.util.EnumUtils;
-
 import io.github.apickledwalrus.skriptgui.gui.GUI;
+import org.bukkit.event.inventory.InventoryType.SlotType;
+import org.eclipse.jdt.annotation.Nullable;
 
-public class SkriptTypes {
+public class SkriptClasses {
 
-	public static void register() {
+	public SkriptClasses() {
 
 		Classes.registerClass(new ClassInfo<>(GUI.class, "guiinventory")
 			.user("gui inventor(y|ies)?")
@@ -40,11 +38,6 @@ public class SkriptTypes {
 				public String toVariableNameString(GUI gui) {
 					return toString(gui, 0);
 				}
-
-				@Override
-				public String getVariableNamePattern() {
-					return ".+";
-				}
 			})
 		);
 
@@ -58,14 +51,14 @@ public class SkriptTypes {
 				.since("1.0.0")
 				.parser(new Parser<SlotType>() {
 					@Override
-					public boolean canParse(ParseContext ctx) {
-						return true;
-					}
-
 					@Nullable
-					@Override
 					public SlotType parse(String expr, ParseContext context) {
 						return slotTypes.parse(expr);
+					}
+
+					@Override
+					public boolean canParse(ParseContext ctx) {
+						return true;
 					}
 
 					@Override
@@ -76,11 +69,6 @@ public class SkriptTypes {
 					@Override
 					public String toVariableNameString(SlotType type) {
 						return "slottype:" + type.name();
-					}
-
-					@Override
-					public String getVariableNamePattern() {
-						return "\\S+";
 					}
 				})
 				.serializer(new EnumSerializer<>(SlotType.class)

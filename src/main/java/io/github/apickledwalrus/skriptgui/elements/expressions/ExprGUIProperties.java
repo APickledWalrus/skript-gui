@@ -1,120 +1,124 @@
 package io.github.apickledwalrus.skriptgui.elements.expressions;
 
-import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
-
-import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
+import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
-import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
-
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
-import io.github.apickledwalrus.skriptgui.elements.sections.SecCreateGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
-import io.github.apickledwalrus.skriptgui.gui.GUI.ShapeMode;
-import io.github.apickledwalrus.skriptgui.util.EffectSection;
+import org.bukkit.event.Event;
+import org.eclipse.jdt.annotation.Nullable;
 
 @Name("GUI Properties")
-@Description("Different properties of the GUI. They can be modified.")
-@Examples({"edit gui last gui:",
-			"\tset the gui-inventory-name to \"New GUI Name!\"",
-			"\tset the gui-size to 3 # Sets the number of rows to 3 (if possible)",
-			"\tset the gui-shape to \"xxxxxxxxx\", \"x-------x\", and \"xxxxxxxxx\"",
-			"\tset the gui-lock-status to false # Players can take items from this GUI now"
+@Description("Different properties of a GUI. They can be modified.")
+@Examples({
+		"edit gui last gui:",
+		"\tset the name of the edited gui to \"New GUI Name!\"",
+		"\tset the rows of the edited gui to 3 # Sets the number of rows to 3 (if possible)",
+		"\tset the shape of the edited gui to \"xxxxxxxxx\", \"x-------x\", and \"xxxxxxxxx\"",
+		"\tset the lock status of the edited gui to false # Players can take items from this GUI now"
 })
-@Since("1.0.0")
-public class ExprGUIProperties extends SimpleExpression<Object> {
+@Since("1.0.0, 1.3 (rework, support outside of edit sections)")
+public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 
 	static {
-		Skript.registerExpression(ExprGUIProperties.class, Object.class, ExpressionType.SIMPLE,
-				"[the] gui(-| )[inventory(-| )]name",
-				"[the] [total] [(number|amount) of] gui(-| )(size|rows)",
-				"[the] gui(-| )shape [of (1�items|2�actions)]",
-				"[the] gui(-| )lock(-| )status"
-		);
+		register(ExprGUIProperties.class, Object.class, "(0¦[skript-gui] name[s]|1¦(size[s]|rows)|2¦shape[s]|3¦lock status[es])", "guiinventorys");
 	}
 
-	private int pattern;
-	private ShapeMode shapeMode;
+	private static final int NAME = 0, ROWS = 1, SHAPE = 2, LOCK_STATUS = 3;
+	private int property;
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult) {
-		if (!EffectSection.isCurrentSection(SecCreateGUI.class)) {
-			Skript.error("You can't change or get the GUI properties outside of a GUI creation or editing section.");
-			return false;
-		}
-
-		pattern = matchedPattern;
-
-		if (parseResult.mark == 1) {
-			shapeMode = ShapeMode.ITEMS;
-		} else if (parseResult.mark == 2) {
-			shapeMode = ShapeMode.ACTIONS;
-		} else {
-			shapeMode = ShapeMode.BOTH;
-		}
-
-		return true;
+	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
+		property = parseResult.mark;
+		return super.init(exprs, matchedPattern, isDelayed, parseResult);
 	}
 
 	@Override
 	@Nullable
-	protected Object[] get(Event e) {
-		GUI gui = SkriptGUI.getGUIManager().getGUIEvent(e);
-		if (gui != null) {
-			switch (pattern) {
-				case 0: return new String[]{gui.getName()};
-				case 1: return new Number[]{gui.getInventory().getSize()};
-				case 2: return new String[]{gui.getRawShape()};
-				case 3: return new Boolean[]{!gui.isStealable()};
-			}
+	public Object convert(GUI gui) {
+		switch (property) {
+			case NAME:
+				return gui.getName();
+			case ROWS:
+				return gui.getInventory().getSize() / 9; // We return rows
+			case SHAPE:
+				return gui.getRawShape();
+			case LOCK_STATUS:
+				return !gui.isRemovable(); // Not removable = locked
 		}
-		return new Object[]{};
+		return null;
 	}
 
 	@Override
-	public Class<?>[] acceptChange(final ChangeMode mode) {
+	@Nullable
+	public Class<?>[] acceptChange(ChangeMode mode) {
 		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
-			switch (pattern) {
-				case 0: return CollectionUtils.array(String.class);
-				case 1: return CollectionUtils.array(Number.class);
-				case 2: return CollectionUtils.array(String[].class);
-				case 3: return CollectionUtils.array(Boolean.class);
+			switch (property) {
+				case NAME:
+					return CollectionUtils.array(String.class);
+				case ROWS:
+					return CollectionUtils.array(Number.class);
+				case SHAPE:
+					return CollectionUtils.array(String[].class);
+				case LOCK_STATUS:
+					return CollectionUtils.array(Boolean.class);
 			}
 		}
 		return null;
 	}
 
 	@Override
-	public void change(final Event e, Object[] delta, ChangeMode mode) {
-		if (delta == null || (mode != ChangeMode.SET && mode != ChangeMode.RESET))
+	public void change(Event e, Object @Nullable [] delta, ChangeMode mode) {
+		if (delta == null || (mode != ChangeMode.SET && mode != ChangeMode.RESET)) {
 			return;
-		GUI gui = SkriptGUI.getGUIManager().getGUIEvent(e);
+		}
+		GUI gui = SkriptGUI.getGUIManager().getGUI(e);
 		if (gui != null) {
 			switch (mode) {
 				case SET:
-					switch (pattern) {
-						case 0: gui.setName((String) delta[0]); break;
-						case 1: gui.setSize(((Number) delta[0]).intValue()); break;
-						case 2: gui.setShape(false, shapeMode, (String[]) delta); break;
-						case 3: gui.setStealable(!(Boolean) delta[0]); break;
+					switch (property) {
+						case NAME:
+							gui.setName((String) delta[0]);
+							break;
+						case ROWS:
+							gui.setSize(((Number) delta[0]).intValue() * 9);
+							break;
+						case SHAPE:
+							String[] newShape = new String[delta.length];
+							for (int i = 0; i < delta.length; i++) {
+								if (!(delta[i] instanceof String)) {
+									return;
+								}
+								newShape[i] = (String) delta[i];
+							}
+							gui.setShape(newShape);
+							break;
+						case LOCK_STATUS:
+							gui.setRemovable(!(boolean) delta[0]);
+							break;
 					}
 					break;
 				case RESET:
-					switch (pattern) {
-						case 0: gui.setName(gui.getInventory().getType().getDefaultTitle()); break;
-						case 1: gui.setSize(gui.getInventory().getType().getDefaultSize()); break;
-						case 2: gui.setShape(true, null); break; // Reset shape to default
-						case 3: gui.setStealable(false); break;
+					switch (property) {
+						case NAME:
+							gui.setName(gui.getInventory().getType().getDefaultTitle());
+							break;
+						case ROWS:
+							gui.setSize(gui.getInventory().getType().getDefaultSize());
+							break;
+						case SHAPE:
+							gui.resetShape();
+							break;
+						case LOCK_STATUS:
+							gui.setRemovable(false);
+							break;
 					}
 					break;
 				default:
@@ -124,29 +128,33 @@ public class ExprGUIProperties extends SimpleExpression<Object> {
 	}
 
 	@Override
-	public boolean isSingle() {
-		return false;
-	}
-
-	@Override
-	public Class<? extends Object> getReturnType() {
-		switch (pattern) {
-			case 0: return String.class;
-			case 1: return Number.class;
-			case 2: return String.class;
-			case 3: return Boolean.class;
-			default: return Object.class;
+	public Class<?> getReturnType() {
+		switch (property) {
+			case NAME:
+			case SHAPE:
+				return String.class;
+			case ROWS:
+				return Number.class;
+			case LOCK_STATUS:
+				return Boolean.class;
+			default:
+				return Object.class;
 		}
 	}
 
 	@Override
-	public String toString(Event e, boolean debug) {
-		switch (pattern) {
-			case 0: return "the gui inventory name";
-			case 1: return "the total number of gui rows";
-			case 2: return "the gui shape of " + shapeMode.name().toLowerCase();
-			case 3: return "the gui lock status";
-			default: return "gui properties";
+	protected String getPropertyName() {
+		switch (property) {
+			case NAME:
+				return "name";
+			case ROWS:
+				return "size";
+			case SHAPE:
+				return "shape";
+			case LOCK_STATUS:
+				return "lock status";
+			default:
+				return "property";
 		}
 	}
 

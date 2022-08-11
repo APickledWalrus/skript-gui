@@ -7,23 +7,24 @@ import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.SectionSkriptEvent;
+import ch.njol.skript.lang.SkriptEvent;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
-
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
-import io.github.apickledwalrus.skriptgui.elements.sections.SecOnCloseGUI;
-import io.github.apickledwalrus.skriptgui.util.EffectSection;
-
+import io.github.apickledwalrus.skriptgui.elements.sections.SecGUIOpenClose;
+import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
-
 import org.eclipse.jdt.annotation.Nullable;
 
 @Name("Cancel GUI Close")
-@Description({"Cancels or uncancels the closing of a GUI.",
+@Description({
+		"Cancels or uncancels the closing of a GUI.",
 		" This effect can be used within a GUI close section.",
-		" A 1 tick delay is applied by this effect."
+		" A 1 tick delay is applied by this effect after the code has run."
 })
-@Examples({"create a gui with virtual chest inventory with 3 rows named \"My GUI\":",
+@Examples({
+		"create a gui with virtual chest inventory with 3 rows named \"My GUI\":",
 		"\trun on gui close:",
 		"\t\tcancel the gui closing"
 })
@@ -39,10 +40,10 @@ public class EffCancelGUIClose extends Effect {
 	private boolean cancel;
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		if (!EffectSection.isCurrentSection(SecOnCloseGUI.class)) {
-			Skript.error("Canceling or uncanceling the closing of a GUI can only be done within a GUI close section.");
+		SkriptEvent skriptEvent = getParser().getCurrentSkriptEvent();
+		if (!(skriptEvent instanceof SectionSkriptEvent) || !((SectionSkriptEvent) skriptEvent).isSection(SecGUIOpenClose.class)) {
+			Skript.error("Cancelling or uncancelling the closing of a GUI can only be done within a GUI close section.");
 			return false;
 		}
 		cancel = parseResult.mark == 0;
@@ -51,7 +52,10 @@ public class EffCancelGUIClose extends Effect {
 
 	@Override
 	protected void execute(Event e) {
-		SkriptGUI.getGUIManager().getGUIEvent(e).setCloseCancelled(cancel);
+		GUI gui = SkriptGUI.getGUIManager().getGUI(e);
+		if (gui != null) {
+			gui.setCloseCancelled(cancel);
+		}
 	}
 
 	@Override

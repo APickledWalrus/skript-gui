@@ -1,114 +1,172 @@
 package io.github.apickledwalrus.skriptgui.elements.sections;
 
-import io.github.apickledwalrus.skriptgui.elements.expressions.ExprVirtualInventory;
-import org.bukkit.event.Event;
-import org.bukkit.inventory.Inventory;
-
 import ch.njol.skript.Skript;
+import ch.njol.skript.config.SectionNode;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
+import ch.njol.skript.lang.EffectSection;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.skript.lang.TriggerItem;
 import ch.njol.util.Kleenean;
-
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
+import io.github.apickledwalrus.skriptgui.elements.expressions.ExprVirtualInventory;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
-import io.github.apickledwalrus.skriptgui.gui.SkriptGUIEvent;
-import io.github.apickledwalrus.skriptgui.gui.GUI.ShapeMode;
-import io.github.apickledwalrus.skriptgui.util.EffectSection;
+import org.bukkit.event.Event;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.eclipse.jdt.annotation.Nullable;
+
+import java.util.List;
 
 @Name("Create / Edit GUI")
 @Description("The base of creating and editing GUIs.")
-@Examples({"create a gui with virtual chest inventory with 3 rows named \"My GUI\"",
-			"edit gui last gui:",
-			"\tset the gui-inventory-name to \"New GUI Name!\"",
+@Examples({
+		"create a gui with virtual chest inventory with 3 rows named \"My GUI\"",
+		"edit gui last gui:",
+		"\tset the gui-inventory-name to \"New GUI Name!\"",
 })
 @Since("1.0.0")
 public class SecCreateGUI extends EffectSection {
 
 	static {
-		Skript.registerCondition(SecCreateGUI.class,
-				"create [a] [new] gui [[with id] %-string%] with %inventory% [(1¦(and|with) (moveable|stealable) items)] [(and|with) shape %-strings%]",
+		Skript.registerSection(SecCreateGUI.class,
+				"create [a] [new] gui [[with id[entifier]] %-string%] with %inventory% [removable:(and|with) ([re]move[e]able|stealable) items] [(and|with) shape %-strings%]",
 				"(change|edit) [gui] %guiinventory%"
 		);
 	}
 
-	private Expression<GUI> exprGUI;
-	private Expression<Inventory> inv;
-	private Expression<String> shape, id;
+	private boolean inception;
 
-	private boolean moveableItems;
+	@SuppressWarnings("NotNullFieldNotInitialized")
+	private Expression<Inventory> inv;
+	@Nullable
+	private Expression<String> shape, id;
+	private boolean removableItems;
+
+	@Nullable
+	private Expression<GUI> gui;
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult) {
-		if (checkIfCondition())
-			return false;
-
+	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult, @Nullable SectionNode sectionNode, @Nullable List<TriggerItem> triggerItems) {
 		if (matchedPattern == 1) {
 			if (!hasSection()) {
 				Skript.error("You can't edit a gui inventory using an empty section, you need to change at least a slot or a property.");
 				return false;
 			}
-			exprGUI = (Expression<GUI>) exprs[0];
+			gui = (Expression<GUI>) exprs[0];
 		} else {
 			id = (Expression<String>) exprs[0];
 			inv = (Expression<Inventory>) exprs[1];
 			shape = (Expression<String>) exprs[2];
-			moveableItems = parseResult.mark == 1;
+			removableItems = parseResult.hasTag("removable");
 		}
 
-		if (hasSection())
-			loadSection(true);
+		inception = getParser().isCurrentSection(SecCreateGUI.class);
 
-		// Just a safe check, to make sure the listener was registered when this is loaded
-		SkriptGUIEvent.getInstance().register();
+		if (hasSection()) {
+			assert sectionNode != null;
+			loadOptionalCode(sectionNode);
+		}
 
 		return true;
 	}
 
 	@Override
-	public void execute(Event e) {
-		if (exprGUI == null) { // Creating a new GUI.
+	@Nullable
+	public TriggerItem walk(Event e) {
+		GUI gui;
+		if (this.gui == null) { // Creating a new GUI.
 			Inventory inv = this.inv.getSingle(e);
-			if (inv != null) {
+			if (inv == null) // Don't run the section if the GUI can't be created
+				return walk(e, false);
 
-				GUI gui;
-				if (this.inv instanceof ExprVirtualInventory) { // Try to set the name
-					gui = new GUI(inv, moveableItems, ((ExprVirtualInventory) this.inv).getName());
-				} else {
-					gui = new GUI(inv, moveableItems);
-				}
-
-				if (shape == null) {
-					gui.setShape(true, null);
-				} else {
-					gui.setShape(false, ShapeMode.ACTIONS, shape.getArray(e));
-				}
-
-				String id = this.id != null ? this.id.getSingle(e) : null;
-				if (id != null && !id.isEmpty())
-					SkriptGUI.getGUIManager().addGlobalGUI(id, gui);
-
-				SkriptGUI.getGUIManager().setGUIEvent(e, gui);
+			InventoryType invType = inv.getType();
+			if (invType == InventoryType.CRAFTING || invType == InventoryType.PLAYER) { // We don't want to run this section as this is an invalid GUI type
+				SkriptGUI.getInstance().getLogger().warning("Unable to create an inventory of type: " + invType.name());
+				return walk(e, false);
 			}
-		} else { // Editing the given GUI.
-			GUI gui = exprGUI.getSingle(e);
-			SkriptGUI.getGUIManager().setGUIEvent(e, gui);
+
+			if (this.inv instanceof ExprVirtualInventory) { // Try to set the name
+				gui = new GUI(inv, removableItems, ((ExprVirtualInventory) this.inv).getName());
+			} else {
+				gui = new GUI(inv, removableItems, null);
+			}
+
+			if (shape == null) {
+				gui.resetShape();
+			} else {
+				gui.setShape(shape.getArray(e));
+			}
+
+			String id = this.id != null ? this.id.getSingle(e) : null;
+			if (id != null && !id.isEmpty()) {
+				GUI old = SkriptGUI.getGUIManager().getGUI(id);
+				if (old != null) { // We are making a new GUI with this ID (see https://github.com/APickledWalrus/skript-gui/issues/72)
+					SkriptGUI.getGUIManager().unregister(old);
+				}
+				gui.setID(id);
+			}
+
+		} else { // Editing the given GUI
+			gui = this.gui.getSingle(e);
 		}
 
-		if (hasSection())
-			runSection(e);
+		if (!inception) { // No sort of inception going on, just do the regular stuff
+			SkriptGUI.getGUIManager().setGUI(e, gui);
+			return walk(e, true);
+		}
 
+		// We need to switch the event GUI for the creation section
+		GUI currentGUI = SkriptGUI.getGUIManager().getGUI(e);
+
+		if (currentGUI == null) { // No current GUI, treat as normal
+			SkriptGUI.getGUIManager().setGUI(e, gui);
+			return walk(e, true);
+		}
+
+		if (!hasSection()) { // No section to run, we can skip the code below (no code to run with "new" gui)
+			return walk(e, false);
+		}
+
+		SkriptGUI.getGUIManager().setGUI(e, gui);
+
+		assert first != null && last != null;
+		TriggerItem lastNext = last.getNext();
+		last.setNext(null);
+		TriggerItem.walk(first, e);
+		last.setNext(lastNext);
+
+		// Switch back to the old GUI since we are returning to the previous GUI section
+		// TODO the downside here is that "open last gui" may not always work as expected!
+		// Unsurprisingly, creation section inception is annoying!
+		SkriptGUI.getGUIManager().setGUI(e, currentGUI);
+
+		// Don't run the section, we ran it above if needed
+		return walk(e, false);
 	}
 
 	@Override
-	public String toString(Event e, boolean debug) {
-		if (exprGUI != null)
-			return "edit GUI " + exprGUI.toString(e, debug);
-		return "create gui";
+	public String toString(@Nullable Event e, boolean debug) {
+		if (gui != null) {
+			return "edit gui " + gui.toString(e, debug);
+		} else {
+			StringBuilder creation = new StringBuilder("create a gui");
+			if (id != null) {
+				creation.append(" with id ").append(id.toString(e, debug));
+			}
+			creation.append(" with ").append(inv.toString(e, debug));
+			if (removableItems) {
+				creation.append(" with removable items");
+			}
+			if (shape != null) {
+				creation.append(" and shape ").append(shape.toString(e, debug));
+			}
+			return creation.toString();
+		}
 	}
 
 }

@@ -12,8 +12,10 @@ import org.eclipse.jdt.annotation.Nullable;
 
 @Name("GUI of Player")
 @Description("The GUI that the player currently has open.")
-@Examples({"edit the player's gui:",
-		"\tmake gui 1 with dirt named \"Edited Slot\""})
+@Examples({
+		"edit the player's gui:",
+		"\tmake gui 1 with dirt named \"Edited Slot\""
+})
 @Since("1.1.0")
 public class ExprGUI extends SimplePropertyExpression<Player, GUI> {
 
@@ -21,8 +23,8 @@ public class ExprGUI extends SimplePropertyExpression<Player, GUI> {
 		register(ExprGUI.class, GUI.class, "gui", "players");
 	}
 
-	@Nullable
 	@Override
+	@Nullable
 	public GUI convert(Player player) {
 		return SkriptGUI.getGUIManager().getGUI(player);
 	}
