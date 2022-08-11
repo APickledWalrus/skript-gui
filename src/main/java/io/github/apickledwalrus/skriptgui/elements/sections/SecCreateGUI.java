@@ -38,6 +38,8 @@ public class SecCreateGUI extends EffectSection {
 		);
 	}
 
+	private boolean inception;
+
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<Inventory> inv;
 	@Nullable
@@ -63,6 +65,8 @@ public class SecCreateGUI extends EffectSection {
 			removableItems = parseResult.hasTag("removable");
 		}
 
+		inception = getParser().isCurrentSection(SecCreateGUI.class);
+
 		if (hasSection()) {
 			assert sectionNode != null;
 			loadOptionalCode(sectionNode);
@@ -77,55 +81,58 @@ public class SecCreateGUI extends EffectSection {
 		GUI gui;
 		if (this.gui == null) { // Creating a new GUI.
 			Inventory inv = this.inv.getSingle(e);
-			if (inv != null) {
+			if (inv == null) // Don't run the section if the GUI can't be created
+				return walk(e, false);
 
-				InventoryType invType = inv.getType();
-				if (invType == InventoryType.CRAFTING || invType == InventoryType.PLAYER) { // We don't want to run this section as this is an invalid GUI type
-					SkriptGUI.getInstance().getLogger().warning("Unable to create an inventory of type: " + invType.name());
-					return walk(e, false);
-				}
+			InventoryType invType = inv.getType();
+			if (invType == InventoryType.CRAFTING || invType == InventoryType.PLAYER) { // We don't want to run this section as this is an invalid GUI type
+				SkriptGUI.getInstance().getLogger().warning("Unable to create an inventory of type: " + invType.name());
+				return walk(e, false);
+			}
 
-				if (this.inv instanceof ExprVirtualInventory) { // Try to set the name
-					gui = new GUI(inv, removableItems, ((ExprVirtualInventory) this.inv).getName());
-				} else {
-					gui = new GUI(inv, removableItems, null);
-				}
-
-				if (shape == null) {
-					gui.resetShape();
-				} else {
-					gui.setShape(shape.getArray(e));
-				}
-
-				String id = this.id != null ? this.id.getSingle(e) : null;
-				if (id != null && !id.isEmpty()) {
-					GUI old = SkriptGUI.getGUIManager().getGUI(id);
-					if (old != null) { // We are making a new GUI with this ID (see https://github.com/APickledWalrus/skript-gui/issues/72)
-						SkriptGUI.getGUIManager().unregister(old);
-					}
-					gui.setID(id);
-				}
+			if (this.inv instanceof ExprVirtualInventory) { // Try to set the name
+				gui = new GUI(inv, removableItems, ((ExprVirtualInventory) this.inv).getName());
 			} else {
-				return walk(e, false); // Don't run the section if the GUI can't be created
+				gui = new GUI(inv, removableItems, null);
+			}
+
+			if (shape == null) {
+				gui.resetShape();
+			} else {
+				gui.setShape(shape.getArray(e));
+			}
+
+			String id = this.id != null ? this.id.getSingle(e) : null;
+			if (id != null && !id.isEmpty()) {
+				GUI old = SkriptGUI.getGUIManager().getGUI(id);
+				if (old != null) { // We are making a new GUI with this ID (see https://github.com/APickledWalrus/skript-gui/issues/72)
+					SkriptGUI.getGUIManager().unregister(old);
+				}
+				gui.setID(id);
 			}
 
 		} else { // Editing the given GUI
 			gui = this.gui.getSingle(e);
 		}
 
+		if (!inception) { // No sort of inception going on, just do the regular stuff
+			SkriptGUI.getGUIManager().setGUI(e, gui);
+			return walk(e, true);
+		}
+
 		// We need to switch the event GUI for the creation section
 		GUI currentGUI = SkriptGUI.getGUIManager().getGUI(e);
 
-		if (!(hasSection())) { // Don't bother updating the "current" event GUI - we'd end up switching right back to the old one
-			if (currentGUI == null) // We do need to set event GUI if we AREN'T in another creation section though
-				SkriptGUI.getGUIManager().setGUI(e, gui);
+		if (currentGUI == null) { // No current GUI, treat as normal
+			SkriptGUI.getGUIManager().setGUI(e, gui);
+			return walk(e, true);
+		}
+
+		if (!hasSection()) { // No section to run, we can skip the code below (no code to run with "new" gui)
 			return walk(e, false);
 		}
 
 		SkriptGUI.getGUIManager().setGUI(e, gui);
-		if (currentGUI == null) { // We're not within another creation section
-			return walk(e, true);
-		}
 
 		assert first != null && last != null;
 		TriggerItem lastNext = last.getNext();
@@ -134,7 +141,7 @@ public class SecCreateGUI extends EffectSection {
 		last.setNext(lastNext);
 
 		// Switch back to the old GUI since we are returning to the previous GUI section
-		// TODO the downside here is that "open last gui" may not work as expected!
+		// TODO the downside here is that "open last gui" may not always work as expected!
 		// Unsurprisingly, creation section inception is annoying!
 		SkriptGUI.getGUIManager().setGUI(e, currentGUI);
 
