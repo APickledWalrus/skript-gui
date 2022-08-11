@@ -33,7 +33,7 @@ public class SecCreateGUI extends EffectSection {
 
 	static {
 		Skript.registerSection(SecCreateGUI.class,
-				"create [a] [new] gui [[with id[entifier]] %-string%] with %inventory% [(removable:(and|with) ([re]moveable|stealable) items)] [(and|with) shape %-strings%]",
+				"create [a] [new] gui [[with id[entifier]] %-string%] with %inventory% [removable:(and|with) ([re]move[e]able|stealable) items] [(and|with) shape %-strings%]",
 				"(change|edit) [gui] %guiinventory%"
 		);
 	}

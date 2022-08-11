@@ -33,19 +33,19 @@ public class GUI {
 				return;
 			}
 
-			Character realSlot = convert(e.getSlot());
-
-			SlotData slotData = slots.get(realSlot);
+			SlotData slotData = getSlotData(convert(e.getSlot()));
 			if (slotData != null) {
+				// Only cancel if this slot can't be removed AND all items aren't removable
+				e.setCancelled(!isRemovable(slotData));
+
 				Consumer<InventoryClickEvent> runOnClick = slotData.getRunOnClick();
-				// Cancel if this slot OR all slots are removable from this GUI IFF this slot doesn't have a click consumer
-				e.setCancelled(runOnClick != null || (!isRemovable() && !slotData.isRemovable()));
 				if (runOnClick != null) {
 					SkriptGUI.getGUIManager().setGUI(e, GUI.this);
 					runOnClick.accept(e);
 				}
+			} else { // If there is no slot data, cancel if this GUI doesn't have stealable items
+				e.setCancelled(!isRemovable());
 			}
-
 		}
 
 		@Override
@@ -56,14 +56,10 @@ public class GUI {
 			}
 
 			for (int slot : e.getRawSlots()) {
-				Character realSlot = convert(slot);
-				SlotData slotData = slots.get(realSlot);
-				if (slotData != null) { // Cancel if this slot OR all slots are removable from this GUI IFF this slot doesn't have a click consumer
-					e.setCancelled(slotData.getRunOnClick() != null || (!isRemovable() && !slotData.isRemovable()));
-				} else { // If there is no data, we only care about global settings
-					e.setCancelled(!isRemovable());
+				if (!isRemovable(convert(slot))) {
+					e.setCancelled(true);
+					break;
 				}
-				break;
 			}
 		}
 
@@ -118,10 +114,10 @@ public class GUI {
 	// Whether all items of this GUI (excluding buttons) can be taken.
 	private boolean removableItems;
 
-	// To be ran when this inventory is opened.
+	// To be run when this inventory is opened.
 	@Nullable
 	private Consumer<InventoryOpenEvent> onOpen;
-	// To be ran when this inventory is closed.
+	// To be run when this inventory is closed.
 	@Nullable
 	private Consumer<InventoryCloseEvent> onClose;
 	// Whether the inventory close event for this event handler is cancelled.
@@ -277,7 +273,7 @@ public class GUI {
 			return;
 		}
 
-		Character ch = convert(slot);
+		char ch = convert(slot);
 		if (ch == ' ') {
 			return;
 		}
@@ -421,11 +417,15 @@ public class GUI {
 	 */
 	public boolean isRemovable(Character slot) {
 		SlotData slotData = slots.get(slot);
-		if (slotData != null) {
-			// Removable IF all GUI items are removable and this item does not have a click consumer OR if the SlotData is marked as removable
-			return (removableItems && slotData.getRunOnClick() == null) || slotData.isRemovable();
-		}
-		return removableItems;
+		return slotData != null ? isRemovable(slotData) : removableItems;
+	}
+
+	/**
+	 * Internal method for determining whether a slot can have its item removed.
+	 */
+	private boolean isRemovable(SlotData slotData) {
+		// Removable IF all GUI items are removable and this item does not have a click consumer OR if the SlotData is marked as removable
+		return (removableItems && slotData.getRunOnClick() == null) || slotData.isRemovable();
 	}
 
 	/**
@@ -436,16 +436,16 @@ public class GUI {
 	}
 
 	/**
-	 * Sets the consumer to be ran when this GUI is opened.
-	 * @param onOpen The consumer to be ran when this GUI is opened.
+	 * Sets the consumer to be run when this GUI is opened.
+	 * @param onOpen The consumer to be run when this GUI is opened.
 	 */
 	public void setOnOpen(Consumer<InventoryOpenEvent> onOpen) {
 		this.onOpen = onOpen;
 	}
 
 	/**
-	 * Sets the consumer to be ran when this GUI is closed.
-	 * @param onClose The consumer to be ran when this GUI is closed.
+	 * Sets the consumer to be run when this GUI is closed.
+	 * @param onClose The consumer to be run when this GUI is closed.
 	 */
 	public void setOnClose(Consumer<InventoryCloseEvent> onClose) {
 		this.onClose = onClose;
@@ -485,6 +485,7 @@ public class GUI {
 	 * @param slot The slot to find data for.
 	 * @return The SlotData for the provided slot, or null if no SlotData exists.
 	 */
+	@Nullable
 	public SlotData getSlotData(Character slot) {
 		return slots.get(slot);
 	}
@@ -524,7 +525,7 @@ public class GUI {
 		 * 	Please note that if {@link #getRunOnClick()} returns a non-null value, this method will <b>always</b> return false.
 		 */
 		public boolean isRemovable() {
-			return runOnClick != null && removable;
+			return runOnClick == null && removable;
 		}
 
 		/**

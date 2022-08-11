@@ -39,8 +39,8 @@ public class SecMakeGUI extends EffectSection {
 
 	static {
 		Skript.registerSection(SecMakeGUI.class,
-				"(make|format) [the] next gui [slot] (with|to) [(1¦([re]moveable|stealable))] %itemtype%",
-				"(make|format) gui [slot[s]] %strings/numbers% (with|to) [(1¦([re]moveable|stealable))] %itemtype%",
+				"(make|format) [the] next gui [slot] (with|to) [removable:([re]mov[e]able|stealable)] %itemtype%",
+				"(make|format) gui [slot[s]] %strings/numbers% (with|to) [removable:([re]mov[e]able|stealable)] %itemtype%",
 				"(un(make|format)|remove) [the] next gui [slot]",
 				"(un(make|format)|remove) gui [slot[s]] %strings/numbers%",
 				"(un(make|format)|remove) all [[of] the] gui [slots]"
@@ -56,7 +56,7 @@ public class SecMakeGUI extends EffectSection {
 	private Expression<ItemType> item;
 
 	private int pattern;
-	private boolean stealable;
+	private boolean removable;
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -78,7 +78,7 @@ public class SecMakeGUI extends EffectSection {
 			slots = (Expression<Object>) exprs[0];
 		}
 
-		stealable = parseResult.mark == 1;
+		removable = parseResult.hasTag("removable");
 
 		if (hasSection()) {
 			assert sectionNode != null;
@@ -110,21 +110,21 @@ public class SecMakeGUI extends EffectSection {
 					Object variables = Variables.copyLocalVariables(e);
 					if (variables != null) {
 						for (Object slot : slots != null ? slots.getArray(e) : new Object[]{gui.nextSlot()}) {
-							gui.setItem(slot, item, stealable, event -> {
+							gui.setItem(slot, item, removable, event -> {
 								Variables.setLocalVariables(event, variables);
 								trigger.execute(event);
 							});
 						}
 					} else { // Don't paste variables if there are none to paste
 						for (Object slot : slots != null ? slots.getArray(e) : new Object[]{gui.nextSlot()}) {
-							gui.setItem(slot, item, stealable, event -> {
+							gui.setItem(slot, item, removable, event -> {
 								trigger.execute(event);
 							});
 						}
 					}
 				} else {
 					for (Object slot : slots != null ? slots.getArray(e) : new Object[]{gui.nextSlot()}) {
-						gui.setItem(slot, item, stealable, null);
+						gui.setItem(slot, item, removable, null);
 					}
 				}
 				break;
