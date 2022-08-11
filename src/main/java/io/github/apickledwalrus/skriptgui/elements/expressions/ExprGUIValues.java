@@ -17,8 +17,8 @@ import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecCreateGUI;
-import io.github.apickledwalrus.skriptgui.elements.sections.SecMakeGUI;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecGUIOpenClose;
+import io.github.apickledwalrus.skriptgui.elements.sections.SecMakeGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.Event;
@@ -152,7 +152,7 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 			return null;
 		}
 
-		if (mode == ChangeMode.SET && getParser().isCurrentEvent(InventoryClickEvent.class) && pattern == 7) {
+		if (mode == ChangeMode.SET && pattern == 7) {
 			return CollectionUtils.array(ItemType.class);
 		}
 
