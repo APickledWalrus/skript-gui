@@ -397,8 +397,10 @@ public class GUI {
 		// Move around items for the moved characters
 		for (Entry<Character, ItemStack> movedCharacter : movedCharacters.entrySet()) {
 			Character ch = movedCharacter.getKey();
-			SlotData slotData = slots.get(ch);
-			setItem(ch, movedCharacter.getValue(), slotData.isRemovable(), slotData.getRunOnClick());
+			SlotData slotData = getSlotData(ch);
+			if (slotData != null) { // Make sure the character was actually used, see https://github.com/APickledWalrus/skript-gui/issues/133
+				setItem(ch, movedCharacter.getValue(), slotData.isRemovable(), slotData.getRunOnClick());
+			}
 		}
 
 	}
