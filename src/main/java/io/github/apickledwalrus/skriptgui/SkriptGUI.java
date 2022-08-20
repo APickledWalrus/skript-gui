@@ -22,12 +22,21 @@ public class SkriptGUI extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		Plugin skript = getServer().getPluginManager().getPlugin("Skript");
-		if (skript == null || !skript.isEnabled()) {
-			getLogger().severe("Could not find Skript! Make sure you have it installed and that it properly loaded. Disabling...");
+		if (skript == null) {
+			// Skript doesn't exist within the server plugins folder
+			getLogger().severe("Could not find Skript! Make sure you have it installed. Disabling...");
+			getLogger().severe("Download latest skript release at https://github.com/SkriptLang/Skript/releases");
 			getServer().getPluginManager().disablePlugin(this);
 			return;
-		} else if (!Skript.getVersion().isLargerThan(new Version(2, 5, 3))) { // Skript is not any version after 2.5.3 (aka 2.6)
-			getLogger().severe("You are running an unsupported version of Skript. Please update to at least Skript 2.6-alpha1. Disabling...");
+		} else if (!skript.isEnabled()) {
+			// Skript is disabled on the server
+			getLogger().severe("Could not load Skript! Skript is disabled on the server. Disabling...");
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		} else if (Skript.getVersion().isSmallerThan(new Version(2,6,2))) {
+			// Current Skript version is below minimum required version
+			getLogger().severe("You're running an unsupported skript version v" + Skript.getVersion() +" lowest support version is v"+new Version(2,6,2)+". Disabling...");
+			getLogger().severe("Download latest skript release at https://github.com/SkriptLang/Skript/releases");
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
