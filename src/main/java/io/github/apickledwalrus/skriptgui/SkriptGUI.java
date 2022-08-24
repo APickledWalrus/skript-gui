@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import ch.njol.skript.util.Version;
 import io.github.apickledwalrus.skriptgui.gui.events.GUIEvents;
-import io.github.apickledwalrus.skriptgui.gui.events.RecipeEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -50,10 +49,6 @@ public class SkriptGUI extends JavaPlugin {
 		// Register manager and events
 		manager = new GUIManager();
 		getServer().getPluginManager().registerEvents(new GUIEvents(), this);
-		if (Skript.classExists("com.destroystokyo.paper.event.player.PlayerRecipeBookClickEvent")) {
-			// We need to track this event (see https://github.com/APickledWalrus/skript-gui/issues/33)
-			getServer().getPluginManager().registerEvents(new RecipeEvent(), this);
-		}
 
 	}
 
