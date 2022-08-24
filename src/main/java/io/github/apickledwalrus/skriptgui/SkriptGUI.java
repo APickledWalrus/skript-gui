@@ -26,18 +26,18 @@ public class SkriptGUI extends JavaPlugin {
 		if (skript == null) {
 			// Skript doesn't exist within the server plugins folder
 			getLogger().severe("Could not find Skript! Make sure you have it installed. Disabling...");
-			getLogger().severe("Download latest skript release at https://github.com/SkriptLang/Skript/releases");
+			getLogger().severe("skript-gui requires Skript 2.6.3 or newer! Download Skript releases at https://github.com/SkriptLang/Skript/releases");
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		} else if (!skript.isEnabled()) {
 			// Skript is disabled on the server
-			getLogger().severe("Could not load Skript! Skript is disabled on the server. Disabling...");
+			getLogger().severe("Skript failed to properly enable and is disabled on the server. Disabling...");
 			getServer().getPluginManager().disablePlugin(this);
 			return;
-		} else if (Skript.getVersion().isSmallerThan(MINIMUM_VERSION_SUPPORT)) {
+		} else if (Skript.getVersion().isSmallerThan(minimumSupportedVersion)) {
 			// Current Skript version is below minimum required version
-			getLogger().severe("You're running an unsupported skript version v" + Skript.getVersion() +" lowest support version is v"+ MINIMUM_VERSION_SUPPORT +". Disabling...");
-			getLogger().severe("Download latest skript release at https://github.com/SkriptLang/Skript/releases");
+			getLogger().severe("You're running an unsupported Skript version (" + Skript.getVersion() + ")! Disabling...");
+			getLogger().severe("skript-gui requires Skript " + minimumSupportedVersion + " or newer! Download Skript releases at https://github.com/SkriptLang/Skript/releases");
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
