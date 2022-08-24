@@ -1,8 +1,6 @@
 package io.github.apickledwalrus.skriptgui.gui.events;
 
-import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptEventHandler;
-import com.destroystokyo.paper.event.player.PlayerRecipeBookClickEvent;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.GameMode;
@@ -22,10 +20,6 @@ public class GUIEvents implements Listener {
 		SkriptEventHandler.listenCancelled.add(InventoryDragEvent.class);
 		SkriptEventHandler.listenCancelled.add(InventoryOpenEvent.class);
 		SkriptEventHandler.listenCancelled.add(InventoryCloseEvent.class);
-		if (Skript.classExists("com.destroystokyo.paper.event.player.PlayerRecipeBookClickEvent")) {
-			// We need to track this event (see https://github.com/APickledWalrus/skript-gui/issues/33)
-			SkriptEventHandler.listenCancelled.add(PlayerRecipeBookClickEvent.class);
-		}
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -159,14 +153,6 @@ public class GUIEvents implements Listener {
 		GUI gui = SkriptGUI.getGUIManager().getGUI(e.getInventory());
 		if (gui != null) {
 			gui.getEventHandler().onClose(e);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onRecipeBookClick(PlayerRecipeBookClickEvent e) {
-		GUI gui = SkriptGUI.getGUIManager().getGUI(e.getPlayer());
-		if (gui != null) {
-			e.setCancelled(true);
 		}
 	}
 
