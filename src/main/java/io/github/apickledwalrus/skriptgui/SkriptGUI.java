@@ -26,7 +26,7 @@ public class SkriptGUI extends JavaPlugin {
 		if (skript == null) {
 			// Skript doesn't exist within the server plugins folder
 			getLogger().severe("Could not find Skript! Make sure you have it installed. Disabling...");
-			getLogger().severe("skript-gui requires Skript 2.6.3 or newer! Download Skript releases at https://github.com/SkriptLang/Skript/releases");
+			getLogger().severe("skript-gui requires Skript " + minimumSupportedVersion + " or newer! Download Skript releases at https://github.com/SkriptLang/Skript/releases");
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		} else if (!skript.isEnabled()) {
