@@ -1,6 +1,5 @@
 package io.github.apickledwalrus.skriptgui.gui.events;
 
-import ch.njol.skript.SkriptEventHandler;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.GameMode;
@@ -8,19 +7,15 @@ import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class GUIEvents implements Listener {
-
-	public GUIEvents() {
-		// We still want these events to be processed by Skript
-		SkriptEventHandler.listenCancelled.add(InventoryClickEvent.class);
-		SkriptEventHandler.listenCancelled.add(InventoryDragEvent.class);
-		SkriptEventHandler.listenCancelled.add(InventoryOpenEvent.class);
-		SkriptEventHandler.listenCancelled.add(InventoryCloseEvent.class);
-	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onInventoryClick(InventoryClickEvent event) {
