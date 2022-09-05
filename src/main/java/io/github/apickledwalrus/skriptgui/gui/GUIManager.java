@@ -7,19 +7,22 @@ import org.bukkit.inventory.Inventory;
 import org.eclipse.jdt.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 public class GUIManager {
 
 	/**
-	 * A list of all tracked GUIs.
-	 * This list is used for event processing.
+	 * A map for tracking all GUIs based on their Inventory.
+	 * Used mainly during event processing (see {@link io.github.apickledwalrus.skriptgui.gui.events.GUIEvents}).
 	 */
-	private final List<GUI> guis = new ArrayList<>();
+	private final Map<Inventory, GUI> guis = new HashMap<>();
 
 	/**
 	 * A map to track the GUI involved in an event.
+	 * Used for tracking GUIs within Skript {@link ch.njol.skript.lang.Trigger}s.
 	 */
 	private final WeakHashMap<Event, GUI> eventGUIs = new WeakHashMap<>();
 
@@ -28,7 +31,7 @@ public class GUIManager {
 	 * @param gui The GUI to register.
 	 */
 	public void register(GUI gui) {
-		guis.add(gui);
+		guis.put(gui.getInventory(), gui);
 	}
 
 	/**
@@ -39,16 +42,28 @@ public class GUIManager {
 	public void unregister(GUI gui) {
 		new ArrayList<>(gui.getInventory().getViewers()).forEach(HumanEntity::closeInventory);
 		gui.clear();
-		guis.remove(gui);
+		guis.remove(gui.getInventory());
 		// Just remove them from the event GUIs list now
 		eventGUIs.values().removeIf(eventGUI -> eventGUI == gui);
 	}
 
 	/**
+	 * Transfers the Inventory reference tied to the provided GUI's registration.
+	 * This method is preferred over {@link #register(GUI)} and then {@link #unregister(GUI)},
+	 * as it ensures no information (such as Event associations) may be lost.
+	 * @param gui The GUI to modify the registration of.
+	 * @param newInventory The new Inventory to associate with the provided GUI.
+	 */
+	public void transferRegistration(GUI gui, Inventory newInventory) {
+		guis.remove(gui.getInventory());
+		guis.put(newInventory, gui);
+	}
+
+	/**
 	 * @return A list of tracked GUIs.
 	 */
-	public List<GUI> getTrackedGUIs() {
-		return guis;
+	public Collection<GUI> getTrackedGUIs() {
+		return guis.values();
 	}
 
 	/**
@@ -80,7 +95,7 @@ public class GUIManager {
 	 */
 	@Nullable
 	public GUI getGUI(Player player) {
-		for (GUI gui : guis) {
+		for (GUI gui : getTrackedGUIs()) {
 			if (gui.getInventory().getViewers().contains(player)) {
 				return gui;
 			}
@@ -93,7 +108,7 @@ public class GUIManager {
 	 * @return Whether the player has a GUI open.
 	 */
 	public boolean hasGUI(Player player) {
-		for (GUI gui : guis) {
+		for (GUI gui : getTrackedGUIs()) {
 			if (gui.getInventory().getViewers().contains(player)) {
 				return true;
 			}
@@ -107,7 +122,7 @@ public class GUIManager {
 	 */
 	@Nullable
 	public GUI getGUI(String id) {
-		for (GUI gui : guis) {
+		for (GUI gui : getTrackedGUIs()) {
 			if (id.equals(gui.getID())) {
 				return gui;
 			}
@@ -121,12 +136,7 @@ public class GUIManager {
 	 */
 	@Nullable
 	public GUI getGUI(Inventory inventory) {
-		for (GUI gui : guis) {
-			if (gui.getInventory().equals(inventory)) {
-				return gui;
-			}
-		}
-		return null;
+		return guis.get(inventory);
 	}
 
 }

@@ -200,6 +200,7 @@ public class GUI {
 			viewer.openInventory(newInventory);
 			viewer.setItemOnCursor(cursor);
 		}
+		SkriptGUI.getGUIManager().transferRegistration(this, newInventory);
 		inventory = newInventory;
 		this.name = name;
 
