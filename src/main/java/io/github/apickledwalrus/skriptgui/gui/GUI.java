@@ -38,10 +38,41 @@ public class GUI {
 				// Only cancel if this slot can't be removed AND all items aren't removable
 				e.setCancelled(!isRemovable(slotData));
 
+				// Call onChange if the slot is being changed
+				if (!e.isCancelled() && (e.getCursor() != null || e.getCurrentItem() != null)) {
+					if (e.getCursor() == null || e.getCurrentItem() == null ||
+							!e.getCursor().isSimilar(e.getCurrentItem()) ||
+							e.getCurrentItem().getAmount() < e.getCurrentItem().getMaxStackSize()) {
+						onChange(e);
+					}
+				}
+
 				Consumer<InventoryClickEvent> runOnClick = slotData.getRunOnClick();
 				if (runOnClick != null) {
 					SkriptGUI.getGUIManager().setGUI(e, GUI.this);
 					runOnClick.accept(e);
+				}
+			} else { // If there is no slot data, cancel if this GUI doesn't have stealable items
+				e.setCancelled(!isRemovable());
+			}
+		}
+
+		@Override
+		public void onChange(InventoryClickEvent e) {
+			if (isPaused() || isPaused((Player) e.getWhoClicked())) {
+				e.setCancelled(true); // Just in case
+				return;
+			}
+
+			SlotData slotData = getSlotData(convert(e.getSlot()));
+			if (slotData != null) {
+				// Only cancel if this slot can't be removed AND all items aren't removable
+				e.setCancelled(!isRemovable(slotData));
+
+				Consumer<InventoryClickEvent> runOnChange = slotData.getRunOnChange();
+				if (runOnChange != null) {
+					SkriptGUI.getGUIManager().setGUI(e, GUI.this);
+					runOnChange.accept(e);
 				}
 			} else { // If there is no slot data, cancel if this GUI doesn't have stealable items
 				e.setCancelled(!isRemovable());
@@ -61,6 +92,7 @@ public class GUI {
 					break;
 				}
 			}
+			onChange(e);
 		}
 
 		@Override
@@ -231,6 +263,16 @@ public class GUI {
 		}
 
 		return nextSlot();
+	}
+
+	public InventoryClickEvent setClickedSlot(InventoryClickEvent event, int slot) {
+		return new InventoryClickEvent(
+				event.getView(),
+				event.getSlotType(),
+				slot,
+				event.getClick(),
+				event.getAction()
+		);
 	}
 
 	/**
@@ -477,7 +519,7 @@ public class GUI {
 	 */
 	public void setID(@Nullable String id) {
 		this.id = id;
-		if (id == null && inventory.getViewers().size() == 0) {
+		if (id == null && inventory.getViewers().isEmpty()) {
 			SkriptGUI.getGUIManager().unregister(this);
 			clear();
 		}
@@ -500,6 +542,8 @@ public class GUI {
 
 		@Nullable
 		private Consumer<InventoryClickEvent> runOnClick;
+		@Nullable
+		private Consumer<InventoryClickEvent> runOnChange;
 		private boolean removable;
 
 		public SlotData(@Nullable Consumer<InventoryClickEvent> runOnClick, boolean removable) {
@@ -515,6 +559,11 @@ public class GUI {
 			return runOnClick;
 		}
 
+		@Nullable
+		public Consumer<InventoryClickEvent> getRunOnChange() {
+			return runOnChange;
+		}
+
 		/**
 		 * Updates the consumer to run when a slot with this data is clicked. A null value may be used to remove the consumer.
 		 * @param runOnClick The consumer to run when a slot with this data is clicked.
@@ -523,12 +572,16 @@ public class GUI {
 			this.runOnClick = runOnClick;
 		}
 
+		public void setRunOnChange(@Nullable Consumer<InventoryClickEvent> runOnChange) {
+			this.runOnChange = runOnChange;
+		}
+
 		/**
 		 * @return Whether this item can be removed from its slot, regardless of {@link GUI#isRemovable()}.
 		 * 	Please note that if {@link #getRunOnClick()} returns a non-null value, this method will <b>always</b> return false.
 		 */
 		public boolean isRemovable() {
-			return runOnClick == null && removable;
+			return removable;
 		}
 
 		/**

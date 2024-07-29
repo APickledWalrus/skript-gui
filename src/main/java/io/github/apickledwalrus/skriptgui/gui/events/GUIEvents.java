@@ -2,6 +2,7 @@ package io.github.apickledwalrus.skriptgui.gui.events;
 
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
+import io.github.apickledwalrus.skriptgui.gui.GUIEventHandler;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -43,6 +44,7 @@ public class GUIEvents implements Listener {
 		if (gui == null) {
 			return;
 		}
+		GUIEventHandler eventHandler = gui.getEventHandler();
 
 		// Don't process unknown clicks for safety reasons - cancel them to prevent unwanted GUI changes
 		if (event.getClick() == ClickType.UNKNOWN) {
@@ -61,27 +63,25 @@ public class GUIEvents implements Listener {
 					if (clicked != null) {
 						Inventory guiInventory = gui.getInventory();
 
-						if (!guiInventory.contains(clicked.getType())) {
-							int firstEmpty = guiInventory.firstEmpty();
-							if (firstEmpty != -1 && gui.isRemovable(gui.convert(firstEmpty))) { // Safe to be moved into the GUI
-								return;
-							}
-						}
-
 						int size = guiInventory.getSize();
 
 						for (int slot = 0; slot < size; slot++) {
 							ItemStack item = guiInventory.getItem(slot);
 							if (item != null && item.getType() != Material.AIR && item.isSimilar(clicked)) {
+								InventoryClickEvent clickEvent = gui.setClickedSlot(event, slot);
+
 								if (!gui.isRemovable(gui.convert(slot))) {
-									if (item.getAmount() == 64) { // It wouldn't be able to combine
+									if (item.getAmount() >= item.getMaxStackSize()) { // It wouldn't be able to combine
 										continue;
 									}
 									event.setCancelled(true);
+
+									eventHandler.onChange(clickEvent);
 									return;
 								}
 
-								if (item.getAmount() + clicked.getAmount() <= 64) { // This will only modify a modifiable slot
+								if (item.getAmount() + clicked.getAmount() <= item.getMaxStackSize()) { // This will only modify a modifiable slot
+									eventHandler.onChange(clickEvent);
 									return;
 								}
 
@@ -89,8 +89,11 @@ public class GUIEvents implements Listener {
 						}
 
 						int firstEmpty = guiInventory.firstEmpty();
-						if (firstEmpty != -1 && gui.isRemovable(gui.convert(firstEmpty))) { // Safe to be moved into the GUI
-							return;
+						if (firstEmpty != -1) { // Safe to be moved into the GUI
+							InventoryClickEvent clickEvent = gui.setClickedSlot(event, firstEmpty);
+							eventHandler.onChange(clickEvent);
+							if (gui.isRemovable(gui.convert(firstEmpty)))
+								return;
 						}
 
 					}
@@ -103,17 +106,41 @@ public class GUIEvents implements Listener {
 					// If that item is mergeable but it isn't stealable, we will cancel the event now
 					Inventory guiInventory = gui.getInventory();
 					int size = guiInventory.getSize();
-					ItemStack cursor = event.getWhoClicked().getItemOnCursor();
-					for (int slot = 0; slot < size; slot++) {
-						ItemStack item = guiInventory.getItem(slot);
-						if (item != null && item.isSimilar(cursor) && !gui.isRemovable(gui.convert(slot))) {
-							event.setCancelled(true);
-							break;
+					ItemStack cursor = event.getCursor();
+					if (cursor != null) {
+						for (int slot = 0; slot < size; slot++) {
+							ItemStack item = guiInventory.getItem(slot);
+							if (item != null && item.isSimilar(cursor)) {
+								if (!gui.isRemovable(gui.convert(slot))) {
+									event.setCancelled(true);
+									break;
+								}
+								if (cursor.getAmount() < cursor.getMaxStackSize()) {
+									InventoryClickEvent clickEvent = gui.setClickedSlot(event, slot);
+									eventHandler.onChange(clickEvent);
+								}
+							}
 						}
 					}
 					return;
 				default:
 					return;
+			}
+		} else {
+			// Call onChange if a slot is changed due to interactions within the gui itself
+			if (event.getClick() == ClickType.DOUBLE_CLICK) {
+				Inventory guiInventory = gui.getInventory();
+				int size = guiInventory.getSize();
+				ItemStack cursor = event.getCursor();
+				if (cursor != null && cursor.getAmount() < cursor.getMaxStackSize()) {
+					for (int slot = 0; slot < size; slot++) {
+						ItemStack item = guiInventory.getItem(slot);
+						if (item != null && item.isSimilar(cursor)) {
+							InventoryClickEvent clickEvent = gui.setClickedSlot(event, slot);
+							eventHandler.onChange(clickEvent);
+						}
+					}
+				}
 			}
 		}
 

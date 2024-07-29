@@ -1,10 +1,7 @@
 package io.github.apickledwalrus.skriptgui.gui;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,8 +65,21 @@ public abstract class GUIEventHandler {
 	}
 
 	public abstract void onClick(InventoryClickEvent e);
+	public abstract void onChange(InventoryClickEvent e);
 	public abstract void onDrag(InventoryDragEvent e);
 	public abstract void onOpen(InventoryOpenEvent e);
 	public abstract void onClose(InventoryCloseEvent e);
 
+	public void onChange(InventoryDragEvent e) {
+		for (int slot : e.getInventorySlots()) {
+			InventoryClickEvent clickEvent = new InventoryClickEvent(
+					e.getView(),
+					e.getView().getSlotType(slot),
+					slot,
+					ClickType.UNKNOWN,
+					InventoryAction.UNKNOWN
+			);
+			onChange(clickEvent);
+		}
+	}
 }

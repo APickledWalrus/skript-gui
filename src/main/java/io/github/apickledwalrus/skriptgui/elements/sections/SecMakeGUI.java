@@ -167,4 +167,7 @@ public class SecMakeGUI extends EffectSection {
 		}
 	}
 
+	public Expression<Object> getSlots() {
+		return slots;
+	}
 }
