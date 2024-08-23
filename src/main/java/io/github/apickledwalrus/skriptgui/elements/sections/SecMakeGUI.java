@@ -166,8 +166,4 @@ public class SecMakeGUI extends EffectSection {
 				return "make gui";
 		}
 	}
-
-	public Expression<Object> getSlots() {
-		return slots;
-	}
 }

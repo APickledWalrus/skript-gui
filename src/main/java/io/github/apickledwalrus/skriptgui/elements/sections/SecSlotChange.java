@@ -63,10 +63,13 @@ public class SecSlotChange extends Section {
 	@Nullable
 	public TriggerItem walk(Event e) {
 		GUI gui = SkriptGUI.getGUIManager().getGUI(e);
+		if (gui == null)
+			return walk(e, false);
+
 		Integer[] slots = guiSlots.getAll(e);
 
 		for (Integer slot : slots) {
-			if (gui != null && slot != null && slot >= 0 && slot + 1 <= gui.getInventory().getSize()) {
+			if (slot >= 0 && slot + 1 <= gui.getInventory().getSize()) {
 				Object variables = Variables.copyLocalVariables(e);
 				GUI.SlotData slotData = gui.getSlotData(gui.convert(slot));
 				if (variables != null && slotData != null) {

@@ -70,7 +70,7 @@ public class GUI {
 				e.setCancelled(!isRemovable(slotData));
 
 				Consumer<InventoryClickEvent> runOnChange = slotData.getRunOnChange();
-				if (runOnChange != null) {
+				if (!e.isCancelled() && runOnChange != null) {
 					SkriptGUI.getGUIManager().setGUI(e, GUI.this);
 					runOnChange.accept(e);
 				}
@@ -265,7 +265,7 @@ public class GUI {
 		return nextSlot();
 	}
 
-	public InventoryClickEvent setClickedSlot(InventoryClickEvent event, int slot) {
+	public static InventoryClickEvent setClickedSlot(InventoryClickEvent event, int slot) {
 		return new InventoryClickEvent(
 				event.getView(),
 				event.getSlotType(),

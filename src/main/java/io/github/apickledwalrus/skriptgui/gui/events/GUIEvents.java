@@ -16,6 +16,9 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GUIEvents implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -68,7 +71,7 @@ public class GUIEvents implements Listener {
 						for (int slot = 0; slot < size; slot++) {
 							ItemStack item = guiInventory.getItem(slot);
 							if (item != null && item.getType() != Material.AIR && item.isSimilar(clicked)) {
-								InventoryClickEvent clickEvent = gui.setClickedSlot(event, slot);
+								InventoryClickEvent clickEvent = GUI.setClickedSlot(event, slot);
 
 								if (!gui.isRemovable(gui.convert(slot))) {
 									if (item.getAmount() >= item.getMaxStackSize()) { // It wouldn't be able to combine
@@ -76,7 +79,6 @@ public class GUIEvents implements Listener {
 									}
 									event.setCancelled(true);
 
-									eventHandler.onChange(clickEvent);
 									return;
 								}
 
@@ -89,11 +91,10 @@ public class GUIEvents implements Listener {
 						}
 
 						int firstEmpty = guiInventory.firstEmpty();
-						if (firstEmpty != -1) { // Safe to be moved into the GUI
-							InventoryClickEvent clickEvent = gui.setClickedSlot(event, firstEmpty);
+						if (firstEmpty != -1 && gui.isRemovable(gui.convert(firstEmpty))) { // Safe to be moved into the GUI
+							InventoryClickEvent clickEvent = GUI.setClickedSlot(event, firstEmpty);
 							eventHandler.onChange(clickEvent);
-							if (gui.isRemovable(gui.convert(firstEmpty)))
-								return;
+							return;
 						}
 
 					}
@@ -104,24 +105,7 @@ public class GUIEvents implements Listener {
 					// Only cancel if this will cause a change to the GUI itself
 					// We are checking if our GUI contains an item that could be merged with the event item
 					// If that item is mergeable but it isn't stealable, we will cancel the event now
-					Inventory guiInventory = gui.getInventory();
-					int size = guiInventory.getSize();
-					ItemStack cursor = event.getCursor();
-					if (cursor != null) {
-						for (int slot = 0; slot < size; slot++) {
-							ItemStack item = guiInventory.getItem(slot);
-							if (item != null && item.isSimilar(cursor)) {
-								if (!gui.isRemovable(gui.convert(slot))) {
-									event.setCancelled(true);
-									break;
-								}
-								if (cursor.getAmount() < cursor.getMaxStackSize()) {
-									InventoryClickEvent clickEvent = gui.setClickedSlot(event, slot);
-									eventHandler.onChange(clickEvent);
-								}
-							}
-						}
-					}
+					handleDoubleClick(gui, event);
 					return;
 				default:
 					return;
@@ -129,18 +113,12 @@ public class GUIEvents implements Listener {
 		} else {
 			// Call onChange if a slot is changed due to interactions within the gui itself
 			if (event.getClick() == ClickType.DOUBLE_CLICK) {
-				Inventory guiInventory = gui.getInventory();
-				int size = guiInventory.getSize();
-				ItemStack cursor = event.getCursor();
-				if (cursor != null && cursor.getAmount() < cursor.getMaxStackSize()) {
-					for (int slot = 0; slot < size; slot++) {
-						ItemStack item = guiInventory.getItem(slot);
-						if (item != null && item.isSimilar(cursor)) {
-							InventoryClickEvent clickEvent = gui.setClickedSlot(event, slot);
-							eventHandler.onChange(clickEvent);
-						}
-					}
+				if (!gui.isRemovable(gui.convert(event.getSlot()))) { // Doesn't change the slots
+					event.setCancelled(true);
+					return;
 				}
+
+				handleDoubleClick(gui, event);
 			}
 		}
 
@@ -175,6 +153,38 @@ public class GUIEvents implements Listener {
 		GUI gui = SkriptGUI.getGUIManager().getGUI(e.getInventory());
 		if (gui != null) {
 			gui.getEventHandler().onClose(e);
+		}
+	}
+
+	private void handleDoubleClick(GUI gui, InventoryClickEvent event) {
+		GUIEventHandler eventHandler = gui.getEventHandler();
+
+		Inventory guiInventory = gui.getInventory();
+		int size = guiInventory.getSize();
+		ItemStack cursor = event.getCursor();
+
+		if (cursor == null || event.getCurrentItem() != null)
+			return;
+
+		int totalAmount = cursor.getAmount();
+		List<InventoryClickEvent> clickEvents = new ArrayList<>();
+		for (int slot = 0; slot < size; slot++) {
+			ItemStack item = guiInventory.getItem(slot);
+			if (item != null && item.isSimilar(cursor)) {
+				if (!gui.isRemovable(gui.convert(slot))) {
+					event.setCancelled(true);
+					clickEvents.clear();
+					break;
+				}
+				if (totalAmount < cursor.getMaxStackSize()) {
+					InventoryClickEvent clickEvent = GUI.setClickedSlot(event, slot);
+					clickEvents.add(clickEvent);
+					totalAmount += item.getAmount();
+				}
+			}
+		}
+		for (InventoryClickEvent clickEvent : clickEvents) {
+			eventHandler.onChange(clickEvent);
 		}
 	}
 

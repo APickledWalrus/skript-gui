@@ -82,4 +82,5 @@ public abstract class GUIEventHandler {
 			onChange(clickEvent);
 		}
 	}
+
 }
