@@ -166,4 +166,5 @@ public class SecMakeGUI extends EffectSection {
 				return "make gui";
 		}
 	}
+
 }
