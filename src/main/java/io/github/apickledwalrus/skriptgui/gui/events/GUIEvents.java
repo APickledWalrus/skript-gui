@@ -71,7 +71,7 @@ public class GUIEvents implements Listener {
 						for (int slot = 0; slot < size; slot++) {
 							ItemStack item = guiInventory.getItem(slot);
 							if (item != null && item.getType() != Material.AIR && item.isSimilar(clicked)) {
-								InventoryClickEvent clickEvent = GUI.setClickedSlot(event, slot);
+								InventoryClickEvent clickEvent = setClickedSlot(event, slot);
 
 								if (!gui.isRemovable(gui.convert(slot))) {
 									if (item.getAmount() >= item.getMaxStackSize()) { // It wouldn't be able to combine
@@ -92,7 +92,7 @@ public class GUIEvents implements Listener {
 
 						int firstEmpty = guiInventory.firstEmpty();
 						if (firstEmpty != -1 && gui.isRemovable(gui.convert(firstEmpty))) { // Safe to be moved into the GUI
-							InventoryClickEvent clickEvent = GUI.setClickedSlot(event, firstEmpty);
+							InventoryClickEvent clickEvent = setClickedSlot(event, firstEmpty);
 							eventHandler.onChange(clickEvent);
 							return;
 						}
@@ -174,10 +174,10 @@ public class GUIEvents implements Listener {
 				if (!gui.isRemovable(gui.convert(slot))) {
 					event.setCancelled(true);
 					return;
-
 				}
+
 				if (totalAmount < cursor.getMaxStackSize()) {
-					InventoryClickEvent clickEvent = GUI.setClickedSlot(event, slot);
+					InventoryClickEvent clickEvent = setClickedSlot(event, slot);
 					clickEvents.add(clickEvent);
 					totalAmount += item.getAmount();
 				}
@@ -188,4 +188,13 @@ public class GUIEvents implements Listener {
 		}
 	}
 
+	private static InventoryClickEvent setClickedSlot(InventoryClickEvent event, int slot) {
+		return new InventoryClickEvent(
+				event.getView(),
+				event.getSlotType(),
+				slot,
+				event.getClick(),
+				event.getAction()
+		);
+	}
 }

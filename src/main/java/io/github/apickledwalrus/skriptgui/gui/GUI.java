@@ -265,16 +265,6 @@ public class GUI {
 		return nextSlot();
 	}
 
-	public static InventoryClickEvent setClickedSlot(InventoryClickEvent event, int slot) {
-		return new InventoryClickEvent(
-				event.getView(),
-				event.getSlotType(),
-				slot,
-				event.getClick(),
-				event.getAction()
-		);
-	}
-
 	/**
 	 * @return The next available slot in this GUI.
 	 */
