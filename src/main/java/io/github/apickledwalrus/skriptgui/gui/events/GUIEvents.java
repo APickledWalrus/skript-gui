@@ -173,8 +173,8 @@ public class GUIEvents implements Listener {
 			if (item != null && item.isSimilar(cursor)) {
 				if (!gui.isRemovable(gui.convert(slot))) {
 					event.setCancelled(true);
-					clickEvents.clear();
-					break;
+					return;
+
 				}
 				if (totalAmount < cursor.getMaxStackSize()) {
 					InventoryClickEvent clickEvent = GUI.setClickedSlot(event, slot);
