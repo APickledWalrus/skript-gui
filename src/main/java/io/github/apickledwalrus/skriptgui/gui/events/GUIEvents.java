@@ -67,27 +67,25 @@ public class GUIEvents implements Listener {
 						Inventory guiInventory = gui.getInventory();
 
 						int size = guiInventory.getSize();
+						int totalAmount = clicked.getAmount();
 
 						for (int slot = 0; slot < size; slot++) {
+							if (totalAmount <= 0) {
+								return;
+							}
+
 							ItemStack item = guiInventory.getItem(slot);
-							if (item != null && item.getType() != Material.AIR && item.isSimilar(clicked)) {
+							if (item != null && item.getType() != Material.AIR && item.isSimilar(clicked) && item.getAmount() < item.getMaxStackSize()) {
 								InventoryClickEvent clickEvent = setClickedSlot(event, slot);
 
 								if (!gui.isRemovable(gui.convert(slot))) {
-									if (item.getAmount() >= item.getMaxStackSize()) { // It wouldn't be able to combine
-										continue;
-									}
 									event.setCancelled(true);
-
 									return;
-								}
-
-								if (item.getAmount() + clicked.getAmount() <= item.getMaxStackSize()) { // This will only modify a modifiable slot
+                                } else {
 									eventHandler.onChange(clickEvent);
-									return;
-								}
-
-							}
+									totalAmount -= item.getMaxStackSize() - item.getAmount();
+                                }
+                            }
 						}
 
 						int firstEmpty = guiInventory.firstEmpty();
