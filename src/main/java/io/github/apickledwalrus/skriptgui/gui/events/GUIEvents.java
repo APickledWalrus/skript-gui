@@ -81,11 +81,12 @@ public class GUIEvents implements Listener {
 								if (!gui.isRemovable(gui.convert(slot))) {
 									event.setCancelled(true);
 									return;
-                                } else {
+								} else {
 									eventHandler.onChange(clickEvent);
 									totalAmount -= item.getMaxStackSize() - item.getAmount();
-                                }
-                            }
+								}
+							}
+
 						}
 
 						int firstEmpty = guiInventory.firstEmpty();
