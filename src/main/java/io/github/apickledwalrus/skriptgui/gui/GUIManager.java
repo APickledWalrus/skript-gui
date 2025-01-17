@@ -4,7 +4,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.Inventory;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,8 +70,7 @@ public class GUIManager {
 	 * @param event The event to get the GUI from.
 	 * @return The GUI involved with the given event.
 	 */
-	@Nullable
-	public GUI getGUI(Event event) {
+	public @Nullable GUI getGUI(Event event) {
 		return eventGUIs.get(event);
 	}
 

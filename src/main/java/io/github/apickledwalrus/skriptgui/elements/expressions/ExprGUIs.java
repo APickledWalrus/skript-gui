@@ -1,6 +1,10 @@
 package io.github.apickledwalrus.skriptgui.elements.expressions;
 
 import ch.njol.skript.Skript;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
@@ -9,12 +13,20 @@ import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
+@Name("GUIs")
+@Description("An expression to obtain all of the global/tracked GUIs.")
+@Examples({
+		"open a random gui out of all guis to all players"
+})
+@Since("1.3")
 public class ExprGUIs extends SimpleExpression<GUI> {
 
 	static {
-		Skript.registerExpression(ExprGUIs.class, GUI.class, ExpressionType.SIMPLE, "all guis");
+		Skript.registerExpression(ExprGUIs.class, GUI.class, ExpressionType.SIMPLE,
+				"[all [[of] the]|the] guis"
+		);
 	}
 
 	@Override
@@ -23,9 +35,8 @@ public class ExprGUIs extends SimpleExpression<GUI> {
 	}
 
 	@Override
-	@Nullable
-	protected GUI[] get(Event e) {
-		return SkriptGUI.getGUIManager().getTrackedGUIs().toArray(new GUI[0]);
+	protected GUI[] get(Event event) {
+		return SkriptGUI.getGUIManager().getTrackedGUIs().toArray(GUI[]::new);
 	}
 
 	@Override
@@ -39,8 +50,8 @@ public class ExprGUIs extends SimpleExpression<GUI> {
 	}
 
 	@Override
-	public String toString(@Nullable Event e, boolean debug) {
-		return "all guis";
+	public String toString(@Nullable Event event, boolean debug) {
+		return "the guis";
 	}
 
 }

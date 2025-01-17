@@ -17,7 +17,7 @@ import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 

@@ -18,7 +18,7 @@ import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -36,16 +36,14 @@ public class SecGUIOpenClose extends Section {
 
 	static {
 		Skript.registerSection(SecGUIOpenClose.class,
-				"run (when|while) (open[ing]|1¦clos(e|ing)) [[the] gui]",
-				"run (when|while) [the] gui (opens|1¦closes)",
-				"run on gui (open[ing]|1¦clos(e|ing))"
+				"run (when|while) (open[ing]|close:clos(e|ing)) [[the] gui]",
+				"run (when|while) [the] gui (opens|close:closes)",
+				"run on gui (open[ing]|close:clos(e|ing))"
 		);
 	}
 
-	@SuppressWarnings("NotNullFieldNotInitialized")
-	private Trigger trigger;
-
 	private boolean close;
+	private Trigger trigger;
 
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult, SectionNode sectionNode, List<TriggerItem> triggerItems) {
@@ -54,7 +52,7 @@ public class SecGUIOpenClose extends Section {
 			return false;
 		}
 
-		close = parseResult.mark == 1;
+		close = parseResult.hasTag("close");
 
 		if (close) {
 			trigger = loadCode(sectionNode, "inventory close", InventoryCloseEvent.class);
@@ -97,7 +95,7 @@ public class SecGUIOpenClose extends Section {
 	}
 
 	@Override
-	public String toString(@Nullable Event e, boolean debug) {
+	public String toString(@Nullable Event event, boolean debug) {
 		return "run on gui " + (close ? "close" : "open");
 	}
 

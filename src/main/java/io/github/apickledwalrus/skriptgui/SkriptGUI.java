@@ -14,9 +14,7 @@ import io.github.apickledwalrus.skriptgui.gui.GUIManager;
 
 public class SkriptGUI extends JavaPlugin {
 
-	@SuppressWarnings("NotNullFieldNotInitialized")
 	private static SkriptGUI instance;
-	@SuppressWarnings("NotNullFieldNotInitialized")
 	private static GUIManager manager;
 
 	@Override
@@ -51,7 +49,7 @@ public class SkriptGUI extends JavaPlugin {
 			new SkriptClasses(); // Register ClassInfos
 			new SkriptConverters(); // Register Converters
 		} catch (IOException e) {
-			getLogger().severe("An error occured while trying to load the addon's elements. The addon will be disabled.");
+			getLogger().severe("An error occurred while trying to load the addon's elements. The addon will be disabled.");
 			getLogger().severe("Printing StackTrace:");
 			e.printStackTrace();
 			getServer().getPluginManager().disablePlugin(this);

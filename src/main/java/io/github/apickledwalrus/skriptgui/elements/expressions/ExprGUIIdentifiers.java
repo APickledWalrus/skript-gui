@@ -13,10 +13,11 @@ import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 @Name("Global GUI Identifiers")
 @Description("A list of the identifiers of all registered global GUIs.")
@@ -31,7 +32,7 @@ public class ExprGUIIdentifiers extends SimpleExpression<String> {
 
 	static {
 		Skript.registerExpression(ExprGUIIdentifiers.class, String.class, ExpressionType.SIMPLE,
-				"[(all [[of] the]|the)] (global|registered) gui id(s|entifiers)"
+				"[all [[of] the]|the] (global|registered) gui id(s|entifiers)"
 		);
 	}
 
@@ -41,14 +42,15 @@ public class ExprGUIIdentifiers extends SimpleExpression<String> {
 	}
 
 	@Override
-	protected String[] get(Event e) {
-		List<String> identifiers = new ArrayList<>();
-		for (GUI gui : SkriptGUI.getGUIManager().getTrackedGUIs()) {
-			if (gui.getID() != null) {
-				identifiers.add(gui.getID());
-			}
-		}
-		return identifiers.toArray(new String[0]);
+	protected String[] get(Event event) {
+		return stream(event).toArray(String[]::new);
+	}
+
+	@Override
+	public Stream<? extends @NotNull String> stream(Event event) {
+		return SkriptGUI.getGUIManager().getTrackedGUIs().stream()
+				.map(GUI::getID)
+				.filter(Objects::nonNull);
 	}
 
 	@Override
@@ -62,8 +64,8 @@ public class ExprGUIIdentifiers extends SimpleExpression<String> {
 	}
 
 	@Override
-	public String toString(@Nullable Event e, boolean debug) {
-		return "all of the registered gui identifiers";
+	public String toString(@Nullable Event event, boolean debug) {
+		return "the registered gui identifiers";
 	}
 
 }

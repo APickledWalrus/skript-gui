@@ -8,20 +8,19 @@ import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SectionSkriptEvent;
-import ch.njol.skript.lang.SkriptEvent;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecGUIOpenClose;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 @Name("Cancel GUI Close")
 @Description({
 		"Cancels or uncancels the closing of a GUI.",
-		" This effect can be used within a GUI close section.",
-		" A 1 tick delay is applied by this effect after the code has run."
+		"This effect can be used within a GUI close section.",
+		"A 1 tick delay is applied by this effect after the code has run."
 })
 @Examples({
 		"create a gui with virtual chest inventory with 3 rows named \"My GUI\":",
@@ -33,7 +32,7 @@ public class EffCancelGUIClose extends Effect {
 
 	static {
 		Skript.registerEffect(EffCancelGUIClose.class,
-				"(cancel|1¦uncancel) [the] gui clos(e|ing)"
+				"(:cancel|uncancel) [the] gui clos(e|ing)"
 		);
 	}
 
@@ -41,25 +40,25 @@ public class EffCancelGUIClose extends Effect {
 
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		SkriptEvent skriptEvent = getParser().getCurrentSkriptEvent();
-		if (!(skriptEvent instanceof SectionSkriptEvent) || !((SectionSkriptEvent) skriptEvent).isSection(SecGUIOpenClose.class)) {
+		if (!(getParser().getCurrentStructure() instanceof SectionSkriptEvent sectionEvent)
+				|| !(sectionEvent.isSection(SecGUIOpenClose.class))) {
 			Skript.error("Cancelling or uncancelling the closing of a GUI can only be done within a GUI close section.");
 			return false;
 		}
-		cancel = parseResult.mark == 0;
+		cancel = parseResult.hasTag("cancel");
 		return true;
 	}
 
 	@Override
-	protected void execute(Event e) {
-		GUI gui = SkriptGUI.getGUIManager().getGUI(e);
+	protected void execute(Event event) {
+		GUI gui = SkriptGUI.getGUIManager().getGUI(event);
 		if (gui != null) {
 			gui.setCloseCancelled(cancel);
 		}
 	}
 
 	@Override
-	public String toString(@Nullable Event e, boolean debug) {
+	public String toString(@Nullable Event event, boolean debug) {
 		return (cancel ? "cancel" : "uncancel") + " the gui closing";
 	}
 

@@ -9,7 +9,7 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.util.coll.CollectionUtils;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 @Name("ID of GUI")
 @Description({
@@ -29,28 +29,24 @@ public class ExprIDOfGUI extends SimplePropertyExpression<GUI, String> {
 	}
 
 	@Override
-	@Nullable
 	public String convert(GUI gui) {
 		return gui.getID();
 	}
 
 	@Override
-	@Nullable
-	public Class<?>[] acceptChange(ChangeMode mode) {
-		return mode == ChangeMode.SET ? CollectionUtils.array(String.class) : null;
+	public Class<?> @Nullable [] acceptChange(ChangeMode mode) {
+		if (mode == ChangeMode.SET) {
+			return CollectionUtils.array(String.class);
+		}
+		return null;
 	}
 
 	@Override
-	public void change(Event e, Object @Nullable [] delta, ChangeMode mode) {
-		if (delta == null || delta[0] == null) {
-			return;
-		}
+	public void change(Event event, Object @Nullable [] delta, ChangeMode mode) {
+		assert delta != null; // should not be null for SET
 		String id = (String) delta[0];
-		GUI[] guis = getExpr().getArray(e);
-		for (GUI gui : guis) {
-			if (gui != null) {
-				gui.setID(id);
-			}
+		for (GUI gui : getExpr().getArray(event)) {
+			gui.setID(id);
 		}
 	}
 
@@ -61,7 +57,7 @@ public class ExprIDOfGUI extends SimplePropertyExpression<GUI, String> {
 
 	@Override
 	protected String getPropertyName() {
-		return "id";
+		return "identifier";
 	}
 
 }

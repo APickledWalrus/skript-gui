@@ -18,7 +18,7 @@ import io.github.apickledwalrus.skriptgui.elements.sections.SecGUIOpenClose;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecMakeGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 @Name("Next GUI Slot")
 @Description("An expression that returns the number/character of the next open slot in a GUI.")
@@ -26,8 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @Since("1.3")
 public class ExprNextGUISlot extends SimpleExpression<Character> {
 
-	@Nullable
-	private Expression<GUI> guis;
+	private @Nullable Expression<GUI> guis;
 
 	static {
 		Skript.registerExpression(ExprNextGUISlot.class, Character.class, ExpressionType.SIMPLE,
@@ -41,8 +40,9 @@ public class ExprNextGUISlot extends SimpleExpression<Character> {
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		if (matchedPattern == 2) {
-			SkriptEvent skriptEvent = getParser().getCurrentSkriptEvent();
-			if (!getParser().isCurrentSection(SecCreateGUI.class) && !(skriptEvent instanceof SectionSkriptEvent && ((SectionSkriptEvent) skriptEvent).isSection(SecCreateGUI.class, SecMakeGUI.class, SecGUIOpenClose.class))) {
+			if (!getParser().isCurrentSection(SecCreateGUI.class)
+					|| !(getParser().getCurrentStructure() instanceof SectionSkriptEvent sectionEvent)
+					|| !(sectionEvent.isSection(SecCreateGUI.class, SecMakeGUI.class, SecGUIOpenClose.class))) {
 				Skript.error("The 'next gui slot' expression must have a GUI specified unless it is used in a GUI section.");
 				return false;
 			}
@@ -55,15 +55,15 @@ public class ExprNextGUISlot extends SimpleExpression<Character> {
 
 	@Override
 	@Nullable
-	protected Character[] get(Event e) {
+	protected Character[] get(Event event) {
 		if (guis == null) {
-			GUI gui = SkriptGUI.getGUIManager().getGUI(e);
+			GUI gui = SkriptGUI.getGUIManager().getGUI(event);
 			if (gui != null) {
 				return new Character[]{gui.nextSlot()};
 			}
 		}
 
-		GUI[] guis = this.guis.getArray(e);
+		GUI[] guis = this.guis.getArray(event);
 		int size = guis.length;
 		Character[] slots = new Character[size];
 		for (int i = 0; i < size; i++) {
@@ -74,7 +74,7 @@ public class ExprNextGUISlot extends SimpleExpression<Character> {
 
 	@Override
 	public boolean isSingle() {
-		return guis != null && guis.isSingle();
+		return guis == null || guis.isSingle();
 	}
 
 	@Override
@@ -83,9 +83,9 @@ public class ExprNextGUISlot extends SimpleExpression<Character> {
 	}
 
 	@Override
-	public String toString(@Nullable Event e, boolean debug) {
+	public String toString(@Nullable Event event, boolean debug) {
 		if (guis != null) {
-			return "the next gui slot" + (guis.isSingle() ? "" : "s") + " of " + guis.toString(e, debug);
+			return "the next gui slot" + (guis.isSingle() ? "" : "s") + " of " + guis.toString(event, debug);
 		} else {
 			return "the next gui slot";
 		}

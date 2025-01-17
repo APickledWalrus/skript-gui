@@ -8,7 +8,7 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.entity.Player;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 @Name("GUI of Player")
 @Description("The GUI that the player currently has open.")
@@ -24,8 +24,7 @@ public class ExprGUI extends SimplePropertyExpression<Player, GUI> {
 	}
 
 	@Override
-	@Nullable
-	public GUI convert(Player player) {
+	public @Nullable GUI convert(Player player) {
 		return SkriptGUI.getGUIManager().getGUI(player);
 	}
 

@@ -10,17 +10,20 @@ import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.UnparsedLiteral;
 import ch.njol.skript.lang.util.SimpleExpression;
+import ch.njol.skript.util.LiteralUtils;
 import ch.njol.util.Kleenean;
 import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Name("Paginated List")
 @Description("Returns the \"pages\" of a list based on the given number of lines per page.")
-@Examples({"# The SECOND set of 36 items in the \"guiItems\" list. This represents the elements from indexes 37 to 72",
-			"set {_guiPage2::*} to page 2 of {_guiItems::*} with 36 lines"})
+@Examples({
+		"# The SECOND set of 36 items in the \"guiItems\" list. This represents the elements from indexes 37 to 72",
+		"set {_guiPage2::*} to page 2 of {_guiItems::*} with 36 lines"
+})
 @Since("1.1.0")
 public class ExprPaginatedList extends SimpleExpression<Object> {
 
@@ -30,26 +33,17 @@ public class ExprPaginatedList extends SimpleExpression<Object> {
 		);
 	}
 
-	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<Number> pages;
-	@Nullable
 	private Expression<?> contents;
-	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<Number> lines;
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		pages = (Expression<Number>) exprs[0];
-		contents = exprs[1];
-		if (contents instanceof UnparsedLiteral) {
-			contents = contents.getConvertedExpression(Object.class);
-			if (contents == null) {
-				return false;
-			}
-		}
+		contents = LiteralUtils.defendExpression(exprs[1]);
 		lines = (Expression<Number>) exprs[2];
-		return true;
+		return LiteralUtils.canInitSafely(contents);
 	}
 
 	@Override
@@ -62,7 +56,7 @@ public class ExprPaginatedList extends SimpleExpression<Object> {
 		}
 
 		assert contents != null;
-		Object[] contents = this.contents.getAll(e).clone();
+		Object[] contents = this.contents.getAll(e);
 		if (contents.length == 0) {
 			return new Object[0];
 		}
@@ -100,13 +94,14 @@ public class ExprPaginatedList extends SimpleExpression<Object> {
 
 	@Override
 	public Class<?> getReturnType() {
-		return Object.class;
+		return contents.getReturnType();
 	}
 
 	@Override
-	public String toString(@Nullable Event e, boolean debug) {
-		assert contents != null;
-		return "page(s) " + pages.toString(e, debug) + " of " + contents.toString(e, debug) + " with " + lines.toString(e, debug) + " lines";
+	public String toString(@Nullable Event event, boolean debug) {
+		return "page(s) " + pages.toString(event, debug) +
+				" of " + contents.toString(event, debug) +
+				" with " + lines.toString(event, debug) + " lines";
 	}
 
 }

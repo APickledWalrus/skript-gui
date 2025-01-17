@@ -17,7 +17,7 @@ import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -41,7 +41,6 @@ public class SecSlotChange extends Section {
 		);
 	}
 
-	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Trigger trigger;
 	private Expression<Integer> guiSlots;
 

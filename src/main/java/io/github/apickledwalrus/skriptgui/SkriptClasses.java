@@ -8,7 +8,7 @@ import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.util.EnumUtils;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.inventory.InventoryType.SlotType;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class SkriptClasses {
 
@@ -20,7 +20,7 @@ public class SkriptClasses {
 			.description("Represents a skript-gui GUI")
 			.examples("See the GUI creation section.")
 			.since("1.0")
-			.parser(new Parser<GUI>() {
+			.parser(new Parser<>() {
 				@Override
 				public boolean canParse(ParseContext ctx) {
 					return false;
@@ -29,7 +29,7 @@ public class SkriptClasses {
 				@Override
 				public String toString(GUI gui, int flags) {
 					return gui.getInventory().getType().getDefaultTitle().toLowerCase()
-							+ " gui named " + gui.getName() 
+							+ " gui named " + gui.getName()
 							+ " with " + gui.getInventory().getSize() / 9 + " rows"
 							+ " and shape " + gui.getRawShape();
 				}
@@ -49,16 +49,10 @@ public class SkriptClasses {
 				.description("Represents the slot type in an Inventory Click Event.")
 				.examples(slotTypes.getAllNames())
 				.since("1.0.0")
-				.parser(new Parser<SlotType>() {
+				.parser(new Parser<>() {
 					@Override
-					@Nullable
-					public SlotType parse(String expr, ParseContext context) {
+					public @Nullable SlotType parse(String expr, ParseContext context) {
 						return slotTypes.parse(expr);
-					}
-
-					@Override
-					public boolean canParse(ParseContext ctx) {
-						return true;
 					}
 
 					@Override
