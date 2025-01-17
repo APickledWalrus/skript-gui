@@ -8,27 +8,25 @@ import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
-import ch.njol.skript.lang.UnparsedLiteral;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.skript.util.LiteralUtils;
 import ch.njol.util.Kleenean;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Array;
 
 @Name("Paginated List")
 @Description("Returns the \"pages\" of a list based on the given number of lines per page.")
 @Examples({
-		"# The SECOND set of 36 items in the \"guiItems\" list. This represents the elements from indexes 37 to 72",
-		"set {_guiPage2::*} to page 2 of {_guiItems::*} with 36 lines"
+		"# The second set of 36 items in the {_items::*} list. This represents the elements from indexes 37 to 72",
+		"set {_pages::2::*} to page 2 of {_items::*} with 36 lines"
 })
 @Since("1.1.0")
 public class ExprPaginatedList extends SimpleExpression<Object> {
 
 	static {
-		Skript.registerExpression(ExprPaginatedList.class, Object.class, ExpressionType.SIMPLE,
+		Skript.registerExpression(ExprPaginatedList.class, Object.class, ExpressionType.COMBINED,
 				"page[s] %numbers% of %objects% with %number% lines"
 		);
 	}
@@ -42,49 +40,50 @@ public class ExprPaginatedList extends SimpleExpression<Object> {
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		pages = (Expression<Number>) exprs[0];
 		contents = LiteralUtils.defendExpression(exprs[1]);
+		if (contents.isSingle()) {
+			Skript.error("You cannot paginate a single value.");
+			return false;
+		}
 		lines = (Expression<Number>) exprs[2];
 		return LiteralUtils.canInitSafely(contents);
 	}
 
 	@Override
-	protected Object[] get(Event e) {
-		Number[] pages = this.pages.getArray(e);
-		Number l = this.lines.getSingle(e);
-		int lines;
-		if (l == null || (lines = l.intValue()) < 1 || pages.length == 0) {
+	protected Object[] get(Event event) {
+		Integer[] pages = this.pages.stream(event)
+				.map(Number::intValue)
+				.filter(page -> page >= 1)
+				.toArray(Integer[]::new);
+		if (pages.length == 0) {
 			return new Object[0];
 		}
 
-		assert contents != null;
-		Object[] contents = this.contents.getAll(e);
+		int lines = this.lines.getOptionalSingle(event).orElse(0).intValue();
+		if (lines < 1) {
+			return new Object[0];
+		}
+
+		Object[] contents = this.contents.getAll(event);
 		if (contents.length == 0) {
 			return new Object[0];
 		}
 
-		List<Object> paginatedList = new ArrayList<>();
-		for (Number p : pages) {
-			int page = p.intValue();
-			if (page < 1) {
-				continue;
-			} else if (page > 1) {
-				page = (page - 1) * lines;
-			} else {
-				page = 0;
-			}
+		Object[] values = (Object[]) Array.newInstance(getReturnType(), pages.length * lines);
+		for (int page : pages) {
+			// map page to starting point
+			page = (page - 1) * lines;
 
+			// find end point
 			int max = page + lines;
 			if (max > contents.length) {
 				max = contents.length;
 			}
 
-			for (int i = page; i < max; i++) {
-				if (contents[i] != null) {
-					paginatedList.add(contents[i]);
-				}
-			}
+			// copy contents over
+			System.arraycopy(contents, page, values, page, max - page);
 		}
 
-		return paginatedList.toArray();
+		return values;
 	}
 
 	@Override

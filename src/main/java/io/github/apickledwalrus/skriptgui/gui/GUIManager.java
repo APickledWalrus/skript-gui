@@ -92,8 +92,7 @@ public class GUIManager {
 	 * @param player The player to get the GUI from.
 	 * @return The open GUI of the player, or null if this player doesn't have a GUI open.
 	 */
-	@Nullable
-	public GUI getGUI(Player player) {
+	public @Nullable GUI getGUI(Player player) {
 		for (GUI gui : getTrackedGUIs()) {
 			if (gui.getInventory().getViewers().contains(player)) {
 				return gui;
@@ -119,8 +118,7 @@ public class GUIManager {
 	 * @param id The ID of the GUI to get. This parameter is case-sensitive.
 	 * @return The GUI with the given ID, or null if a GUI with this ID doesn't exist.
 	 */
-	@Nullable
-	public GUI getGUI(String id) {
+	public @Nullable GUI getGUI(String id) {
 		for (GUI gui : getTrackedGUIs()) {
 			if (id.equals(gui.getID())) {
 				return gui;
@@ -133,8 +131,7 @@ public class GUIManager {
 	 * @param inventory The inventory of the GUI to get.
 	 * @return The GUI with this inventory, or null if a GUI with this inventory doesn't exist.
 	 */
-	@Nullable
-	public GUI getGUI(Inventory inventory) {
+	public @Nullable GUI getGUI(Inventory inventory) {
 		return guis.get(inventory);
 	}
 

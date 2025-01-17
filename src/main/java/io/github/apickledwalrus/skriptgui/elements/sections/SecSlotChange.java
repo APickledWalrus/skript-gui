@@ -53,42 +53,45 @@ public class SecSlotChange extends Section {
 		}
 
 		trigger = loadCode(sectionNode, "inventory click", InventoryClickEvent.class);
-
 		guiSlots = (Expression<Integer>) exprs[0];
+
 		return true;
 	}
 
 	@Override
 	@Nullable
-	public TriggerItem walk(Event e) {
-		GUI gui = SkriptGUI.getGUIManager().getGUI(e);
+	public TriggerItem walk(Event event) {
+		GUI gui = SkriptGUI.getGUIManager().getGUI(event);
 		if (gui == null)
-			return walk(e, false);
+			return walk(event, false);
 
-		Integer[] slots = guiSlots.getAll(e);
+		Integer[] slots = guiSlots.getAll(event);
 
 		for (Integer slot : slots) {
 			if (slot >= 0 && slot + 1 <= gui.getInventory().getSize()) {
-				Object variables = Variables.copyLocalVariables(e);
+				Object variables = Variables.copyLocalVariables(event);
 				GUI.SlotData slotData = gui.getSlotData(gui.convert(slot));
-				if (variables != null && slotData != null) {
-					slotData.setRunOnChange(event -> {
-						Variables.setLocalVariables(event, variables);
-						trigger.execute(event);
+				if (slotData == null) {
+					continue;
+				}
+				if (variables != null) {
+					slotData.setRunOnChange(clickEvent -> {
+						Variables.setLocalVariables(clickEvent, variables);
+						trigger.execute(clickEvent);
 					});
-				} else if (slotData != null) {
+				} else {
 					slotData.setRunOnChange(trigger::execute);
 				}
 			}
 		}
 
 		// We don't want to execute this section
-		return walk(e, false);
+		return walk(event, false);
 	}
 
 	@Override
-	public String toString(@Nullable Event e, boolean debug) {
-		return "run on change of slot " + guiSlots.toString(e, debug);
+	public String toString(@Nullable Event event, boolean debug) {
+		return "run on change of slot " + guiSlots.toString(event, debug);
 	}
 
 }

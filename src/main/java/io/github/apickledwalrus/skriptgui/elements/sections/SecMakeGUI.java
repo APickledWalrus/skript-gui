@@ -47,13 +47,10 @@ public class SecMakeGUI extends EffectSection {
 		);
 	}
 
-	@Nullable
-	private Trigger trigger;
+	private @Nullable Trigger trigger;
 
-	@Nullable
-	private Expression<Object> slots; // Can be number or a string
-	@Nullable
-	private Expression<ItemType> item;
+	private @Nullable Expression<Object> slots; // Can be number or a string
+	private @Nullable Expression<ItemType> item;
 
 	private int pattern;
 	private boolean removable;
@@ -61,13 +58,11 @@ public class SecMakeGUI extends EffectSection {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult, @Nullable SectionNode sectionNode, @Nullable List<TriggerItem> items) {
-		if (!getParser().isCurrentSection(SecCreateGUI.class)) {
-			SkriptEvent skriptEvent = getParser().getCurrentSkriptEvent();
-			// This check allows users to use a make section in a make section or a open/close section
-			if (!(skriptEvent instanceof SectionSkriptEvent) || !((SectionSkriptEvent) skriptEvent).isSection(SecMakeGUI.class, SecGUIOpenClose.class)) {
-				Skript.error("You can't make a GUI slot outside of a GUI creation or editing section.");
-				return false;
-			}
+		if (!getParser().isCurrentSection(SecCreateGUI.class)
+				|| !(getParser().getCurrentStructure() instanceof SectionSkriptEvent sectionEvent)
+				|| !sectionEvent.isSection(SecMakeGUI.class, SecGUIOpenClose.class)) {
+			Skript.error("You can't make a GUI slot outside of a GUI creation or editing section.");
+			return false;
 		}
 
 		pattern = matchedPattern;
@@ -89,41 +84,38 @@ public class SecMakeGUI extends EffectSection {
 	}
 
 	@Override
-	@Nullable
-	public TriggerItem walk(Event e) {
-		GUI gui = SkriptGUI.getGUIManager().getGUI(e);
+	public @Nullable TriggerItem walk(Event event) {
+		GUI gui = SkriptGUI.getGUIManager().getGUI(event);
 
 		if (gui == null) { // We aren't going to do anything with this section
-			return walk(e, false);
+			return walk(event, false);
 		}
 
 		switch (pattern) {
 			case 0: // Set the next slot
 			case 1: // Set the input slots
 				assert item != null;
-				ItemType itemType = item.getSingle(e);
+				ItemType itemType = item.getSingle(event);
 				if (itemType == null)
 					break;
 				ItemStack item = itemType.getRandom();
 				if (hasSection()) {
 					assert trigger != null;
-					Object variables = Variables.copyLocalVariables(e);
+					Object variables = Variables.copyLocalVariables(event);
 					if (variables != null) {
-						for (Object slot : slots != null ? slots.getArray(e) : new Object[]{gui.nextSlot()}) {
-							gui.setItem(slot, item, removable, event -> {
-								Variables.setLocalVariables(event, variables);
-								trigger.execute(event);
+						for (Object slot : slots != null ? slots.getArray(event) : new Object[]{gui.nextSlot()}) {
+							gui.setItem(slot, item, removable, clickEvent -> {
+								Variables.setLocalVariables(clickEvent, variables);
+								trigger.execute(clickEvent);
 							});
 						}
 					} else { // Don't paste variables if there are none to paste
-						for (Object slot : slots != null ? slots.getArray(e) : new Object[]{gui.nextSlot()}) {
-							gui.setItem(slot, item, removable, event -> {
-								trigger.execute(event);
-							});
+						for (Object slot : slots != null ? slots.getArray(event) : new Object[]{gui.nextSlot()}) {
+							gui.setItem(slot, item, removable, trigger::execute);
 						}
 					}
 				} else {
-					for (Object slot : slots != null ? slots.getArray(e) : new Object[]{gui.nextSlot()}) {
+					for (Object slot : slots != null ? slots.getArray(event) : new Object[]{gui.nextSlot()}) {
 						gui.setItem(slot, item, removable, null);
 					}
 				}
@@ -133,7 +125,7 @@ public class SecMakeGUI extends EffectSection {
 				break;
 			case 3: // Clear the input slots
 				assert slots != null;
-				for (Object slot : slots.getArray(e)) {
+				for (Object slot : slots.getArray(event)) {
 					gui.clear(slot);
 				}
 				break;
@@ -143,23 +135,23 @@ public class SecMakeGUI extends EffectSection {
 		}
 
 		// We don't want to execute this section
-		return walk(e, false);
+		return walk(event, false);
 	}
 
 	@Override
-	public String toString(@Nullable Event e, boolean debug) {
+	public String toString(@Nullable Event event, boolean debug) {
 		switch (pattern) {
 			case 0:
 				assert item != null;
-				return "make next gui slot with " + item.toString(e, debug);
+				return "make next gui slot with " + item.toString(event, debug);
 			case 1:
 				assert slots != null && item != null;
-				return "make gui slot(s) " + slots.toString(e, debug) + " with " + item.toString(e, debug);
+				return "make gui slot(s) " + slots.toString(event, debug) + " with " + item.toString(event, debug);
 			case 2:
 				return "remove the next gui slot";
 			case 3:
 				assert slots != null;
-				return "remove gui slot(s) " + slots.toString(e, debug);
+				return "remove gui slot(s) " + slots.toString(event, debug);
 			case 4:
 				return "remove all of the gui slots";
 			default:

@@ -20,7 +20,7 @@ public class SkriptGUI extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		Plugin skript = getServer().getPluginManager().getPlugin("Skript");
-		Version minimumSupportedVersion = new Version(2, 6, 3);
+		Version minimumSupportedVersion = new Version(2, 7, 3);
 		if (skript == null) {
 			// Skript doesn't exist within the server plugins folder
 			getLogger().severe("Could not find Skript! Make sure you have it installed. Disabling...");

@@ -64,25 +64,24 @@ public class SecGUIOpenClose extends Section {
 	}
 
 	@Override
-	@Nullable
-	public TriggerItem walk(Event e) {
-		GUI gui = SkriptGUI.getGUIManager().getGUI(e);
+	public @Nullable TriggerItem walk(Event event) {
+		GUI gui = SkriptGUI.getGUIManager().getGUI(event);
 		if (gui != null) {
-			Object variables = Variables.copyLocalVariables(e);
+			Object variables = Variables.copyLocalVariables(event);
 			if (close) {
 				if (variables != null) {
-					gui.setOnClose(event -> {
-						Variables.setLocalVariables(event, variables);
-						trigger.execute(event);
+					gui.setOnClose(closeEvent -> {
+						Variables.setLocalVariables(closeEvent, variables);
+						trigger.execute(closeEvent);
 					});
 				} else {
 					gui.setOnClose(trigger::execute);
 				}
 			} else {
 				if (variables != null) {
-					gui.setOnOpen(event -> {
-						Variables.setLocalVariables(event, variables);
-						trigger.execute(event);
+					gui.setOnOpen(openEvent -> {
+						Variables.setLocalVariables(openEvent, variables);
+						trigger.execute(openEvent);
 					});
 				} else {
 					gui.setOnOpen(trigger::execute);
@@ -91,7 +90,7 @@ public class SecGUIOpenClose extends Section {
 		}
 
 		// We don't want to execute this section
-		return walk(e, false);
+		return walk(event, false);
 	}
 
 	@Override
