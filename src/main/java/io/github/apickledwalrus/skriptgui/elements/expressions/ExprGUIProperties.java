@@ -13,7 +13,7 @@ import ch.njol.util.coll.CollectionUtils;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 @Name("GUI Properties")
 @Description("Different properties of a GUI. They can be modified.")
