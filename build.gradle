@@ -11,7 +11,7 @@ compileJava.options.encoding = 'UTF-8'
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(8))
     }
 }
 
@@ -23,9 +23,10 @@ repositories {
 }
 
 dependencies {
+    implementation group: 'org.jetbrains', name: 'annotations', version: '26.0.1'
     implementation group: 'com.google.code.findbugs', name: 'findbugs', version: '3.0.1'
-    implementation group: 'io.papermc.paper', name: 'paper-api', version: '1.19.4-R0.1-SNAPSHOT'
-    implementation (group: 'com.github.SkriptLang', name: 'Skript', version: '2.10.0') {
+    implementation group: 'com.destroystokyo.paper', name: 'paper-api', version: '1.16.4-R0.1-SNAPSHOT'
+    implementation (group: 'com.github.SkriptLang', name: 'Skript', version: '2.7.3') {
         transitive = false
     }
 }
@@ -36,17 +37,17 @@ processResources {
     ]
 }
 
-task nightlyResources(type: ProcessResources) {
+tasks.register('nightlyResources', ProcessResources) {
     from 'src/main/resources', {
         include '**'
         filter ReplaceTokens, tokens: [
-                'version' : project.property('version') + '-nightly-' + 'git rev-parse --short HEAD'.execute().text.trim()
+                'version': project.property('version') + '-nightly-' + 'git rev-parse --short HEAD'.execute().text.trim()
         ]
     }
     into 'build/resources/main'
 }
 
-task nightlyBuild(type: Jar) {
+tasks.register('nightlyBuild', Jar) {
     dependsOn nightlyResources
     from sourceSets.main.output
     archiveFileName = 'skript-gui-nightly.jar'

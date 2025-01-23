@@ -28,15 +28,21 @@ import org.jetbrains.annotations.Nullable;
 public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 
 	static {
-		register(ExprGUIProperties.class, Object.class, "(0¦[skript-gui] name[s]|1¦(size[s]|rows)|2¦shape[s]|3¦lock status[es])", "guiinventorys");
+		register(ExprGUIProperties.class, Object.class, "[[skript-]gui] (0:name[s]|1:(size[s]|rows)|2:shape[s]|3:lock status[es])", "guiinventorys");
 	}
 
-	private static final int NAME = 0, ROWS = 1, SHAPE = 2, LOCK_STATUS = 3;
-	private int property;
+	private enum Property {
+		NAME,
+		ROWS,
+		SHAPE,
+		LOCK_STATUS
+	}
+
+	private Property property;
 
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		property = parseResult.mark;
+		property = Property.values()[parseResult.mark];
 		return super.init(exprs, matchedPattern, isDelayed, parseResult);
 	}
 
@@ -52,78 +58,79 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 				return gui.getRawShape();
 			case LOCK_STATUS:
 				return !gui.isRemovable(); // Not removable = locked
+			default:
+				return null;
 		}
-		return null;
 	}
 
 	@Override
 	@Nullable
 	public Class<?>[] acceptChange(ChangeMode mode) {
-		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
-			switch (property) {
-				case NAME:
-					return CollectionUtils.array(String.class);
-				case ROWS:
-					return CollectionUtils.array(Number.class);
-				case SHAPE:
-					return CollectionUtils.array(String[].class);
-				case LOCK_STATUS:
-					return CollectionUtils.array(Boolean.class);
-			}
+		switch (mode) {
+			case SET:
+			case RESET:
+				switch (property) {
+					case NAME:
+						return CollectionUtils.array(String.class);
+					case ROWS:
+						return CollectionUtils.array(Number.class);
+					case SHAPE:
+						return CollectionUtils.array(String[].class);
+					case LOCK_STATUS:
+						return CollectionUtils.array(Boolean.class);
+				}
+			default:
+				return null;
 		}
-		return null;
 	}
 
 	@Override
-	public void change(Event e, Object @Nullable [] delta, ChangeMode mode) {
-		if (delta == null || (mode != ChangeMode.SET && mode != ChangeMode.RESET)) {
+	public void change(Event event, Object @Nullable [] delta, ChangeMode mode) {
+		GUI gui = SkriptGUI.getGUIManager().getGUI(event);
+		if (gui == null) {
 			return;
 		}
-		GUI gui = SkriptGUI.getGUIManager().getGUI(e);
-		if (gui != null) {
-			switch (mode) {
-				case SET:
-					switch (property) {
-						case NAME:
-							gui.setName((String) delta[0]);
-							break;
-						case ROWS:
-							gui.setSize(((Number) delta[0]).intValue() * 9);
-							break;
-						case SHAPE:
-							String[] newShape = new String[delta.length];
-							for (int i = 0; i < delta.length; i++) {
-								if (!(delta[i] instanceof String)) {
-									return;
-								}
-								newShape[i] = (String) delta[i];
-							}
-							gui.setShape(newShape);
-							break;
-						case LOCK_STATUS:
-							gui.setRemovable(!(boolean) delta[0]);
-							break;
-					}
+
+		switch (property) {
+			case NAME:
+				String name;
+				if (delta == null) {
+					name = gui.getInventory().getType().getDefaultTitle();
+				} else {
+					name = (String) delta[0];
+				}
+				gui.setName(name);
+				break;
+			case ROWS:
+				int size;
+				if (delta == null) {
+					size = gui.getInventory().getType().getDefaultSize();
+				} else {
+					size = ((Number) delta[0]).intValue() * 9;
+				}
+				gui.setSize(size);
+				break;
+			case SHAPE:
+				if (delta == null) {
+					gui.resetShape();
 					break;
-				case RESET:
-					switch (property) {
-						case NAME:
-							gui.setName(gui.getInventory().getType().getDefaultTitle());
-							break;
-						case ROWS:
-							gui.setSize(gui.getInventory().getType().getDefaultSize());
-							break;
-						case SHAPE:
-							gui.resetShape();
-							break;
-						case LOCK_STATUS:
-							gui.setRemovable(false);
-							break;
+				}
+				String[] newShape = new String[delta.length];
+				for (int i = 0; i < delta.length; i++) {
+					if (!(delta[i] instanceof String)) {
+						return;
 					}
-					break;
-				default:
-					assert false;
-			}
+					newShape[i] = (String) delta[i];
+				}
+				gui.setShape(newShape);
+				break;
+			case LOCK_STATUS:
+				boolean value = false;
+				if (delta != null) {
+					value = (boolean) delta[0];
+				}
+				gui.setRemovable(value);
+				break;
 		}
 	}
 
@@ -138,7 +145,7 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 			case LOCK_STATUS:
 				return Boolean.class;
 			default:
-				return Object.class;
+				throw new IllegalArgumentException("Unknown property: " + property);
 		}
 	}
 
@@ -154,7 +161,7 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 			case LOCK_STATUS:
 				return "lock status";
 			default:
-				return "property";
+				throw new IllegalArgumentException("Unknown property: " + property);
 		}
 	}
 

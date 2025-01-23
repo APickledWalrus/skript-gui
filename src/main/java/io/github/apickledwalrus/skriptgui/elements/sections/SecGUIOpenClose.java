@@ -46,7 +46,8 @@ public class SecGUIOpenClose extends Section {
 	private Trigger trigger;
 
 	@Override
-	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult, SectionNode sectionNode, List<TriggerItem> triggerItems) {
+	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult,
+						SectionNode sectionNode, List<TriggerItem> triggerItems) {
 		if (!getParser().isCurrentSection(SecCreateGUI.class)) {
 			Skript.error("GUI open/close sections can only be put within GUI creation or editing sections.");
 			return false;

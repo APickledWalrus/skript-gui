@@ -7,11 +7,11 @@ import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
-import ch.njol.skript.lang.SectionSkriptEvent;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
+import io.github.apickledwalrus.skriptgui.SkriptUtils;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecCreateGUI;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecGUIOpenClose;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecMakeGUI;
@@ -39,9 +39,7 @@ public class ExprNextGUISlot extends SimpleExpression<Character> {
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		if (matchedPattern == 2) {
-			if (!getParser().isCurrentSection(SecCreateGUI.class)
-					|| !(getParser().getCurrentStructure() instanceof SectionSkriptEvent sectionEvent)
-					|| !(sectionEvent.isSection(SecCreateGUI.class, SecMakeGUI.class, SecGUIOpenClose.class))) {
+			if (!SkriptUtils.isSection(SecCreateGUI.class, SecMakeGUI.class, SecGUIOpenClose.class)) {
 				Skript.error("The 'next gui slot' expression must have a GUI specified unless it is used in a GUI section.");
 				return false;
 			}

@@ -44,9 +44,10 @@ public class SecSlotChange extends Section {
 	private Trigger trigger;
 	private Expression<Integer> guiSlots;
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult, SectionNode sectionNode, List<TriggerItem> triggerItems) {
+	@SuppressWarnings("unchecked")
+	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult,
+						SectionNode sectionNode, List<TriggerItem> triggerItems) {
 		if (!getParser().isCurrentSection(SecCreateGUI.class)) {
 			Skript.error("You can't listen for changes of a slot outside of a GUI creation or editing section.");
 			return false;

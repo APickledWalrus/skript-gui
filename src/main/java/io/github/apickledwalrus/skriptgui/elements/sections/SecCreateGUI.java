@@ -47,7 +47,8 @@ public class SecCreateGUI extends EffectSection {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult, @Nullable SectionNode sectionNode, @Nullable List<TriggerItem> triggerItems) {
+	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult,
+						@Nullable SectionNode sectionNode, @Nullable List<TriggerItem> triggerItems) {
 		if (matchedPattern == 1) {
 			if (sectionNode == null) {
 				Skript.error("You can't edit a gui inventory using an empty section, you need to change at least a slot or a property.");
@@ -84,8 +85,8 @@ public class SecCreateGUI extends EffectSection {
 				return walk(event, false);
 			}
 
-			if (this.inventory instanceof ExprVirtualInventory exprVirtualInventory) { // Try to set the name
-				gui = new GUI(inv, removableItems, exprVirtualInventory.getName());
+			if (this.inventory instanceof ExprVirtualInventory) { // Try to set the name
+				gui = new GUI(inv, removableItems, ((ExprVirtualInventory) this.inventory).getName());
 			} else {
 				gui = new GUI(inv, removableItems, null);
 			}

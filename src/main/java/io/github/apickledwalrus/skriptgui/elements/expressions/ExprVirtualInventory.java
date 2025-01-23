@@ -23,26 +23,22 @@ import org.jetbrains.annotations.Nullable;
 public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 
 	static {
-		Skript.registerExpression(ExprVirtualInventory.class, Inventory.class, ExpressionType.SIMPLE,
-				"virtual (1¦(crafting [table]|workbench)|2¦chest|3¦anvil|4¦hopper|5¦dropper|6¦dispenser|%-inventorytype%) [with size %-number%] [(named|with (name|title)) %-string%]",
-				"virtual (1¦(crafting [table]|workbench)|2¦chest|3¦anvil|4¦hopper|5¦dropper|6¦dispenser|%-inventorytype%) [with %-number% row[s]] [(named|with (name|title)) %-string%]",
-				"virtual (1¦(crafting [table]|workbench)|2¦chest|3¦anvil|4¦hopper|5¦dropper|6¦dispenser|%-inventorytype%) [(named|with (name|title)) %-string%] with size %-number%",
-				"virtual (1¦(crafting [table]|workbench)|2¦chest|3¦anvil|4¦hopper|5¦dropper|6¦dispenser|%-inventorytype%) [(named|with (name|title)) %-string%] with %-number% row[s]"
+		String common = "virtual (1:(crafting [table]|workbench)|2:chest|3:anvil|4:hopper|5:dropper|6:dispenser|%-inventorytype%)";
+		Skript.registerExpression(ExprVirtualInventory.class, Inventory.class, ExpressionType.COMBINED,
+				common + " [with size %-number%] [(named|with (name|title)) %-string%]",
+				common + " [with %-number% row[s]] [(named|with (name|title)) %-string%]",
+				common + " [(named|with (name|title)) %-string%] with size %-number%",
+				common + " [(named|with (name|title)) %-string%] with %-number% row[s]"
 		);
 	}
 
-	@Nullable
-	private InventoryType specifiedType;
-	@Nullable
-	private Expression<InventoryType> inventoryType;
-	@Nullable
-	private Expression<Number> rows;
-	@Nullable
-	private Expression<String> name;
+	private @Nullable InventoryType specifiedType;
+	private @Nullable Expression<InventoryType> inventoryType;
+	private @Nullable Expression<Number> rows;
+	private @Nullable Expression<String> name;
 
 	// The name of this inventory.
-	@Nullable
-	private String invName;
+	private @Nullable String invName;
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -83,22 +79,22 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 	}
 
 	@Override
-	protected Inventory[] get(Event e) {
-		InventoryType type = inventoryType != null ? inventoryType.getSingle(e) : specifiedType;
+	protected Inventory[] get(Event event) {
+		InventoryType type = inventoryType != null ? inventoryType.getSingle(event) : specifiedType;
 		if (type == null) {
 			return new Inventory[0];
 		} else if (type == InventoryType.CRAFTING) { // Make it a valid inventory. It's not the same, but it's likely what the user wants.
 			type = InventoryType.WORKBENCH;
 		}
 
-		String name = this.name != null ? this.name.getSingle(e) : null;
+		String name = this.name != null ? this.name.getSingle(event) : null;
 		invName = name != null ? name : type.getDefaultTitle();
 
 		Inventory inventory;
 		if (type == InventoryType.CHEST) {
 			int size = -1;
 			if (rows != null) {
-				Number rows = this.rows.getSingle(e);
+				Number rows = this.rows.getSingle(event);
 				if (rows != null) {
 					size = rows.intValue();
 					if (size <= 6) {
@@ -128,10 +124,10 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 	}
 
 	@Override
-	public String toString(@Nullable Event e, boolean debug) {
-		return "virtual " + (inventoryType != null ? inventoryType.toString(e, debug) : specifiedType != null ? specifiedType.name().toLowerCase() : "unknown inventory type")
-			+ (name != null ? " with name" + name.toString(e, debug) : "")
-			+ (rows != null ? " with " + rows.toString(e, debug) + " rows" : "");
+	public String toString(@Nullable Event event, boolean debug) {
+		return "virtual " + (inventoryType != null ? inventoryType.toString(event, debug) : specifiedType != null ? specifiedType.name().toLowerCase() : "unknown inventory type")
+			+ (name != null ? " with name" + name.toString(event, debug) : "")
+			+ (rows != null ? " with " + rows.toString(event, debug) + " rows" : "");
 	}
 
 	/**

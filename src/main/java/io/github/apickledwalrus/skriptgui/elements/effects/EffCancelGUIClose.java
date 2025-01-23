@@ -12,6 +12,7 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.parser.ParserInstance;
 import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
+import io.github.apickledwalrus.skriptgui.SkriptUtils;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecGUIOpenClose;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
@@ -43,9 +44,7 @@ public class EffCancelGUIClose extends Effect {
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		ParserInstance parser = getParser();
-		if (!parser.isCurrentEvent(InventoryCloseEvent.class)
-				|| !(parser.getCurrentStructure() instanceof SectionSkriptEvent sectionEvent)
-				|| !sectionEvent.isSection(SecGUIOpenClose.class)) {
+		if (!parser.isCurrentEvent(InventoryCloseEvent.class) && !SkriptUtils.isSection(SecGUIOpenClose.class)) {
 			Skript.error("Cancelling or uncancelling the closing of a GUI can only be done within a GUI close section.");
 			return false;
 		}

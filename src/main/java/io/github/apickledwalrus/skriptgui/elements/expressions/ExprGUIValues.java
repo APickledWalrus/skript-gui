@@ -9,13 +9,12 @@ import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
-import ch.njol.skript.lang.SectionSkriptEvent;
-import ch.njol.skript.lang.SkriptEvent;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
+import io.github.apickledwalrus.skriptgui.SkriptUtils;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecCreateGUI;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecGUIOpenClose;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecMakeGUI;
@@ -33,6 +32,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.Locale;
+
 @Name("GUI Values")
 @Description("Different utility values for a GUI. Some are available in vanilla Skript. Not all values are available for the GUI close section.")
 @Examples({
@@ -44,115 +46,133 @@ import org.jetbrains.annotations.Nullable;
 public class ExprGUIValues extends SimpleExpression<Object> {
 
 	static {
-		Skript.registerExpression(ExprGUIValues.class, Object.class, ExpressionType.SIMPLE,
-				"[the] gui slot",
-				"[the] gui raw slot",
-				"[the] gui hotbar slot",
-				"[the] gui inventory",
-				"[the] gui inventory action",
-				"[the] gui click (type|action)",
-				"[the] gui cursor [item]",
-				"[the] gui [(clicked|current)] item",
-				"[the] gui slot type",
-				"[the] gui player",
-				"[the] gui (viewer|player)s",
-				"[the] gui slot id",
-				"[the] gui"
-		);
+		Skript.registerExpression(ExprGUIValues.class, Object.class, ExpressionType.SIMPLE, Arrays.stream(Value.values())
+				.map(Value::getPattern)
+				.toArray(String[]::new));
 	}
 
-	private int pattern;
+	private enum Value {
+
+		SLOT("slot"),
+		RAW_SLOT("raw slot"),
+		HOTBAR_SLOT("hotbar slot"),
+		INVENTORY("inventory"),
+		INVENTORY_ACTION("inventory action"),
+		CLICK_TYPE("click (type|action)"),
+		CURSOR_ITEM("cursor [item]"),
+		CLICKED_ITEM("[clicked|current] item"),
+		SLOT_TYPE("slot type"),
+		PLAYER("player"),
+		VIEWERS("(viewer|player)s"),
+		SLOT_ID("slot id"),
+		GUI("");
+
+		private final String pattern;
+
+		Value(String pattern) {
+			this.pattern = "[the] gui" + pattern;
+		}
+
+		public String getPattern() {
+			return pattern;
+		}
+
+	}
+
+	private Value value;
 	private boolean isDelayed;
 	// Whether the expression is being used in an open/close section
 	private boolean openClose;
 
-	private String toString = "gui values";
-
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		SkriptEvent skriptEvent = getParser().getCurrentSkriptEvent();
-		if (!(matchedPattern == 12 && getParser().isCurrentSection(SecCreateGUI.class)) && !(skriptEvent instanceof SectionSkriptEvent && ((SectionSkriptEvent) skriptEvent).isSection(SecMakeGUI.class, SecGUIOpenClose.class))) {
+		if (!SkriptUtils.isSection(SecCreateGUI.class, SecMakeGUI.class, SecGUIOpenClose.class)) {
 			Skript.error("You can't use '" + parseResult.expr + "' outside of a GUI make or open/close section.");
 			return false;
 		}
 
-		openClose = skriptEvent instanceof SectionSkriptEvent && ((SectionSkriptEvent) skriptEvent).isSection(SecGUIOpenClose.class);
+		value = Value.values()[matchedPattern];
+		openClose = SkriptUtils.isSection(SecGUIOpenClose.class);
 
-		pattern = matchedPattern;
 		if (openClose && matchedPattern != 3 && matchedPattern != 9 && matchedPattern != 10 && matchedPattern != 12) {
 			Skript.error("You can't use '" + parseResult.expr + "' in a GUI open/close section.");
 			return false;
 		}
 
 		this.isDelayed = !isDelayed.isFalse(); // TRUE or UNKNOWN
-		toString = parseResult.expr;
 
 		return true;
 	}
 
 	@Override
 	protected Object[] get(Event event) {
-		if (pattern == 12) {
+		if (value == Value.GUI) {
 			GUI gui = SkriptGUI.getGUIManager().getGUI(event);
 			return gui != null ? new GUI[]{gui} : new GUI[0];
 		}
 
 		if (openClose) {
-			InventoryEvent e = (InventoryEvent) event;
-			switch (pattern) {
-				case 3:
-					return new Inventory[]{e.getInventory()};
-				case 9:
-					// Ugly but oh well
-					return new HumanEntity[]{(event instanceof InventoryCloseEvent ? ((InventoryCloseEvent) e).getPlayer() : ((InventoryOpenEvent) e).getPlayer())};
-				case 10:
-					return (e.getViewers().toArray(new HumanEntity[0]));
-			}
-		} else {
-			InventoryClickEvent e = (InventoryClickEvent) event;
-			switch (pattern) {
-				case 0:
-					return new Number[]{e.getSlot()};
-				case 1:
-					return new Number[]{e.getRawSlot()};
-				case 2:
-					return new Number[]{e.getHotbarButton()};
-				case 3:
-					Inventory clicked = e.getClickedInventory();
-					return clicked != null ? new Inventory[]{clicked} : new Inventory[0];
-				case 4:
-					return new InventoryAction[]{e.getAction()};
-				case 5:
-					return new ClickType[]{e.getClick()};
-				case 6:
-					ItemStack cursor = e.getCursor();
-					return cursor != null ? new ItemType[]{new ItemType(cursor)} : new ItemType[0];
-				case 7:
-					ItemStack currentItem = e.getCurrentItem();
-					return currentItem != null ? new ItemType[]{new ItemType(currentItem)} : new ItemType[0];
-				case 8:
-					return new SlotType[]{e.getSlotType()};
-				case 9:
-					return new HumanEntity[]{e.getWhoClicked()};
-				case 10:
-					return e.getViewers().toArray(new HumanEntity[0]);
-				case 11:
-					GUI gui = SkriptGUI.getGUIManager().getGUI(event);
-					return gui != null ? new String[]{"" + gui.convert(e.getSlot())} : new GUI[0];
+			InventoryEvent inventoryEvent = (InventoryEvent) event;
+			switch (value) {
+				case INVENTORY:
+					return new Inventory[]{inventoryEvent.getInventory()};
+				case PLAYER:
+					if (inventoryEvent instanceof InventoryCloseEvent) {
+						return new HumanEntity[]{((InventoryCloseEvent) event).getPlayer()};
+					}
+					return new HumanEntity[]{((InventoryOpenEvent) inventoryEvent).getPlayer()};
+				case VIEWERS:
+					return (inventoryEvent.getViewers().toArray(new HumanEntity[0]));
+				default:
+					throw new IllegalStateException("Unexpected value: " + value);
 			}
 		}
-		return new Object[0];
+
+		InventoryClickEvent clickEvent = (InventoryClickEvent) event;
+		switch (value) {
+			case SLOT:
+				return new Number[]{clickEvent.getSlot()};
+			case RAW_SLOT:
+				return new Number[]{clickEvent.getRawSlot()};
+			case HOTBAR_SLOT:
+				return new Number[]{clickEvent.getHotbarButton()};
+			case INVENTORY:
+				Inventory clicked = clickEvent.getClickedInventory();
+				return clicked != null ? new Inventory[]{clicked} : new Inventory[0];
+			case INVENTORY_ACTION:
+				return new InventoryAction[]{clickEvent.getAction()};
+			case CLICK_TYPE:
+				return new ClickType[]{clickEvent.getClick()};
+			case CURSOR_ITEM:
+				ItemStack cursor = clickEvent.getCursor();
+				return cursor != null ? new ItemType[]{new ItemType(cursor)} : new ItemType[0];
+			case CLICKED_ITEM:
+				ItemStack currentItem = clickEvent.getCurrentItem();
+				return currentItem != null ? new ItemType[]{new ItemType(currentItem)} : new ItemType[0];
+			case SLOT_TYPE:
+				return new SlotType[]{clickEvent.getSlotType()};
+			case PLAYER:
+				return new HumanEntity[]{clickEvent.getWhoClicked()};
+			case VIEWERS:
+				return clickEvent.getViewers().toArray(new HumanEntity[0]);
+			case SLOT_ID:
+				GUI gui = SkriptGUI.getGUIManager().getGUI(event);
+				return gui != null ? new String[]{String.valueOf(gui.convert(clickEvent.getSlot()))} : new GUI[0];
+			default:
+				throw new IllegalStateException("Unexpected value: " + value);
+		}
 	}
 
 	@Override
 	@Nullable
 	public Class<?>[] acceptChange(ChangeMode mode) {
 		if (isDelayed) {
-			Skript.error("You can't set the '" + toString + "' when the event is already passed.");
+			String value = "the gui " + this.value.name().toLowerCase(Locale.ENGLISH).replace("_", "");
+			Skript.error("You can't set the '" + value  + "' when the event is already passed.");
 			return null;
 		}
 
-		if (mode == ChangeMode.SET && pattern == 7) {
+		if (mode == ChangeMode.SET && value == Value.CLICKED_ITEM) {
 			return CollectionUtils.array(ItemType.class);
 		}
 
@@ -169,42 +189,42 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 
 	@Override
 	public boolean isSingle() {
-		return pattern != 10;
+		return value != Value.VIEWERS;
 	}
 
 	@Override
 	public Class<?> getReturnType() {
-		switch (pattern) {
-			case 0:
-			case 1:
-			case 2:
+		switch (value) {
+			case SLOT:
+			case RAW_SLOT:
+			case HOTBAR_SLOT:
 				return Number.class;
-			case 3:
+			case INVENTORY:
 				return Inventory.class;
-			case 4:
+			case INVENTORY_ACTION:
 				return InventoryAction.class;
-			case 5:
+			case CLICK_TYPE:
 				return ClickType.class;
-			case 6:
-			case 7:
+			case CURSOR_ITEM:
+			case CLICKED_ITEM:
 				return ItemType.class;
-			case 8:
+			case SLOT_TYPE:
 				return SlotType.class;
-			case 9:
-			case 10:
+			case PLAYER:
+			case VIEWERS:
 				return HumanEntity.class;
-			case 11:
+			case SLOT_ID:
 				return String.class;
-			case 12:
+			case GUI:
 				return GUI.class;
 			default:
-				return Object.class;
+				throw new IllegalStateException("Unknown value " + value);
 		}
 	}
 
 	@Override
-	public String toString(@Nullable Event e, boolean debug) {
-		return toString;
+	public String toString(@Nullable Event event, boolean debug) {
+		return "the " + value.name().toLowerCase(Locale.ENGLISH);
 	}
 
 }
