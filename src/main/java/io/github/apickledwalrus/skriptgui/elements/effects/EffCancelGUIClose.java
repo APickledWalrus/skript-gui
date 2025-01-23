@@ -44,7 +44,7 @@ public class EffCancelGUIClose extends Effect {
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		ParserInstance parser = getParser();
-		if (!parser.isCurrentEvent(InventoryCloseEvent.class) && !SkriptUtils.isSection(SecGUIOpenClose.class)) {
+		if (!parser.isCurrentEvent(InventoryCloseEvent.class) || !SkriptUtils.isSection(SecGUIOpenClose.class)) {
 			Skript.error("Cancelling or uncancelling the closing of a GUI can only be done within a GUI close section.");
 			return false;
 		}
