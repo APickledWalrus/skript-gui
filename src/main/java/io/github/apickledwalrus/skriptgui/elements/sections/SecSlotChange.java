@@ -42,7 +42,7 @@ public class SecSlotChange extends Section {
 	}
 
 	private Trigger trigger;
-	private Expression<Integer> guiSlots;
+	private Expression<Integer> slots;
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -54,7 +54,7 @@ public class SecSlotChange extends Section {
 		}
 
 		trigger = loadCode(sectionNode, "inventory click", InventoryClickEvent.class);
-		guiSlots = (Expression<Integer>) exprs[0];
+		slots = (Expression<Integer>) exprs[0];
 
 		return true;
 	}
@@ -63,10 +63,11 @@ public class SecSlotChange extends Section {
 	@Nullable
 	public TriggerItem walk(Event event) {
 		GUI gui = SkriptGUI.getGUIManager().getGUI(event);
-		if (gui == null)
+		if (gui == null) {
 			return walk(event, false);
+		}
 
-		Integer[] slots = guiSlots.getAll(event);
+		Integer[] slots = this.slots.getAll(event);
 
 		for (Integer slot : slots) {
 			if (slot >= 0 && slot + 1 <= gui.getInventory().getSize()) {
@@ -92,7 +93,8 @@ public class SecSlotChange extends Section {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return "run on change of slot " + guiSlots.toString(event, debug);
+		boolean isSingle = slots.isSingle();
+		return "run when gui slot" + (isSingle ? " " : "s ") + slots.toString(event, debug) + " change" + (isSingle ? "s" : "");
 	}
 
 }

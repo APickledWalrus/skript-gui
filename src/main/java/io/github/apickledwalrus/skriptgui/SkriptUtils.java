@@ -12,7 +12,7 @@ public final class SkriptUtils {
 		ParserInstance parser = ParserInstance.get();
 		Structure current = parser.getCurrentStructure();
 		return parser.isCurrentSection(sections)
-				|| (current instanceof SectionSkriptEvent && ((SectionSkriptEvent) current).isSection(sections));
+				|| (current instanceof SectionSkriptEvent sectionSkriptEvent && sectionSkriptEvent.isSection(sections));
 	}
 
 }

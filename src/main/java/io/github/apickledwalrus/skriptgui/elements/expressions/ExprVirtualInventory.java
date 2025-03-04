@@ -8,7 +8,9 @@ import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.skript.lang.SyntaxStringBuilder;
 import ch.njol.skript.lang.util.SimpleExpression;
+import ch.njol.skript.registrations.Classes;
 import ch.njol.util.Kleenean;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
@@ -37,34 +39,23 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 	private @Nullable Expression<Number> rows;
 	private @Nullable Expression<String> name;
 
-	// The name of this inventory.
-	private @Nullable String invName;
+	// The last executed name. Used for runtime context purposes.
+	private @Nullable String lastInventoryName;
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult) {
 		inventoryType = (Expression<InventoryType>) exprs[0];
 		if (inventoryType == null) { // They must be using a specific one
-			switch (parseResult.mark) {
-				case 1:
-					specifiedType = InventoryType.WORKBENCH;
-					break;
-				case 2:
-					specifiedType = InventoryType.CHEST;
-					break;
-				case 3:
-					specifiedType = InventoryType.ANVIL;
-					break;
-				case 4:
-					specifiedType = InventoryType.HOPPER;
-					break;
-				case 5:
-					specifiedType = InventoryType.DROPPER;
-					break;
-				case 6:
-					specifiedType = InventoryType.DISPENSER;
-					break;
-			}
+			specifiedType = switch (parseResult.mark) {
+				case 1 -> InventoryType.WORKBENCH;
+				case 2 -> InventoryType.CHEST;
+				case 3 -> InventoryType.ANVIL;
+				case 4 -> InventoryType.HOPPER;
+				case 5 -> InventoryType.DROPPER;
+				case 6 -> InventoryType.DISPENSER;
+				default -> throw new IllegalStateException("Unexpected value: " + parseResult.mark);
+			};
 		}
 
 		if (matchedPattern > 1) {
@@ -81,14 +72,14 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 	@Override
 	protected Inventory[] get(Event event) {
 		InventoryType type = inventoryType != null ? inventoryType.getSingle(event) : specifiedType;
-		if (type == null) {
+		if (type == null || !type.isCreatable()) {
 			return new Inventory[0];
 		} else if (type == InventoryType.CRAFTING) { // Make it a valid inventory. It's not the same, but it's likely what the user wants.
 			type = InventoryType.WORKBENCH;
 		}
 
 		String name = this.name != null ? this.name.getSingle(event) : null;
-		invName = name != null ? name : type.getDefaultTitle();
+		lastInventoryName = name != null ? name : type.getDefaultTitle();
 
 		Inventory inventory;
 		if (type == InventoryType.CHEST) {
@@ -105,9 +96,9 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 			if (size < 9 || size > 54 || size % 9 != 0) { // Invalid inventory size
 				size = type.getDefaultSize();
 			}
-			inventory = Bukkit.getServer().createInventory(null, size, invName);
+			inventory = Bukkit.getServer().createInventory(null, size, lastInventoryName);
 		} else {
-			inventory = Bukkit.getServer().createInventory(null, type, invName);
+			inventory = Bukkit.getServer().createInventory(null, type, lastInventoryName);
 		}
 
 		return new Inventory[]{inventory};
@@ -125,17 +116,34 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return "virtual " + (inventoryType != null ? inventoryType.toString(event, debug) : specifiedType != null ? specifiedType.name().toLowerCase() : "unknown inventory type")
-			+ (name != null ? " with name" + name.toString(event, debug) : "")
-			+ (rows != null ? " with " + rows.toString(event, debug) + " rows" : "");
+		SyntaxStringBuilder builder = new SyntaxStringBuilder(event, debug);
+		builder.append("virtual");
+
+		if (inventoryType != null) {
+			builder.append(inventoryType);
+		} else if (specifiedType != null) {
+			builder.append(Classes.toString(specifiedType));
+		} else {
+			builder.append("inventory");
+		}
+
+		if (name != null) {
+			builder.append("with name", name);
+		}
+
+		if (rows != null) {
+			builder.append("with", rows, "rows");
+		}
+
+		return builder.toString();
 	}
 
 	/**
-	 * @return The name of this inventory. If {@link #invName} is null
+	 * @return The name of this inventory. If {@link #lastInventoryName} is null
 	 * when this method is called, an empty string will be returned.
 	 */
 	public String getName() {
-		return invName != null ? invName : "";
+		return lastInventoryName != null ? lastInventoryName : "";
 	}
 
 }

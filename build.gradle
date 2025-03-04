@@ -11,7 +11,7 @@ compileJava.options.encoding = 'UTF-8'
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
@@ -25,8 +25,8 @@ repositories {
 dependencies {
     implementation group: 'org.jetbrains', name: 'annotations', version: '26.0.1'
     implementation group: 'com.google.code.findbugs', name: 'findbugs', version: '3.0.1'
-    implementation group: 'com.destroystokyo.paper', name: 'paper-api', version: '1.16.4-R0.1-SNAPSHOT'
-    implementation (group: 'com.github.SkriptLang', name: 'Skript', version: '2.7.3') {
+    implementation group: 'io.papermc.paper', name: 'paper-api', version: '1.19.4-R0.1-SNAPSHOT'
+    implementation (group: 'com.github.SkriptLang', name: 'Skript', version: '2.10.1') {
         transitive = false
     }
 }

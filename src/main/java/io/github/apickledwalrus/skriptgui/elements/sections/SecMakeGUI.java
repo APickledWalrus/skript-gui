@@ -10,6 +10,7 @@ import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.EffectSection;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.skript.lang.SyntaxStringBuilder;
 import ch.njol.skript.lang.Trigger;
 import ch.njol.skript.lang.TriggerItem;
 import ch.njol.skript.variables.Variables;
@@ -46,12 +47,26 @@ public class SecMakeGUI extends EffectSection {
 		);
 	}
 
+	private enum Action {
+
+		MAKE_NEXT,
+		MAKE_SPECIFIC,
+		REMOVE_NEXT,
+		REMOVE_SPECIFIC,
+		REMOVE_ALL;
+
+		public boolean isMake() {
+			return this == MAKE_NEXT || this == MAKE_SPECIFIC;
+		}
+
+	}
+
 	private @Nullable Trigger trigger;
 
 	private @Nullable Expression<Object> slots; // Can be number or a string
 	private @Nullable Expression<ItemType> item;
 
-	private int pattern;
+	private Action action;
 	private boolean removable;
 
 	@Override
@@ -63,18 +78,17 @@ public class SecMakeGUI extends EffectSection {
 			return false;
 		}
 
-		pattern = matchedPattern;
-		if (matchedPattern < 2) {
+		action = Action.values()[matchedPattern];
+		if (action.isMake()) {
 			item = (Expression<ItemType>) exprs[matchedPattern];
 		}
-		if (matchedPattern == 1 || matchedPattern == 3) {
+		if (action == Action.MAKE_SPECIFIC || action == Action.REMOVE_SPECIFIC) {
 			slots = (Expression<Object>) exprs[0];
 		}
 
 		removable = parseResult.hasTag("removable");
 
-		if (hasSection()) {
-			assert sectionNode != null;
+		if (sectionNode != null) {
 			trigger = loadCode(sectionNode, "inventory click", InventoryClickEvent.class);
 		}
 
@@ -89,16 +103,18 @@ public class SecMakeGUI extends EffectSection {
 			return walk(event, false);
 		}
 
-		switch (pattern) {
-			case 0: // Set the next slot
-			case 1: // Set the input slots
+		switch (action) {
+			case MAKE_NEXT, MAKE_SPECIFIC -> {
 				assert item != null;
 				ItemType itemType = item.getSingle(event);
-				if (itemType == null)
+				if (itemType == null) {
 					break;
+				}
 				ItemStack item = itemType.getRandom();
-				if (hasSection()) {
-					assert trigger != null;
+				if (item == null) {
+					break;
+				}
+				if (trigger != null) {
 					Object variables = Variables.copyLocalVariables(event);
 					if (variables != null) {
 						for (Object slot : slots != null ? slots.getArray(event) : new Object[]{gui.nextSlot()}) {
@@ -117,19 +133,15 @@ public class SecMakeGUI extends EffectSection {
 						gui.setItem(slot, item, removable, null);
 					}
 				}
-				break;
-			case 2: // Clear the next slot
-				gui.clear(gui.nextSlotInverted());
-				break;
-			case 3: // Clear the input slots
+			}
+			case REMOVE_NEXT -> gui.clear(gui.nextSlotInverted());
+			case REMOVE_SPECIFIC -> {
 				assert slots != null;
 				for (Object slot : slots.getArray(event)) {
 					gui.clear(slot);
 				}
-				break;
-			case 4: // Clear all slots
-				gui.clear();
-				break;
+			}
+			case REMOVE_ALL -> gui.clear();
 		}
 
 		// We don't want to execute this section
@@ -138,23 +150,26 @@ public class SecMakeGUI extends EffectSection {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		switch (pattern) {
-			case 0:
+		return switch (action) {
+			case MAKE_NEXT, MAKE_SPECIFIC -> {
 				assert item != null;
-				return "make next gui slot with " + item.toString(event, debug);
-			case 1:
-				assert slots != null && item != null;
-				return "make gui slot(s) " + slots.toString(event, debug) + " with " + item.toString(event, debug);
-			case 2:
-				return "remove the next gui slot";
-			case 3:
+				SyntaxStringBuilder builder = new SyntaxStringBuilder(event, debug);
+				builder.append("make");
+				if (slots == null) {
+					builder.append("the next gui slot");
+				} else {
+					builder.append("slot" + (slots.isSingle() ? "" : "s"), slots);
+				}
+				builder.append("with", item);
+				yield builder.toString();
+			}
+			case REMOVE_NEXT -> "remove the next gui slot";
+			case REMOVE_SPECIFIC -> {
 				assert slots != null;
-				return "remove gui slot(s) " + slots.toString(event, debug);
-			case 4:
-				return "remove all of the gui slots";
-			default:
-				return "make gui";
-		}
+				yield "remove gui slot" + (slots.isSingle() ? " " : "s ") + slots.toString(event, debug);
+			}
+			case REMOVE_ALL -> "remove all of the gui slots";
+		};
 	}
 
 }

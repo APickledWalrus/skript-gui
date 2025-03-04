@@ -9,6 +9,7 @@ import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.EffectSection;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.skript.lang.SyntaxStringBuilder;
 import ch.njol.skript.lang.TriggerItem;
 import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
@@ -51,7 +52,7 @@ public class SecCreateGUI extends EffectSection {
 						@Nullable SectionNode sectionNode, @Nullable List<TriggerItem> triggerItems) {
 		if (matchedPattern == 1) {
 			if (sectionNode == null) {
-				Skript.error("You can't edit a gui inventory using an empty section, you need to change at least a slot or a property.");
+				Skript.error("An 'edit gui' line must have a section (i.e. change something)");
 				return false;
 			}
 			gui = (Expression<GUI>) exprs[0];
@@ -85,8 +86,8 @@ public class SecCreateGUI extends EffectSection {
 				return walk(event, false);
 			}
 
-			if (this.inventory instanceof ExprVirtualInventory) { // Try to set the name
-				gui = new GUI(inv, removableItems, ((ExprVirtualInventory) this.inventory).getName());
+			if (this.inventory instanceof ExprVirtualInventory exprVirtualInventory) { // Try to set the name
+				gui = new GUI(inv, removableItems, exprVirtualInventory.getName());
 			} else {
 				gui = new GUI(inv, removableItems, null);
 			}
@@ -148,18 +149,20 @@ public class SecCreateGUI extends EffectSection {
 			return "edit gui " + gui.toString(event, debug);
 		}
 
-		StringBuilder creation = new StringBuilder("create a gui");
+		SyntaxStringBuilder builder = new SyntaxStringBuilder(event, debug);
+		builder.append("create a gui");
 		if (id != null) {
-			creation.append(" with id ").append(id.toString(event, debug));
+			builder.append("with id", id);
 		}
-		creation.append(" with ").append(inventory.toString(event, debug));
+		builder.append("with").append(inventory);
 		if (removableItems) {
-			creation.append(" with removable items");
+			builder.append("with removable items");
 		}
 		if (shape != null) {
-			creation.append(" and shape ").append(shape.toString(event, debug));
+			builder.append("and shape", shape);
 		}
-		return creation.toString();
+
+		return builder.toString();
 	}
 
 }

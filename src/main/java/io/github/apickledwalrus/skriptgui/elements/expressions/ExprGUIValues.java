@@ -94,7 +94,7 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 		value = Value.values()[matchedPattern];
 		openClose = SkriptUtils.isSection(SecGUIOpenClose.class);
 
-		if (openClose && matchedPattern != 3 && matchedPattern != 9 && matchedPattern != 10 && matchedPattern != 12) {
+		if (openClose && value != Value.GUI && value != Value.INVENTORY && value != Value.PLAYER && value != Value.VIEWERS) {
 			Skript.error("You can't use '" + parseResult.expr + "' in a GUI open/close section.");
 			return false;
 		}
@@ -113,54 +113,47 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 
 		if (openClose) {
 			InventoryEvent inventoryEvent = (InventoryEvent) event;
-			switch (value) {
-				case INVENTORY:
-					return new Inventory[]{inventoryEvent.getInventory()};
-				case PLAYER:
+			return switch (value) {
+				case INVENTORY -> new Inventory[]{inventoryEvent.getInventory()};
+				case PLAYER -> {
 					if (inventoryEvent instanceof InventoryCloseEvent) {
-						return new HumanEntity[]{((InventoryCloseEvent) event).getPlayer()};
+						yield new HumanEntity[]{((InventoryCloseEvent) event).getPlayer()};
 					}
-					return new HumanEntity[]{((InventoryOpenEvent) inventoryEvent).getPlayer()};
-				case VIEWERS:
-					return (inventoryEvent.getViewers().toArray(new HumanEntity[0]));
-				default:
-					throw new IllegalStateException("Unexpected value: " + value);
-			}
+					yield new HumanEntity[]{((InventoryOpenEvent) inventoryEvent).getPlayer()};
+				}
+				case VIEWERS -> (inventoryEvent.getViewers().toArray(new HumanEntity[0]));
+				default -> throw new IllegalStateException("Unexpected value: " + value);
+			};
 		}
 
 		InventoryClickEvent clickEvent = (InventoryClickEvent) event;
-		switch (value) {
-			case SLOT:
-				return new Number[]{clickEvent.getSlot()};
-			case RAW_SLOT:
-				return new Number[]{clickEvent.getRawSlot()};
-			case HOTBAR_SLOT:
-				return new Number[]{clickEvent.getHotbarButton()};
-			case INVENTORY:
+		return switch (value) {
+			case SLOT -> new Number[]{clickEvent.getSlot()};
+			case RAW_SLOT -> new Number[]{clickEvent.getRawSlot()};
+			case HOTBAR_SLOT -> new Number[]{clickEvent.getHotbarButton()};
+			case INVENTORY -> {
 				Inventory clicked = clickEvent.getClickedInventory();
-				return clicked != null ? new Inventory[]{clicked} : new Inventory[0];
-			case INVENTORY_ACTION:
-				return new InventoryAction[]{clickEvent.getAction()};
-			case CLICK_TYPE:
-				return new ClickType[]{clickEvent.getClick()};
-			case CURSOR_ITEM:
+				yield clicked != null ? new Inventory[]{clicked} : new Inventory[0];
+			}
+			case INVENTORY_ACTION -> new InventoryAction[]{clickEvent.getAction()};
+			case CLICK_TYPE -> new ClickType[]{clickEvent.getClick()};
+			case CURSOR_ITEM -> {
 				ItemStack cursor = clickEvent.getCursor();
-				return cursor != null ? new ItemType[]{new ItemType(cursor)} : new ItemType[0];
-			case CLICKED_ITEM:
+				yield cursor != null ? new ItemType[]{new ItemType(cursor)} : new ItemType[0];
+			}
+			case CLICKED_ITEM -> {
 				ItemStack currentItem = clickEvent.getCurrentItem();
-				return currentItem != null ? new ItemType[]{new ItemType(currentItem)} : new ItemType[0];
-			case SLOT_TYPE:
-				return new SlotType[]{clickEvent.getSlotType()};
-			case PLAYER:
-				return new HumanEntity[]{clickEvent.getWhoClicked()};
-			case VIEWERS:
-				return clickEvent.getViewers().toArray(new HumanEntity[0]);
-			case SLOT_ID:
+				yield currentItem != null ? new ItemType[]{new ItemType(currentItem)} : new ItemType[0];
+			}
+			case SLOT_TYPE -> new SlotType[]{clickEvent.getSlotType()};
+			case PLAYER -> new HumanEntity[]{clickEvent.getWhoClicked()};
+			case VIEWERS -> clickEvent.getViewers().toArray(new HumanEntity[0]);
+			case SLOT_ID -> {
 				GUI gui = SkriptGUI.getGUIManager().getGUI(event);
-				return gui != null ? new String[]{String.valueOf(gui.convert(clickEvent.getSlot()))} : new GUI[0];
-			default:
-				throw new IllegalStateException("Unexpected value: " + value);
-		}
+				yield gui != null ? new String[]{String.valueOf(gui.convert(clickEvent.getSlot()))} : new GUI[0];
+			}
+			default -> throw new IllegalStateException("Unexpected value: " + value);
+		};
 	}
 
 	@Override
@@ -181,10 +174,10 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 
 	@Override
 	public void change(Event event, Object @Nullable [] delta, ChangeMode mode) {
-		if (delta == null || !(event instanceof InventoryClickEvent)) {
+		if (delta == null || !(event instanceof InventoryClickEvent inventoryClickEvent)) {
 			return;
 		}
-		((InventoryClickEvent) event).setCurrentItem(((ItemType) delta[0]).getRandom());
+		inventoryClickEvent.setCurrentItem(((ItemType) delta[0]).getRandom());
 	}
 
 	@Override
@@ -194,32 +187,17 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 
 	@Override
 	public Class<?> getReturnType() {
-		switch (value) {
-			case SLOT:
-			case RAW_SLOT:
-			case HOTBAR_SLOT:
-				return Number.class;
-			case INVENTORY:
-				return Inventory.class;
-			case INVENTORY_ACTION:
-				return InventoryAction.class;
-			case CLICK_TYPE:
-				return ClickType.class;
-			case CURSOR_ITEM:
-			case CLICKED_ITEM:
-				return ItemType.class;
-			case SLOT_TYPE:
-				return SlotType.class;
-			case PLAYER:
-			case VIEWERS:
-				return HumanEntity.class;
-			case SLOT_ID:
-				return String.class;
-			case GUI:
-				return GUI.class;
-			default:
-				throw new IllegalStateException("Unknown value " + value);
-		}
+		return switch (value) {
+			case SLOT, RAW_SLOT, HOTBAR_SLOT -> Number.class;
+			case INVENTORY -> Inventory.class;
+			case INVENTORY_ACTION -> InventoryAction.class;
+			case CLICK_TYPE -> ClickType.class;
+			case CURSOR_ITEM, CLICKED_ITEM -> ItemType.class;
+			case SLOT_TYPE -> SlotType.class;
+			case PLAYER, VIEWERS -> HumanEntity.class;
+			case SLOT_ID -> String.class;
+			case GUI -> GUI.class;
+		};
 	}
 
 	@Override

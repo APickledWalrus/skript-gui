@@ -20,7 +20,7 @@ public class SkriptClasses {
 			.description("Represents a skript-gui GUI")
 			.examples("See the GUI creation section.")
 			.since("1.0")
-			.parser(new Parser<GUI>() {
+			.parser(new Parser<>() {
 				@Override
 				public boolean canParse(ParseContext ctx) {
 					return false;
@@ -49,7 +49,7 @@ public class SkriptClasses {
 				.description("Represents the slot type in an Inventory Click Event.")
 				.examples(slotTypes.getAllNames())
 				.since("1.0.0")
-				.parser(new Parser<SlotType>() {
+				.parser(new Parser<>() {
 					@Override
 					public @Nullable SlotType parse(String expr, ParseContext context) {
 						return slotTypes.parse(expr);

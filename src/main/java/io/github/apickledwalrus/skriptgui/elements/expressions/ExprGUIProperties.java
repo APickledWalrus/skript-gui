@@ -49,39 +49,26 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 	@Override
 	@Nullable
 	public Object convert(GUI gui) {
-		switch (property) {
-			case NAME:
-				return gui.getName();
-			case ROWS:
-				return gui.getInventory().getSize() / 9; // We return rows
-			case SHAPE:
-				return gui.getRawShape();
-			case LOCK_STATUS:
-				return !gui.isRemovable(); // Not removable = locked
-			default:
-				return null;
-		}
+		return switch (property) {
+			case NAME -> gui.getName();
+			case ROWS -> gui.getInventory().getSize() / 9; // We return rows
+			case SHAPE -> gui.getRawShape();
+			case LOCK_STATUS -> !gui.isRemovable(); // Not removable = locked
+		};
 	}
 
 	@Override
 	@Nullable
 	public Class<?>[] acceptChange(ChangeMode mode) {
-		switch (mode) {
-			case SET:
-			case RESET:
-				switch (property) {
-					case NAME:
-						return CollectionUtils.array(String.class);
-					case ROWS:
-						return CollectionUtils.array(Number.class);
-					case SHAPE:
-						return CollectionUtils.array(String[].class);
-					case LOCK_STATUS:
-						return CollectionUtils.array(Boolean.class);
-				}
-			default:
-				return null;
-		}
+		return switch (mode) {
+			case SET, RESET -> switch (property) {
+				case NAME -> CollectionUtils.array(String.class);
+				case ROWS -> CollectionUtils.array(Number.class);
+				case SHAPE -> CollectionUtils.array(String[].class);
+				case LOCK_STATUS -> CollectionUtils.array(Boolean.class);
+			};
+			default -> null;
+		};
 	}
 
 	@Override
@@ -92,7 +79,7 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 		}
 
 		switch (property) {
-			case NAME:
+			case NAME -> {
 				String name;
 				if (delta == null) {
 					name = gui.getInventory().getType().getDefaultTitle();
@@ -100,8 +87,8 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 					name = (String) delta[0];
 				}
 				gui.setName(name);
-				break;
-			case ROWS:
+			}
+			case ROWS -> {
 				int size;
 				if (delta == null) {
 					size = gui.getInventory().getType().getDefaultSize();
@@ -109,8 +96,8 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 					size = ((Number) delta[0]).intValue() * 9;
 				}
 				gui.setSize(size);
-				break;
-			case SHAPE:
+			}
+			case SHAPE -> {
 				if (delta == null) {
 					gui.resetShape();
 					break;
@@ -123,46 +110,34 @@ public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 					newShape[i] = (String) delta[i];
 				}
 				gui.setShape(newShape);
-				break;
-			case LOCK_STATUS:
+			}
+			case LOCK_STATUS -> {
 				boolean value = false;
 				if (delta != null) {
 					value = (boolean) delta[0];
 				}
 				gui.setRemovable(value);
-				break;
+			}
 		}
 	}
 
 	@Override
 	public Class<?> getReturnType() {
-		switch (property) {
-			case NAME:
-			case SHAPE:
-				return String.class;
-			case ROWS:
-				return Number.class;
-			case LOCK_STATUS:
-				return Boolean.class;
-			default:
-				throw new IllegalArgumentException("Unknown property: " + property);
-		}
+		return switch (property) {
+			case NAME, SHAPE -> String.class;
+			case ROWS -> Number.class;
+			case LOCK_STATUS -> Boolean.class;
+		};
 	}
 
 	@Override
 	protected String getPropertyName() {
-		switch (property) {
-			case NAME:
-				return "name";
-			case ROWS:
-				return "size";
-			case SHAPE:
-				return "shape";
-			case LOCK_STATUS:
-				return "lock status";
-			default:
-				throw new IllegalArgumentException("Unknown property: " + property);
-		}
+		return switch (property) {
+			case NAME -> "name";
+			case ROWS -> "size";
+			case SHAPE -> "shape";
+			case LOCK_STATUS -> "lock status";
+		};
 	}
 
 }
