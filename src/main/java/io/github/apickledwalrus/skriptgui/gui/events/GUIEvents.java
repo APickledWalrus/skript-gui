@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -76,7 +77,7 @@ public class GUIEvents implements Listener {
 
 							ItemStack item = guiInventory.getItem(slot);
 							if (item != null && item.getType() != Material.AIR && item.isSimilar(clicked) && item.getAmount() < item.getMaxStackSize()) {
-								InventoryClickEvent clickEvent = setClickedSlot(event, slot);
+								InventoryClickEvent clickEvent = getClickEventWithSlot(event, slot);
 
 								if (!gui.isRemovable(gui.convert(slot))) {
 									event.setCancelled(true);
@@ -91,7 +92,7 @@ public class GUIEvents implements Listener {
 
 						int firstEmpty = guiInventory.firstEmpty();
 						if (firstEmpty != -1 && gui.isRemovable(gui.convert(firstEmpty))) { // Safe to be moved into the GUI
-							InventoryClickEvent clickEvent = setClickedSlot(event, firstEmpty);
+							InventoryClickEvent clickEvent = getClickEventWithSlot(event, firstEmpty);
 							eventHandler.onChange(clickEvent);
 							return;
 						}
@@ -125,33 +126,45 @@ public class GUIEvents implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-	public void onInventoryDrag(InventoryDragEvent e) {
-		GUI gui = SkriptGUI.getGUIManager().getGUI(e.getInventory());
+	public void onInventoryDrag(InventoryDragEvent event) {
+		GUI gui = SkriptGUI.getGUIManager().getGUI(event.getInventory());
 		if (gui != null) {
+			GUIEventHandler eventHandler = gui.getEventHandler();
 			// Check if any slots in the actual GUI were changed. We don't care if only the player's inventory was changed.
 			int lastSlotIndex = gui.getInventory().getSize() - 1;
-			for (int slot : e.getRawSlots()) {
+			for (int slot : event.getRawSlots()) {
 				if (slot <= lastSlotIndex) { // A slot in the actual GUI was interacted with
-					gui.getEventHandler().onDrag(e);
+					eventHandler.onDrag(event);
 					break;
 				}
+			}
+
+			for (int slot : event.getInventorySlots()) {
+				InventoryClickEvent clickEvent = new InventoryClickEvent(
+						event.getView(),
+						event.getView().getSlotType(slot),
+						slot,
+						ClickType.UNKNOWN,
+						InventoryAction.UNKNOWN
+				);
+				eventHandler.onChange(clickEvent);
 			}
 		}
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-	public void onInventoryOpen(InventoryOpenEvent e) {
-		GUI gui = SkriptGUI.getGUIManager().getGUI(e.getInventory());
+	public void onInventoryOpen(InventoryOpenEvent event) {
+		GUI gui = SkriptGUI.getGUIManager().getGUI(event.getInventory());
 		if (gui != null) {
-			gui.getEventHandler().onOpen(e);
+			gui.getEventHandler().onOpen(event);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
-	public void onInventoryClose(InventoryCloseEvent e) {
-		GUI gui = SkriptGUI.getGUIManager().getGUI(e.getInventory());
+	public void onInventoryClose(InventoryCloseEvent event) {
+		GUI gui = SkriptGUI.getGUIManager().getGUI(event.getInventory());
 		if (gui != null) {
-			gui.getEventHandler().onClose(e);
+			gui.getEventHandler().onClose(event);
 		}
 	}
 
@@ -176,7 +189,7 @@ public class GUIEvents implements Listener {
 				}
 
 				if (totalAmount < cursor.getMaxStackSize()) {
-					InventoryClickEvent clickEvent = setClickedSlot(event, slot);
+					InventoryClickEvent clickEvent = getClickEventWithSlot(event, slot);
 					clickEvents.add(clickEvent);
 					totalAmount += item.getAmount();
 				}
@@ -187,7 +200,7 @@ public class GUIEvents implements Listener {
 		}
 	}
 
-	private static InventoryClickEvent setClickedSlot(InventoryClickEvent event, int slot) {
+	private static InventoryClickEvent getClickEventWithSlot(InventoryClickEvent event, int slot) {
 		return new InventoryClickEvent(
 				event.getView(),
 				event.getSlotType(),

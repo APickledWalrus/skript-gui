@@ -64,23 +64,10 @@ public abstract class GUIEventHandler {
 		return isPaused() || pausedFor.contains(player);
 	}
 
-	public abstract void onClick(InventoryClickEvent e);
-	public abstract void onChange(InventoryClickEvent e);
-	public abstract void onDrag(InventoryDragEvent e);
-	public abstract void onOpen(InventoryOpenEvent e);
-	public abstract void onClose(InventoryCloseEvent e);
-
-	public void onChange(InventoryDragEvent e) {
-		for (int slot : e.getInventorySlots()) {
-			InventoryClickEvent clickEvent = new InventoryClickEvent(
-					e.getView(),
-					e.getView().getSlotType(slot),
-					slot,
-					ClickType.UNKNOWN,
-					InventoryAction.UNKNOWN
-			);
-			onChange(clickEvent);
-		}
-	}
+	public abstract void onClick(InventoryClickEvent event);
+	public abstract void onChange(InventoryClickEvent event);
+	public abstract void onDrag(InventoryDragEvent event);
+	public abstract void onOpen(InventoryOpenEvent event);
+	public abstract void onClose(InventoryCloseEvent event);
 
 }

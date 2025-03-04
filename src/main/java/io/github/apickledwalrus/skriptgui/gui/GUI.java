@@ -93,7 +93,6 @@ public class GUI implements AnyNamed {
 					break;
 				}
 			}
-			onChange(e);
 		}
 
 		@Override
