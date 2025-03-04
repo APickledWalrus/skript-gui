@@ -1,5 +1,6 @@
 package io.github.apickledwalrus.skriptgui.gui;
 
+import ch.njol.skript.lang.util.common.AnyNamed;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -20,7 +21,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 
-public class GUI {
+public class GUI implements AnyNamed {
 
 	private Inventory inventory;
 	private String name;
@@ -179,6 +180,16 @@ public class GUI {
 
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public String name() {
+		return name;
+	}
+
+	@Override
+	public boolean supportsNameChange() {
+		return true;
 	}
 
 	public void setName(@Nullable String name) {
