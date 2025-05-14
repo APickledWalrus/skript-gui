@@ -39,7 +39,7 @@ public class ExprNextGUISlot extends SimpleExpression<Character> {
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		if (matchedPattern == 2) {
-			if (!SkriptUtils.isSection(SecCreateGUI.class, SecMakeGUI.class, SecGUIOpenClose.class)) {
+			if (!SkriptUtils.isSection(getParser(), SecCreateGUI.class, SecMakeGUI.class, SecGUIOpenClose.class)) {
 				Skript.error("The 'next gui slot' expression must have a GUI specified unless it is used in a GUI section.");
 				return false;
 			}

@@ -73,7 +73,7 @@ public class SecMakeGUI extends EffectSection {
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult,
 						@Nullable SectionNode sectionNode, @Nullable List<TriggerItem> items) {
-		if (!SkriptUtils.isSection(SecCreateGUI.class, SecMakeGUI.class, SecGUIOpenClose.class)) {
+		if (!SkriptUtils.isSection(getParser(), SecCreateGUI.class, SecMakeGUI.class, SecGUIOpenClose.class)) {
 			Skript.error("You can't make a GUI slot outside of a GUI creation or editing section.");
 			return false;
 		}

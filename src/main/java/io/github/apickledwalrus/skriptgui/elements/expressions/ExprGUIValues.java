@@ -10,6 +10,7 @@ import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.skript.lang.parser.ParserInstance;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
@@ -86,13 +87,14 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		if (!SkriptUtils.isSection(SecCreateGUI.class, SecMakeGUI.class, SecGUIOpenClose.class)) {
+		ParserInstance parser = getParser();
+		if (!SkriptUtils.isSection(parser, SecCreateGUI.class, SecMakeGUI.class, SecGUIOpenClose.class)) {
 			Skript.error("You can't use '" + parseResult.expr + "' outside of a GUI make or open/close section.");
 			return false;
 		}
 
 		value = Value.values()[matchedPattern];
-		openClose = SkriptUtils.isSection(SecGUIOpenClose.class);
+		openClose = SkriptUtils.isSection(parser, SecGUIOpenClose.class);
 
 		if (openClose && value != Value.GUI && value != Value.INVENTORY && value != Value.PLAYER && value != Value.VIEWERS) {
 			Skript.error("You can't use '" + parseResult.expr + "' in a GUI open/close section.");

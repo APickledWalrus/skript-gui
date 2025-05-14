@@ -10,8 +10,7 @@ public final class SkriptUtils {
 	private SkriptUtils() { }
 
 	@SafeVarargs
-	public static boolean isSection(Class<? extends Section>... sections) {
-		ParserInstance parser = ParserInstance.get();
+	public static boolean isSection(ParserInstance parser, Class<? extends Section>... sections) {
 		Structure current = parser.getCurrentStructure();
 		return parser.isCurrentSection(sections)
 				|| (current instanceof SectionSkriptEvent sectionSkriptEvent && sectionSkriptEvent.isSection(sections));
