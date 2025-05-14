@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -17,8 +18,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class GUI implements AnyNamed {
@@ -116,10 +119,10 @@ public class GUI implements AnyNamed {
 			if (onClose != null) {
 				SkriptGUI.getGUIManager().setGUI(e, GUI.this);
 				onClose.accept(e);
-				if (closeCancelled) {
+				if (closeCancelled.contains(e)) {
 					Bukkit.getScheduler().runTaskLater(SkriptGUI.getInstance(), () -> {
 						// Reset behavior (it shouldn't persist)
-						setCloseCancelled(false);
+						setCloseCancelled(e, false);
 
 						Player closer = (Player) e.getPlayer();
 						pause(closer); // Avoid calling any open sections
@@ -153,7 +156,7 @@ public class GUI implements AnyNamed {
 	@Nullable
 	private Consumer<InventoryCloseEvent> onClose;
 	// Whether the inventory close event for this event handler is cancelled.
-	private boolean closeCancelled;
+	private final Set<Event> closeCancelled = new HashSet<>();
 
 	@Nullable
 	private String id;
@@ -500,8 +503,12 @@ public class GUI implements AnyNamed {
 	 * Sets whether this GUI's close event should be cancelled.
 	 * @param cancel Whether this GUI's close event should be cancelled.
 	 */
-	public void setCloseCancelled(boolean cancel) {
-		closeCancelled = cancel;
+	public void setCloseCancelled(Event event, boolean cancel) {
+		if (cancel) {
+			closeCancelled.add(event);
+		} else {
+			closeCancelled.remove(event);
+		}
 	}
 
 	/**

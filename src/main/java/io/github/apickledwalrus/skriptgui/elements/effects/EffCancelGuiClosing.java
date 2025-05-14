@@ -30,10 +30,10 @@ import org.jetbrains.annotations.Nullable;
 		"\t\tcancel the gui closing"
 })
 @Since("1.2.0")
-public class EffCancelGUIClose extends Effect {
+public class EffCancelGuiClosing extends Effect {
 
 	static {
-		Skript.registerEffect(EffCancelGUIClose.class,
+		Skript.registerEffect(EffCancelGuiClosing.class,
 				"(:cancel|uncancel) [the] gui clos(e|ing)"
 		);
 	}
@@ -48,6 +48,7 @@ public class EffCancelGUIClose extends Effect {
 			return false;
 		}
 		cancel = parseResult.hasTag("cancel");
+		parser.setHasDelayBefore(Kleenean.TRUE); // Cancelling forces a 1-tick delay
 		return true;
 	}
 
@@ -55,7 +56,7 @@ public class EffCancelGUIClose extends Effect {
 	protected void execute(Event event) {
 		GUI gui = SkriptGUI.getGUIManager().getGUI(event);
 		if (gui != null) {
-			gui.setCloseCancelled(cancel);
+			gui.setCloseCancelled(event, cancel);
 		}
 	}
 
