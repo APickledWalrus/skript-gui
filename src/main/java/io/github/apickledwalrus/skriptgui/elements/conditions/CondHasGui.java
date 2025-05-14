@@ -18,15 +18,20 @@ import io.github.apickledwalrus.skriptgui.SkriptGUI;
 		"\tsend \"GUI Viewers: %{_viewers::*}%\" to player"
 })
 @Since("1.0.0")
-public class CondHasGUI extends PropertyCondition<Player> {
+public class CondHasGui extends PropertyCondition<Player> {
 
 	static {
-		register(CondHasGUI.class, PropertyType.HAVE, "a gui [open]", "players");
+		register(CondHasGui.class, PropertyType.HAVE, "a gui [open]", "players");
 	}
 
 	@Override
 	public boolean check(Player player) {
 		return SkriptGUI.getGUIManager().hasGUI(player);
+	}
+
+	@Override
+	protected PropertyType getPropertyType() {
+		return PropertyType.HAVE;
 	}
 
 	@Override
