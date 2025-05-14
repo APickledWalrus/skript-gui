@@ -7,6 +7,8 @@ import org.skriptlang.skript.lang.structure.Structure;
 
 public final class SkriptUtils {
 
+	private SkriptUtils() { }
+
 	@SafeVarargs
 	public static boolean isSection(Class<? extends Section>... sections) {
 		ParserInstance parser = ParserInstance.get();

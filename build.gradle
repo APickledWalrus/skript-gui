@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'io.github.apickledwalrus'
-version = '1.4.0-dev'
+version = '2.0.0-dev'
 
 compileJava.options.encoding = 'UTF-8'
 
@@ -26,7 +26,7 @@ dependencies {
     implementation group: 'org.jetbrains', name: 'annotations', version: '26.0.1'
     implementation group: 'com.google.code.findbugs', name: 'findbugs', version: '3.0.1'
     implementation group: 'io.papermc.paper', name: 'paper-api', version: '1.19.4-R0.1-SNAPSHOT'
-    implementation (group: 'com.github.SkriptLang', name: 'Skript', version: '2.10.2') {
+    implementation (group: 'com.github.SkriptLang', name: 'Skript', version: '2.11.1') {
         transitive = false
     }
 }
