@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 public class ExprIDOfGUI extends SimplePropertyExpression<GUI, String> {
 
 	static {
-		register(ExprIDOfGUI.class, String.class, "[[skript-]gui] id[entifier]", "guiinventorys");
+		register(ExprIDOfGUI.class, String.class, "[[skript-]gui] id[entifier][s]", "guiinventorys");
 	}
 
 	@Override
