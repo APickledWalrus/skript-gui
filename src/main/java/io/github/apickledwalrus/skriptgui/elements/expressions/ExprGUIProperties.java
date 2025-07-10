@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class ExprGUIProperties extends SimplePropertyExpression<GUI, Object> {
 
 	static {
-		register(ExprGUIProperties.class, Object.class, "(0¦[skript-gui] name[s]|1¦(size[s]|rows)|2¦shape[s]|3¦lock status[es])", "guiinventorys");
+		register(ExprGUIProperties.class, Object.class, "(0¦[skript-]gui name[s]|1¦([skript-]gui size[s]|rows)|2¦shape[s]|3¦lock status[es])", "guiinventorys");
 	}
 
 	private static final int NAME = 0, ROWS = 1, SHAPE = 2, LOCK_STATUS = 3;
