@@ -1,26 +1,46 @@
 package io.github.apickledwalrus.skriptgui;
 
-import java.io.IOException;
-
+import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.util.Version;
+import io.github.apickledwalrus.skriptgui.gui.GUI;
 import io.github.apickledwalrus.skriptgui.gui.events.GUIEvents;
 import io.github.apickledwalrus.skriptgui.gui.events.RecipeEvent;
+import io.github.apickledwalrus.skriptgui.types.GUIClassInfo;
+import io.github.apickledwalrus.skriptgui.types.SlotTypeClassInfo;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.SkriptAddon;
 import io.github.apickledwalrus.skriptgui.gui.GUIManager;
+import org.skriptlang.skript.addon.AddonModule;
+import org.skriptlang.skript.addon.SkriptAddon;
+import org.skriptlang.skript.lang.converter.Converters;
+import org.skriptlang.skript.util.ClassLoader;
 
-public class SkriptGUI extends JavaPlugin {
+public class SkriptGUI extends JavaPlugin implements AddonModule {
 
 	private static SkriptGUI instance;
 	private static GUIManager manager;
 
+	public static SkriptGUI getInstance() {
+		if (instance == null) {
+			throw new IllegalStateException("skript-gui has not yet enabled!");
+		}
+		return instance;
+	}
+
+	public static GUIManager getGUIManager() {
+		if (manager == null) {
+			throw new IllegalStateException("skript-gui has not yet enabled!");
+		}
+		return manager;
+	}
+
 	@Override
 	public void onEnable() {
 		Plugin skript = getServer().getPluginManager().getPlugin("Skript");
-		Version minimumSupportedVersion = new Version(2, 10, 2);
+		Version minimumSupportedVersion = new Version(2, 15, 2);
 		if (skript == null) {
 			// Skript doesn't exist within the server plugins folder
 			getLogger().severe("Could not find Skript! Make sure you have it installed. Disabling...");
@@ -42,18 +62,9 @@ public class SkriptGUI extends JavaPlugin {
 
 		instance = this;
 
-		SkriptAddon addon = Skript.registerAddon(this);
-		try {
-			addon.loadClasses("io.github.apickledwalrus.skriptgui.elements");
-			addon.setLanguageFileDirectory("lang");
-			new SkriptClasses(); // Register ClassInfos
-			new SkriptConverters(); // Register Converters
-		} catch (IOException e) {
-			getLogger().severe("An error occurred while trying to load the addon's elements. The addon will be disabled.");
-			getLogger().severe("Printing StackTrace:");
-			e.printStackTrace();
-			getServer().getPluginManager().disablePlugin(this);
-		}
+		SkriptAddon addon = Skript.instance().registerAddon(SkriptGUI.class, "skript-gui");
+		addon.localizer().setSourceDirectories("lang", null);
+		addon.loadModules(this);
 
 		// Register manager and events
 		manager = new GUIManager();
@@ -65,12 +76,21 @@ public class SkriptGUI extends JavaPlugin {
 
 	}
 
-	public static SkriptGUI getInstance() {
-		return instance;
+	@Override
+	public void init(SkriptAddon addon) {
+		Classes.registerClass(new GUIClassInfo());
+		Converters.registerConverter(GUI.class, Inventory.class, GUI::getInventory);
+		Classes.registerClass(new SlotTypeClassInfo());
 	}
 
-	public static GUIManager getGUIManager() {
-		return manager;
+	@Override
+	public void load(SkriptAddon addon) {
+		ClassLoader.loadClasses(SkriptGUI.class, getFile(), "io.github.apickledwalrus.skriptgui.elements");
+	}
+
+	@Override
+	public String name() {
+		return "skript-gui";
 	}
 
 }
