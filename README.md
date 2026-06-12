@@ -2,11 +2,12 @@
 Simple syntax to create advanced and organized GUIs with Skript.
 
 > [!IMPORTANT]
-> This addon requires Skript 2.10.2 or newer.
+> This addon requires Skript 2.15.2 or newer.
 > While this addon does not frequently receive updates, it is still compatible with the latest Skript versions and should function without issue.
 > If you encounter errors of any kind, please report them using the [issues tab](https://github.com/APickledWalrus/skript-gui/issues).
 
-This addons allows you to create custom (Chest) GUIs with Skript. It it a remake of [TuSKe's](https://github.com/Tuke-Nuke/TuSKe) advanced GUI system.
+This addons allows you to create custom (Chest) GUIs with Skript.
+It is a remake of [TuSKe's](https://github.com/Tuke-Nuke/TuSKe) advanced GUI system.
 
 # Links
 
