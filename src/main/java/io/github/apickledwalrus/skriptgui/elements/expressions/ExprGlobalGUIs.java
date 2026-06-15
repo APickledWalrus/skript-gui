@@ -20,7 +20,7 @@ import org.skriptlang.skript.registration.SyntaxRegistry;
 @Example("""
 	open a random gui out of all guis to all players
 	""")
-@Since("1.3")
+@Since("1.3.0")
 public class ExprGlobalGUIs extends SimpleExpression<GUI> {
 
 	public static void register(SyntaxRegistry syntaxRegistry) {

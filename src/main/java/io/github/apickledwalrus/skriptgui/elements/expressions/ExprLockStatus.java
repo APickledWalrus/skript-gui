@@ -20,12 +20,12 @@ import org.skriptlang.skript.registration.SyntaxRegistry;
 @Description("The lock status of a GUI, which controls whether its items without actions can be removed.")
 @Example("set the lock status of the player's gui to true")
 @Since("1.0.0, 1.3.0 (support outside of edit sections)")
-public class ExprGUILockStatus extends SimplePropertyExpression<GUI, Boolean> {
+public class ExprLockStatus extends SimplePropertyExpression<GUI, Boolean> {
 
 	public static void register(SyntaxRegistry syntaxRegistry) {
 		syntaxRegistry.register(SyntaxRegistry.EXPRESSION,
-			infoBuilder(ExprGUILockStatus.class, Boolean.class, "[gui] lock status[es]", "guiinventories", false)
-				.supplier(ExprGUILockStatus::new)
+			infoBuilder(ExprLockStatus.class, Boolean.class, "[gui] lock status[es]", "guiinventories", false)
+				.supplier(ExprLockStatus::new)
 				.build());
 	}
 

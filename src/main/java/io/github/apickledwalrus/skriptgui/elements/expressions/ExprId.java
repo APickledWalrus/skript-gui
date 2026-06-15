@@ -24,13 +24,13 @@ import org.skriptlang.skript.registration.SyntaxRegistry;
 @Example("""
 	set the id of the player's gui to "My New ID"
 	""")
-@Since("1.3")
-public class ExprGUIId extends SimplePropertyExpression<GUI, String> {
+@Since("1.3.0")
+public class ExprId extends SimplePropertyExpression<GUI, String> {
 
 	public static void register(SyntaxRegistry syntaxRegistry) {
 		syntaxRegistry.register(SyntaxRegistry.EXPRESSION,
-			infoBuilder(ExprGUIId.class, String.class, "[gui] id[entifier][s]", "guiinventorys", false)
-				.supplier(ExprGUIId::new)
+			infoBuilder(ExprId.class, String.class, "[gui] id[entifier][s]", "guiinventorys", false)
+				.supplier(ExprId::new)
 				.build());
 	}
 

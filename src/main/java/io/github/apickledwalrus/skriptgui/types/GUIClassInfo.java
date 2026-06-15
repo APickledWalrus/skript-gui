@@ -22,7 +22,7 @@ public class GUIClassInfo extends ClassInfo<GUI> {
 			.name("GUI")
 			.description("Represents a skript-gui GUI")
 			.examples("See the GUI creation section.")
-			.since("1.0")
+			.since("1.0.0")
 			.parser(new GUIParser())
 			.property(Property.NAME,
 				"A GUI's name. Can be set, cleared, or reset.",

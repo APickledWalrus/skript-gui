@@ -36,7 +36,7 @@ import java.util.function.Consumer;
 		run when slot "-" changes:
 			send "You changed an interior slot"
 	""")
-@Since("1.3")
+@Since("1.4.0")
 public class SecSlotChange extends Section {
 
 	public static void register(SyntaxRegistry syntaxRegistry) {

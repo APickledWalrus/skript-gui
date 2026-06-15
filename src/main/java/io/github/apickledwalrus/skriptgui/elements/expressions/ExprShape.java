@@ -18,12 +18,12 @@ import org.skriptlang.skript.registration.SyntaxRegistry;
 	set the shape of the player's gui to "xxxxxxxxx", "x-------x", and "xxxxxxxxx"
 	""")
 @Since("1.0.0, 1.3.0 (support outside of edit sections)")
-public class ExprGUIShape extends SimplePropertyExpression<GUI, String> {
+public class ExprShape extends SimplePropertyExpression<GUI, String> {
 
 	public static void register(SyntaxRegistry syntaxRegistry) {
 		syntaxRegistry.register(SyntaxRegistry.EXPRESSION,
-			infoBuilder(ExprGUIShape.class, String.class, "[gui] shape[s]", "guiinventories", false)
-				.supplier(ExprGUIShape::new)
+			infoBuilder(ExprShape.class, String.class, "[gui] shape[s]", "guiinventories", false)
+				.supplier(ExprShape::new)
 				.build());
 	}
 
