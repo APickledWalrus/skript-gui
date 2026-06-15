@@ -3,7 +3,7 @@ package io.github.apickledwalrus.skriptgui.elements.sections;
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.SectionNode;
 import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Example;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.EffectSection;
@@ -19,47 +19,55 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.registration.SyntaxInfo;
+import org.skriptlang.skript.registration.SyntaxRegistry;
 
 import java.util.List;
 
-@Name("Create / Edit GUI")
-@Description("The base of creating and editing GUIs.")
-@Examples({
-		"create a gui with virtual chest inventory with 3 rows named \"My GUI\"",
-		"edit gui last gui:",
-		"\tset the gui-inventory-name to \"New GUI Name!\"",
-})
+@Name("Create/Edit GUI")
+@Description("Creates a new GUI or edits an existing one.")
+@Example("""
+	create a gui with virtual chest inventory with 3 rows named "My GUI"
+	""")
+@Example("""
+	create a gui with a virtual chest inventory with shape "xxxxxxxxx", "x-------x", and "xxxxxxxxx"
+	""")
+@Example("""
+	edit the player's gui:
+		make the next gui slot with a slime block named "Don't Touch!"
+	""")
 @Since("1.0.0")
 public class SecCreateGUI extends EffectSection {
 
-	static {
-		Skript.registerSection(SecCreateGUI.class,
-				"create [a] [new] gui [[with id[entifier]] %-string%] with [a] %inventory% [removable:(and|with) ([re]move[e]able|stealable) items] [(and|with) shape %-strings%]",
-				"(change|edit) [gui] %guiinventory%"
-		);
+	public static void register(SyntaxRegistry syntaxRegistry) {
+		syntaxRegistry.register(SyntaxRegistry.SECTION, SyntaxInfo.builder(SecCreateGUI.class)
+			.supplier(SecCreateGUI::new)
+			.addPatterns("create [a] [new] gui [[with id[entifier]] %-string%] with [a] %inventory% [removable:(and|with) ([re]mov[e]able|stealable) items] [(and|with) shape %-strings%]",
+				"(change|edit) [gui] %guiinventory%")
+			.build());
 	}
 
-	private Expression<Inventory> inventory;
-	private @Nullable Expression<String> shape;
 	private @Nullable Expression<String> id;
+	private Expression<Inventory> inventory;
 	private boolean removableItems;
+	private @Nullable Expression<String> shape;
 
 	private @Nullable Expression<GUI> gui;
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult,
+	public boolean init(Expression<?>[] expressions, int matchedPattern, Kleenean kleenean, ParseResult parseResult,
 						@Nullable SectionNode sectionNode, @Nullable List<TriggerItem> triggerItems) {
 		if (matchedPattern == 1) {
 			if (sectionNode == null) {
-				Skript.error("An 'edit gui' line must have a section (i.e. change something)");
+				Skript.error("'edit gui' can only be used as a section!");
 				return false;
 			}
-			gui = (Expression<GUI>) exprs[0];
+			gui = (Expression<GUI>) expressions[0];
 		} else {
-			id = (Expression<String>) exprs[0];
-			inventory = (Expression<Inventory>) exprs[1];
-			shape = (Expression<String>) exprs[2];
+			id = (Expression<String>) expressions[0];
+			inventory = (Expression<Inventory>) expressions[1];
+			shape = (Expression<String>) expressions[2];
 			removableItems = parseResult.hasTag("removable");
 		}
 
@@ -71,10 +79,9 @@ public class SecCreateGUI extends EffectSection {
 	}
 
 	@Override
-	@Nullable
-	public TriggerItem walk(Event event) {
+	public @Nullable TriggerItem walk(Event event) {
 		GUI gui;
-		if (this.gui == null) { // Creating a new GUI.
+		if (this.gui == null) { // Creating a new GUI
 			Inventory inventory = this.inventory.getSingle(event);
 			if (inventory == null) { // Don't run the section if the GUI can't be created
 				return walk(event, false);
@@ -91,7 +98,7 @@ public class SecCreateGUI extends EffectSection {
 
 			gui = new GUI(inventory, removableItems, name, shape == null ? null : shape.getArray(event));
 
-			String id = this.id != null ? this.id.getSingle(event) : null;
+			String id = this.id == null ? null : this.id.getSingle(event);
 			if (id != null && !id.isEmpty()) {
 				GUI old = SkriptGUI.getGUIManager().getGUI(id);
 				if (old != null) { // We are making a new GUI with this ID (see https://github.com/APickledWalrus/skript-gui/issues/72)
@@ -99,8 +106,7 @@ public class SecCreateGUI extends EffectSection {
 				}
 				gui.setID(id);
 			}
-
-		} else { // Editing the given GUI
+		} else { // Editing a GUI
 			gui = this.gui.getSingle(event);
 			if (gui == null) { // can't edit a GUI that doesn't exist
 				return walk(event, false);

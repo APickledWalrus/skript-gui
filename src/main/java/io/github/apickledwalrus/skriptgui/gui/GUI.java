@@ -326,7 +326,10 @@ public class GUI {
 		}
 
 		// Although we may be adding null consumers, it lets us track what slots have been set
-		slots.put(ch, new SlotData(consumer, removable));
+		SlotData slotData = new SlotData();
+		slotData.setRunOnClick(consumer);
+		slotData.setRemovable(removable);
+		slots.put(ch, slotData);
 
 		int i = 0;
 		for (char ch1 : rawShape.toCharArray()) {
@@ -476,7 +479,7 @@ public class GUI {
 	 * Sets the consumer to be run when this GUI is opened.
 	 * @param onOpen The consumer to be run when this GUI is opened.
 	 */
-	public void setOnOpen(Consumer<InventoryOpenEvent> onOpen) {
+	public void setOnOpen(@Nullable Consumer<InventoryOpenEvent> onOpen) {
 		this.onOpen = onOpen;
 	}
 
@@ -484,7 +487,7 @@ public class GUI {
 	 * Sets the consumer to be run when this GUI is closed.
 	 * @param onClose The consumer to be run when this GUI is closed.
 	 */
-	public void setOnClose(Consumer<InventoryCloseEvent> onClose) {
+	public void setOnClose(@Nullable Consumer<InventoryCloseEvent> onClose) {
 		this.onClose = onClose;
 	}
 
@@ -521,53 +524,47 @@ public class GUI {
 		}
 	}
 
-	/**
-	 * Returns the SlotData for the provided slot. SlotData contains properties of a GUI slot.
-	 * @param slot The slot to find data for.
-	 * @return The SlotData for the provided slot, or null if no SlotData exists.
+	/*
+	 * SlotData (slot specific control)
 	 */
-	@Nullable
-	public SlotData getSlotData(Character slot) {
-		return slots.get(slot);
-	}
 
 	/**
 	 * SlotData contains the properties of a GUI slot.
 	 */
 	public static final class SlotData {
 
-		@Nullable
-		private Consumer<InventoryClickEvent> runOnClick;
-		@Nullable
-		private Consumer<InventoryClickEvent> runOnChange;
+		private @Nullable Consumer<InventoryClickEvent> runOnClick;
+		private @Nullable Consumer<InventoryClickEvent> runOnChange;
 		private boolean removable;
-
-		public SlotData(@Nullable Consumer<InventoryClickEvent> runOnClick, boolean removable) {
-			this.runOnClick = runOnClick;
-			this.removable = removable;
-		}
 
 		/**
 		 * @return The consumer to run when a slot with this data is clicked.
 		 */
-		@Nullable
-		public Consumer<InventoryClickEvent> getRunOnClick() {
+		public @Nullable Consumer<InventoryClickEvent> getRunOnClick() {
 			return runOnClick;
 		}
 
-		@Nullable
-		public Consumer<InventoryClickEvent> getRunOnChange() {
+		/**
+		 * @return The consumer to run when a slot with this data is changed.
+		 */
+		public @Nullable Consumer<InventoryClickEvent> getRunOnChange() {
 			return runOnChange;
 		}
 
 		/**
-		 * Updates the consumer to run when a slot with this data is clicked. A null value may be used to remove the consumer.
+		 * Updates the consumer to run when a slot with this data is clicked.
+		 * A null value may be used to remove the consumer.
 		 * @param runOnClick The consumer to run when a slot with this data is clicked.
 		 */
 		public void setRunOnClick(@Nullable Consumer<InventoryClickEvent> runOnClick) {
 			this.runOnClick = runOnClick;
 		}
 
+		/**
+		 * Updates the consumer to run when a slot with this data is changed.
+		 * A null value may be used to remove the consumer.
+		 * @param runOnChange The consumer to run when a slot with this data is changed.
+		 */
 		public void setRunOnChange(@Nullable Consumer<InventoryClickEvent> runOnChange) {
 			this.runOnChange = runOnChange;
 		}
@@ -589,6 +586,15 @@ public class GUI {
 			this.removable = removable;
 		}
 
+	}
+
+	/**
+	 * Returns the SlotData for the provided slot. SlotData contains properties of a GUI slot.
+	 * @param slot The slot to find data for.
+	 * @return The SlotData for the provided slot, or null if no SlotData exists.
+	 */
+	public @Nullable SlotData getSlotData(Character slot) {
+		return slots.get(slot);
 	}
 
 }

@@ -3,7 +3,7 @@ package io.github.apickledwalrus.skriptgui.elements.sections;
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.SectionNode;
 import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Example;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
@@ -18,35 +18,41 @@ import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.registration.SyntaxInfo;
+import org.skriptlang.skript.registration.SyntaxRegistry;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 @Name("GUI Slot Change")
-@Description("Sections that will run when a gui slot is changed. This section is optional.")
-@Examples({
-		"create a gui with virtual chest inventory with 3 rows named \"My GUI\"",
-		"\trun when slot 12 changes:",
-		"\t\tsend \"You changed slot 12!\" to player",
-		"\trun on slot 14 changed:",
-		"\t\tcancel event"
-})
+@Description("""
+	A section for executing code when a slot changes.
+	Note that for shaped GUIs, where multiple slots are represented by a single character, the section will execute when any of those slots change.
+	""")
+@Example("""
+	create a gui with a virtual chest inventory with shape "xxxxxxxxx", "x-------x", and "xxxxxxxxx"
+		run when slot 1 changes:
+			send "You changed slot 1"
+		run when slot "-" changes:
+			send "You changed an interior slot"
+	""")
 @Since("1.3")
 public class SecSlotChange extends Section {
 
-	static {
-		Skript.registerSection(SecSlotChange.class,
-				"run when [gui] slot[s] %integers% change[s]",
-				"run when [gui] slot[s] %integers% [(are|is)] [being] changed",
-				"run on change of [gui] slot[s] %integers%"
-		);
+	public static void register(SyntaxRegistry syntaxRegistry) {
+		syntaxRegistry.register(SyntaxRegistry.SECTION, SyntaxInfo.builder(SecSlotChange.class)
+			.supplier(SecSlotChange::new)
+			.addPatterns("run when [gui] slot[s] %integers/strings% change[s]",
+				"run when [gui] slot[s] %integers/strings% (is|are) changed",
+				"run on change of [gui] slot[s] %integers/strings%")
+			.build());
 	}
 
 	private Trigger trigger;
-	private Expression<Integer> slots;
+	private Expression<Object> slots;
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult,
+	public boolean init(Expression<?>[] expressions, int matchedPattern, Kleenean isDelayed, ParseResult parseResult,
 						SectionNode sectionNode, List<TriggerItem> triggerItems) {
 		if (!getParser().isCurrentSection(SecCreateGUI.class)) {
 			Skript.error("You can't listen for changes of a slot outside of a GUI creation or editing section.");
@@ -54,7 +60,8 @@ public class SecSlotChange extends Section {
 		}
 
 		trigger = loadCode(sectionNode, "inventory click", InventoryClickEvent.class);
-		slots = (Expression<Integer>) exprs[0];
+		//noinspection unchecked
+		slots = (Expression<Object>) expressions[0];
 
 		return true;
 	}
@@ -67,24 +74,19 @@ public class SecSlotChange extends Section {
 			return walk(event, false);
 		}
 
-		Integer[] slots = this.slots.getAll(event);
+		Object variables = Variables.copyLocalVariables(event);
+		Consumer<InventoryClickEvent> onChange = clickEvent -> {
+			Variables.setLocalVariables(clickEvent, variables);
+			trigger.execute(clickEvent);
+		};
 
-		for (Integer slot : slots) {
-			if (slot >= 0 && slot + 1 <= gui.getInventory().getSize()) {
-				Object variables = Variables.copyLocalVariables(event);
-				GUI.SlotData slotData = gui.getSlotData(gui.convert(slot));
-				if (slotData == null) {
-					continue;
-				}
-				if (variables != null) {
-					slotData.setRunOnChange(clickEvent -> {
-						Variables.setLocalVariables(clickEvent, variables);
-						trigger.execute(clickEvent);
-					});
-				} else {
-					slotData.setRunOnChange(trigger::execute);
-				}
+		Object[] slots = this.slots.getAll(event);
+		for (Object slot : slots) {
+			GUI.SlotData slotData = gui.getSlotData(gui.convert(slot));
+			if (slotData == null) {
+				continue;
 			}
+			slotData.setRunOnChange(onChange);
 		}
 
 		// We don't want to execute this section

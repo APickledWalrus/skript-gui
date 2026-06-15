@@ -16,8 +16,8 @@ import ch.njol.util.coll.CollectionUtils;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.SkriptUtils;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecCreateGUI;
-import io.github.apickledwalrus.skriptgui.elements.sections.SecGUIOpenClose;
-import io.github.apickledwalrus.skriptgui.elements.sections.SecMakeGUI;
+import io.github.apickledwalrus.skriptgui.elements.sections.SecOpenClose;
+import io.github.apickledwalrus.skriptgui.elements.sections.SecMakeSlot;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -105,13 +105,13 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 			return true;
 		}
 
-		if (!SkriptUtils.isSection(parser, SecMakeGUI.class, SecGUIOpenClose.class)) {
+		if (!SkriptUtils.isSection(parser, SecMakeSlot.class, SecOpenClose.class)) {
 			Skript.error("You can't use '" + parseResult.expr + "' outside of a GUI make or open/close section.");
 			return false;
 		}
 
 		value = Value.values()[matchedPattern];
-		openClose = SkriptUtils.isSection(parser, SecGUIOpenClose.class);
+		openClose = SkriptUtils.isSection(parser, SecOpenClose.class);
 
 		if (openClose && value != Value.GUI && value != Value.INVENTORY && value != Value.PLAYER && value != Value.VIEWERS) {
 			Skript.error("You can't use '" + parseResult.expr + "' in a GUI open/close section.");

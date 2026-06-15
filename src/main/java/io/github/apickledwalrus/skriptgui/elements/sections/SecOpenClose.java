@@ -3,7 +3,7 @@ package io.github.apickledwalrus.skriptgui.elements.sections;
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.SectionNode;
 import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Example;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
@@ -19,27 +19,30 @@ import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.registration.SyntaxInfo;
+import org.skriptlang.skript.registration.SyntaxRegistry;
 
 import java.util.List;
 
 @Name("GUI Open/Close")
-@Description("Sections that will run when a user opens or closes the GUI. This section is optional.")
-@Examples({
-		"create a gui with virtual chest inventory with 3 rows named \"My GUI\"",
-		"\trun on gui open:",
-		"\t\tsend \"You just opened this GUI!\" to player",
-		"\trun on gui close:",
-		"\t\tsend \"You just closed this GUI!\" to player"
-})
-@Since("1.0.0, 1.3 (open section)")
-public class SecGUIOpenClose extends Section {
+@Description("Enables running code when a player opens or closes their GUI.")
+@Example("""
+	create a gui with virtual chest inventory with 3 rows named "My GUI":
+		run when the gui opens:
+			send "You just opened this GUI!" to player
+		run on close:
+			send "You just closed this GUI!" to player
+	""")
+@Since("1.0.0, 1.3.0 (open section)")
+public class SecOpenClose extends Section {
 
-	static {
-		Skript.registerSection(SecGUIOpenClose.class,
-				"run (when|while) (open[ing]|close:clos(e|ing)) [[the] gui]",
+	public static void register(SyntaxRegistry syntaxRegistry) {
+		syntaxRegistry.register(SyntaxRegistry.SECTION, SyntaxInfo.builder(SecOpenClose.class)
+			.supplier(SecOpenClose::new)
+			.addPatterns("run (when|while) (open[ing]|close:clos(e|ing)) [[the] gui]",
 				"run (when|while) [the] gui (opens|close:closes)",
-				"run on gui (open[ing]|close:clos(e|ing))"
-		);
+				"run on [gui] (open[ing]|close:clos(e|ing))")
+			.build());
 	}
 
 	private boolean close;
@@ -67,30 +70,23 @@ public class SecGUIOpenClose extends Section {
 	@Override
 	public @Nullable TriggerItem walk(Event event) {
 		GUI gui = SkriptGUI.getGUIManager().getGUI(event);
-		if (gui != null) {
-			Object variables = Variables.copyLocalVariables(event);
-			if (close) {
-				if (variables != null) {
-					gui.setOnClose(closeEvent -> {
-						Variables.setLocalVariables(closeEvent, variables);
-						trigger.execute(closeEvent);
-					});
-				} else {
-					gui.setOnClose(trigger::execute);
-				}
-			} else {
-				if (variables != null) {
-					gui.setOnOpen(openEvent -> {
-						Variables.setLocalVariables(openEvent, variables);
-						trigger.execute(openEvent);
-					});
-				} else {
-					gui.setOnOpen(trigger::execute);
-				}
-			}
+		if (gui == null) {
+			return walk(event, false);
 		}
 
-		// We don't want to execute this section
+		Object variables = Variables.copyLocalVariables(event);
+		if (close) {
+			gui.setOnClose(closeEvent -> {
+				Variables.setLocalVariables(closeEvent, variables);
+				trigger.execute(closeEvent);
+			});
+		} else {
+			gui.setOnOpen(openEvent -> {
+				Variables.setLocalVariables(openEvent, variables);
+				trigger.execute(openEvent);
+			});
+		}
+
 		return walk(event, false);
 	}
 

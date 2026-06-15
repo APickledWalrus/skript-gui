@@ -3,7 +3,6 @@ package io.github.apickledwalrus.skriptgui.elements.expressions;
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Example;
-import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.expressions.base.PropertyExpression;
@@ -14,8 +13,8 @@ import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.SkriptUtils;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecCreateGUI;
-import io.github.apickledwalrus.skriptgui.elements.sections.SecGUIOpenClose;
-import io.github.apickledwalrus.skriptgui.elements.sections.SecMakeGUI;
+import io.github.apickledwalrus.skriptgui.elements.sections.SecOpenClose;
+import io.github.apickledwalrus.skriptgui.elements.sections.SecMakeSlot;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
@@ -45,7 +44,7 @@ public class ExprNextSlot extends SimpleExpression<String> {
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		if (matchedPattern == 2) {
-			if (!SkriptUtils.isSection(getParser(), SecCreateGUI.class, SecMakeGUI.class, SecGUIOpenClose.class)) {
+			if (!SkriptUtils.isSection(getParser(), SecCreateGUI.class, SecMakeSlot.class, SecOpenClose.class)) {
 				Skript.error("The 'next gui slot' expression must have a GUI specified unless it is used in a GUI section.");
 				return false;
 			}

@@ -5,6 +5,7 @@ import ch.njol.skript.util.Version;
 import io.github.apickledwalrus.skriptgui.elements.conditions.*;
 import io.github.apickledwalrus.skriptgui.elements.effects.*;
 import io.github.apickledwalrus.skriptgui.elements.expressions.*;
+import io.github.apickledwalrus.skriptgui.elements.sections.*;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import io.github.apickledwalrus.skriptgui.gui.GUIEvents;
 import io.github.apickledwalrus.skriptgui.types.GUIClassInfo;
@@ -18,7 +19,6 @@ import io.github.apickledwalrus.skriptgui.gui.GUIManager;
 import org.skriptlang.skript.addon.AddonModule;
 import org.skriptlang.skript.addon.SkriptAddon;
 import org.skriptlang.skript.lang.converter.Converters;
-import org.skriptlang.skript.util.ClassLoader;
 
 public class SkriptGUI extends JavaPlugin implements AddonModule {
 
@@ -97,9 +97,12 @@ public class SkriptGUI extends JavaPlugin implements AddonModule {
 			ExprLastGUI::register,
 			ExprNextSlot::register,
 			ExprPaginatedList::register,
-			ExprVirtualInventory::register
+			ExprVirtualInventory::register,
+			SecCreateGUI::register,
+			SecMakeSlot::register,
+			SecOpenClose::register,
+			SecSlotChange::register
 		);
-		ClassLoader.loadClasses(SkriptGUI.class, getFile(), "io.github.apickledwalrus.skriptgui.elements.sections");
 	}
 
 	@Override
