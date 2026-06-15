@@ -1,6 +1,5 @@
 package io.github.apickledwalrus.skriptgui.gui;
 
-import ch.njol.skript.lang.util.common.AnyNamed;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -24,7 +23,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class GUI implements AnyNamed {
+public class GUI {
 
 	private Inventory inventory;
 	private String name;
@@ -176,26 +175,20 @@ public class GUI implements AnyNamed {
 		return eventHandler;
 	}
 
-	public void setSize(int size) {
-		changeInventory(size, getName());
-	}
-
 	public String getName() {
 		return name;
 	}
 
-	@Override
-	public String name() {
-		return name;
-	}
-
-	@Override
-	public boolean supportsNameChange() {
-		return true;
-	}
-
 	public void setName(@Nullable String name) {
 		changeInventory(inventory.getSize(), name);
+	}
+
+	public int getSize() {
+		return inventory.getSize();
+	}
+
+	public void setSize(int size) {
+		changeInventory(size, getName());
 	}
 
 	public void clear(Object slot) {
@@ -212,10 +205,12 @@ public class GUI implements AnyNamed {
 	private void changeInventory(int size, @Nullable String name) {
 		if (name == null) {
 			name = inventory.getType().getDefaultTitle();
-		} else if (size < 9 ) { // Minimum size
+		} else if (size < 9) { // Minimum size
 			size = 9;
 		} else if (size > 54) { // Maximum size
 			size = 54;
+		} else if (size % 9 != 0) {
+			return;
 		}
 
 		if (size == inventory.getSize() && name.equals(this.name)) { // Nothing is actually changing

@@ -75,7 +75,7 @@ public class SkriptGUI extends JavaPlugin implements AddonModule {
 
 	@Override
 	public void init(SkriptAddon addon) {
-		Classes.registerClass(new GUIClassInfo());
+		Classes.registerClass(new GUIClassInfo(addon));
 		Converters.registerConverter(GUI.class, Inventory.class, GUI::getInventory);
 		Classes.registerClass(new SlotTypeClassInfo());
 	}
@@ -84,10 +84,14 @@ public class SkriptGUI extends JavaPlugin implements AddonModule {
 	public void load(SkriptAddon addon) {
 		register(addon,
 			CondHasGUI::register,
-			EffCancelGUIClosing::register,
+			CondIsLocked::register,
+			EffCancelClosing::register,
+			EffLock::register,
 			ExprGlobalGUIs::register,
 			ExprGUI::register,
 			ExprGUIId::register,
+			ExprGUILockStatus::register,
+			ExprGUIShape::register,
 			ExprGUIWithId::register,
 			ExprLastGUI::register,
 			ExprPaginatedList::register
