@@ -1,8 +1,7 @@
-package io.github.apickledwalrus.skriptgui.gui.events;
+package io.github.apickledwalrus.skriptgui.gui;
 
+import com.destroystokyo.paper.event.player.PlayerRecipeBookClickEvent;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
-import io.github.apickledwalrus.skriptgui.gui.GUI;
-import io.github.apickledwalrus.skriptgui.gui.GUIEventHandler;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -20,7 +19,49 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GUIEvents implements Listener {
+public final class GUIEvents implements Listener {
+
+	private void handleDoubleClick(GUI gui, InventoryClickEvent event) {
+		GUIEventHandler eventHandler = gui.getEventHandler();
+
+		Inventory guiInventory = gui.getInventory();
+		int size = guiInventory.getSize();
+		ItemStack cursor = event.getCursor();
+
+		if (event.getCurrentItem() != null)
+			return;
+
+		int totalAmount = cursor.getAmount();
+		List<InventoryClickEvent> clickEvents = new ArrayList<>();
+		for (int slot = 0; slot < size; slot++) {
+			ItemStack item = guiInventory.getItem(slot);
+			if (item != null && item.isSimilar(cursor)) {
+				if (!gui.isRemovable(gui.convert(slot))) {
+					event.setCancelled(true);
+					return;
+				}
+
+				if (totalAmount < cursor.getMaxStackSize()) {
+					InventoryClickEvent clickEvent = getClickEventWithSlot(event, slot);
+					clickEvents.add(clickEvent);
+					totalAmount += item.getAmount();
+				}
+			}
+		}
+		for (InventoryClickEvent clickEvent : clickEvents) {
+			eventHandler.onChange(clickEvent);
+		}
+	}
+
+	private static InventoryClickEvent getClickEventWithSlot(InventoryClickEvent event, int slot) {
+		return new InventoryClickEvent(
+				event.getView(),
+				event.getSlotType(),
+				slot,
+				event.getClick(),
+				event.getAction()
+		);
+	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onInventoryClick(InventoryClickEvent event) {
@@ -168,46 +209,12 @@ public class GUIEvents implements Listener {
 		}
 	}
 
-	private void handleDoubleClick(GUI gui, InventoryClickEvent event) {
-		GUIEventHandler eventHandler = gui.getEventHandler();
-
-		Inventory guiInventory = gui.getInventory();
-		int size = guiInventory.getSize();
-		ItemStack cursor = event.getCursor();
-
-		if (cursor == null || event.getCurrentItem() != null)
-			return;
-
-		int totalAmount = cursor.getAmount();
-		List<InventoryClickEvent> clickEvents = new ArrayList<>();
-		for (int slot = 0; slot < size; slot++) {
-			ItemStack item = guiInventory.getItem(slot);
-			if (item != null && item.isSimilar(cursor)) {
-				if (!gui.isRemovable(gui.convert(slot))) {
-					event.setCancelled(true);
-					return;
-				}
-
-				if (totalAmount < cursor.getMaxStackSize()) {
-					InventoryClickEvent clickEvent = getClickEventWithSlot(event, slot);
-					clickEvents.add(clickEvent);
-					totalAmount += item.getAmount();
-				}
-			}
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void onRecipeBookClick(PlayerRecipeBookClickEvent event) {
+		GUI gui = SkriptGUI.getGUIManager().getGUI(event.getPlayer().getOpenInventory().getTopInventory());
+		if (gui != null) {
+			event.setCancelled(true);
 		}
-		for (InventoryClickEvent clickEvent : clickEvents) {
-			eventHandler.onChange(clickEvent);
-		}
-	}
-
-	private static InventoryClickEvent getClickEventWithSlot(InventoryClickEvent event, int slot) {
-		return new InventoryClickEvent(
-				event.getView(),
-				event.getSlotType(),
-				slot,
-				event.getClick(),
-				event.getAction()
-		);
 	}
 
 }

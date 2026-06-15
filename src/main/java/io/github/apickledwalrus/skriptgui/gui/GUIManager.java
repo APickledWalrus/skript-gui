@@ -15,7 +15,7 @@ public final class GUIManager {
 
 	/**
 	 * A map for tracking all GUIs based on their Inventory.
-	 * Used mainly during event processing (see {@link io.github.apickledwalrus.skriptgui.gui.events.GUIEvents}).
+	 * Used mainly during event processing (see {@link GUIEvents}).
 	 */
 	private final Map<Inventory, GUI> guis = new HashMap<>();
 

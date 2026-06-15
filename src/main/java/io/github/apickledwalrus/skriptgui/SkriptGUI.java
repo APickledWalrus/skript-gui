@@ -3,8 +3,7 @@ package io.github.apickledwalrus.skriptgui;
 import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.util.Version;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
-import io.github.apickledwalrus.skriptgui.gui.events.GUIEvents;
-import io.github.apickledwalrus.skriptgui.gui.events.RecipeEvent;
+import io.github.apickledwalrus.skriptgui.gui.GUIEvents;
 import io.github.apickledwalrus.skriptgui.types.GUIClassInfo;
 import io.github.apickledwalrus.skriptgui.types.SlotTypeClassInfo;
 import org.bukkit.inventory.Inventory;
@@ -69,11 +68,6 @@ public class SkriptGUI extends JavaPlugin implements AddonModule {
 		// Register manager and events
 		manager = new GUIManager();
 		getServer().getPluginManager().registerEvents(new GUIEvents(), this);
-		if (Skript.classExists("com.destroystokyo.paper.event.player.PlayerRecipeBookClickEvent")) {
-			// We need to track this event (see https://github.com/APickledWalrus/skript-gui/issues/33)
-			getServer().getPluginManager().registerEvents(new RecipeEvent(), this);
-		}
-
 	}
 
 	@Override
