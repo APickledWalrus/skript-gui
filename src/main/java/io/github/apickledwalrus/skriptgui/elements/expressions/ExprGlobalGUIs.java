@@ -1,12 +1,10 @@
 package io.github.apickledwalrus.skriptgui.elements.expressions;
 
-import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Example;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
@@ -14,19 +12,22 @@ import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.registration.SyntaxInfo;
+import org.skriptlang.skript.registration.SyntaxRegistry;
 
-@Name("GUIs")
-@Description("An expression to obtain all of the global/tracked GUIs.")
-@Examples({
-		"open a random gui out of all guis to all players"
-})
+@Name("All Global GUIs")
+@Description("Obtains all of the global/tracked GUIs.")
+@Example("""
+	open a random gui out of all guis to all players
+	""")
 @Since("1.3")
-public class ExprGUIs extends SimpleExpression<GUI> {
+public class ExprGlobalGUIs extends SimpleExpression<GUI> {
 
-	static {
-		Skript.registerExpression(ExprGUIs.class, GUI.class, ExpressionType.SIMPLE,
-				"[all [[of] the]|the] guis"
-		);
+	public static void register(SyntaxRegistry syntaxRegistry) {
+		syntaxRegistry.register(SyntaxRegistry.EXPRESSION, SyntaxInfo.Expression.builder(ExprGlobalGUIs.class, GUI.class)
+			.supplier(ExprGlobalGUIs::new)
+			.addPattern("[all [[of] the]|the] global guis")
+			.build());
 	}
 
 	@Override
@@ -51,7 +52,7 @@ public class ExprGUIs extends SimpleExpression<GUI> {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return "the guis";
+		return "the global guis";
 	}
 
 }

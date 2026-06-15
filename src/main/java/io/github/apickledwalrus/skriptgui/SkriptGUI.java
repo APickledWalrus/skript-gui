@@ -2,6 +2,9 @@ package io.github.apickledwalrus.skriptgui;
 
 import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.util.Version;
+import io.github.apickledwalrus.skriptgui.elements.conditions.*;
+import io.github.apickledwalrus.skriptgui.elements.effects.*;
+import io.github.apickledwalrus.skriptgui.elements.expressions.*;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import io.github.apickledwalrus.skriptgui.gui.GUIEvents;
 import io.github.apickledwalrus.skriptgui.types.GUIClassInfo;
@@ -79,6 +82,16 @@ public class SkriptGUI extends JavaPlugin implements AddonModule {
 
 	@Override
 	public void load(SkriptAddon addon) {
+		register(addon,
+			CondHasGUI::register,
+			EffCancelGUIClosing::register,
+			ExprGlobalGUIs::register,
+			ExprGUI::register,
+			ExprGUIId::register,
+			ExprGUIWithId::register,
+			ExprLastGUI::register,
+			ExprPaginatedList::register
+		);
 		ClassLoader.loadClasses(SkriptGUI.class, getFile(), "io.github.apickledwalrus.skriptgui.elements");
 	}
 

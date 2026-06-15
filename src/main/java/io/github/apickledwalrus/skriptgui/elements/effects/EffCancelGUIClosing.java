@@ -2,7 +2,7 @@ package io.github.apickledwalrus.skriptgui.elements.effects;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Example;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Effect;
@@ -17,25 +17,27 @@ import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.registration.SyntaxInfo;
+import org.skriptlang.skript.registration.SyntaxRegistry;
 
 @Name("Cancel GUI Close")
-@Description({
-		"Cancels or uncancels the closing of a GUI.",
-		"This effect can be used within a GUI close section.",
-		"A 1 tick delay is applied by this effect after the code has run."
-})
-@Examples({
-		"create a gui with virtual chest inventory with 3 rows named \"My GUI\":",
-		"\trun on gui close:",
-		"\t\tcancel the gui closing"
-})
+@Description("""
+	Cancels or uncancels the closing of a GUI.
+	This effect can be used within a GUI close section.
+	""")
+@Example("""
+	create a gui with virtual chest inventory with 3 rows named "My GUI":
+		run on gui close:
+			cancel the gui closing
+	""")
 @Since("1.2.0")
 public class EffCancelGUIClosing extends Effect {
 
-	static {
-		Skript.registerEffect(EffCancelGUIClosing.class,
-				"(:cancel|uncancel) [the] gui clos(e|ing)"
-		);
+	public static void register(SyntaxRegistry syntaxRegistry) {
+		syntaxRegistry.register(SyntaxRegistry.EFFECT, SyntaxInfo.builder(EffCancelGUIClosing.class)
+			.supplier(EffCancelGUIClosing::new)
+			.addPattern("(:cancel|uncancel) [the] gui clos(e|ing)")
+			.build());
 	}
 
 	private boolean cancel;
@@ -48,7 +50,6 @@ public class EffCancelGUIClosing extends Effect {
 			return false;
 		}
 		cancel = parseResult.hasTag("cancel");
-		parser.setHasDelayBefore(Kleenean.TRUE); // Cancelling forces a 1-tick delay
 		return true;
 	}
 

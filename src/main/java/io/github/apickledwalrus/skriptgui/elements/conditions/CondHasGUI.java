@@ -1,27 +1,33 @@
 package io.github.apickledwalrus.skriptgui.elements.conditions;
 
 import ch.njol.skript.conditions.base.PropertyCondition;
+import ch.njol.skript.doc.Example;
 import org.bukkit.entity.Player;
 
 import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
+import org.skriptlang.skript.registration.SyntaxRegistry;
 
 @Name("Has GUI")
 @Description("Checks whether a player has a GUI open.")
-@Examples({
-		"command /guiviewers: # Prints a list of all players with a GUI open.",
-		"\tset {_viewers::*} to all players where [input has a gui]",
-		"\tsend \"GUI Viewers: %{_viewers::*}%\" to player"
-})
+@Example("""
+	command /guiviewers:
+		usage: A command for printing a list of all players with a GUI open.
+		trigger:
+			set {_viewers::*} to all players where [input has a gui]
+			send "GUI Viewers: %{_viewers::*}%"
+	""")
 @Since("1.0.0")
 public class CondHasGUI extends PropertyCondition<Player> {
 
-	static {
-		register(CondHasGUI.class, PropertyType.HAVE, "a gui [open]", "players");
+	public static void register(SyntaxRegistry syntaxRegistry) {
+		syntaxRegistry.register(SyntaxRegistry.CONDITION,
+			infoBuilder(CondHasGUI.class, PropertyType.HAVE, "a gui [open]", "players")
+				.supplier(CondHasGUI::new)
+				.build());
 	}
 
 	@Override
