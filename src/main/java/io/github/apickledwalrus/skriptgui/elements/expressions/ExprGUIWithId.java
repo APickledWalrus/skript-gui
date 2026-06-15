@@ -4,7 +4,6 @@ import ch.njol.skript.doc.Example;
 import io.github.apickledwalrus.skriptgui.gui.GUIManager;
 import org.bukkit.event.Event;
 
-import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
@@ -12,7 +11,6 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
-import ch.njol.util.coll.CollectionUtils;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.jetbrains.annotations.Nullable;
@@ -53,24 +51,6 @@ public class ExprGUIWithId extends SimpleExpression<GUI> {
 			.map(manager::getGUI)
 			.filter(Objects::nonNull)
 			.toArray(GUI[]::new);
-	}
-
-	@Override
-	public Class<?> @Nullable [] acceptChange(ChangeMode mode) {
-		if (mode == ChangeMode.DELETE) {
-			return CollectionUtils.array();
-		}
-		return null;
-	}
-
-	@Override
-	public void change(Event event, Object @Nullable [] delta, ChangeMode mode) {
-		for (String id : ids.getArray(event)) {
-			GUI gui = SkriptGUI.getGUIManager().getGUI(id);
-			if (gui != null) {
-				gui.setID(null);
-			}
-		}
 	}
 
 	@Override

@@ -1,10 +1,12 @@
 package io.github.apickledwalrus.skriptgui.types;
 
+import ch.njol.skript.classes.Changer;
 import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.classes.ClassInfo;
 import ch.njol.skript.classes.Parser;
 import ch.njol.skript.lang.ParseContext;
 import ch.njol.skript.registrations.Classes;
+import ch.njol.util.coll.CollectionUtils;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +26,7 @@ public class GUIClassInfo extends ClassInfo<GUI> {
 			.examples("See the GUI creation section.")
 			.since("1.0.0")
 			.parser(new GUIParser())
+			.changer(new GUIChanger())
 			.property(Property.NAME,
 				"A GUI's name. Can be set, cleared, or reset.",
 				source,
@@ -52,6 +55,25 @@ public class GUIClassInfo extends ClassInfo<GUI> {
 		@Override
 		public String toVariableNameString(GUI gui) {
 			return toString(gui, 0);
+		}
+
+	}
+
+	private static final class GUIChanger implements Changer<GUI> {
+
+		@Override
+		public Class<?> @Nullable [] acceptChange(ChangeMode mode) {
+			if (mode == ChangeMode.DELETE) {
+				return CollectionUtils.array();
+			}
+			return null;
+		}
+
+		@Override
+		public void change(GUI[] guis, Object @Nullable [] delta, ChangeMode mode) {
+			for (GUI gui : guis) {
+				gui.setID(null);
+			}
 		}
 
 	}
