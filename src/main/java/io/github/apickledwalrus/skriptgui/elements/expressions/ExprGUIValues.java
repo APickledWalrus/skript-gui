@@ -4,11 +4,10 @@ import ch.njol.skript.Skript;
 import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Example;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.parser.ParserInstance;
 import ch.njol.skript.lang.util.SimpleExpression;
@@ -21,6 +20,7 @@ import io.github.apickledwalrus.skriptgui.elements.sections.SecGUIOpenClose;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecMakeGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
@@ -32,24 +32,34 @@ import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.registration.SyntaxInfo;
+import org.skriptlang.skript.registration.SyntaxRegistry;
 
 import java.util.Arrays;
 import java.util.Locale;
 
 @Name("GUI Values")
-@Description("Different utility values for a GUI. Some are available in vanilla Skript. Not all values are available for the GUI close section.")
-@Examples({
-		"create a gui with virtual chest inventory:",
-		"\tmake gui 10 with water bucket:",
-		"\t\tset the gui item to lava bucket"
-})
+@Description("""
+	Obtains various utility values related to a GUI.
+	Many of these values are available in vanilla Skript, but have been kept for compatibility and/or ease of use.
+	Some values may not be available in certain sections (e.g., 'gui close').
+	""")
+@Example("""
+	create a gui with virtual chest inventory:
+		make gui 10 with water bucket:
+			set the gui item to lava bucket
+	""")
 @Since("1.0.0")
 public class ExprGUIValues extends SimpleExpression<Object> {
 
-	static {
-		Skript.registerExpression(ExprGUIValues.class, Object.class, ExpressionType.SIMPLE, Arrays.stream(Value.values())
-				.map(Value::getPattern)
-				.toArray(String[]::new));
+	public static void register(SyntaxRegistry syntaxRegistry) {
+		syntaxRegistry.register(SyntaxRegistry.EXPRESSION,
+			SyntaxInfo.Expression.builder(ExprGUIValues.class, Object.class)
+				.supplier(ExprGUIValues::new)
+				.addPatterns(Arrays.stream(Value.values())
+					.map(Value::getPattern)
+					.toList())
+				.build());
 	}
 
 	private enum Value {
@@ -71,7 +81,7 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 		private final String pattern;
 
 		Value(String pattern) {
-			this.pattern = "[the] gui" + pattern;
+			this.pattern = ("[the] gui " + pattern).stripTrailing();
 		}
 
 		public String getPattern() {
@@ -81,14 +91,21 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 	}
 
 	private Value value;
-	private boolean isDelayed;
 	// Whether the expression is being used in an open/close section
 	private boolean openClose;
 
 	@Override
-	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
+	public boolean init(Expression<?>[] expressions, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		ParserInstance parser = getParser();
-		if (!SkriptUtils.isSection(parser, SecCreateGUI.class, SecMakeGUI.class, SecGUIOpenClose.class)) {
+		if (SkriptUtils.isSection(parser, SecCreateGUI.class)) {
+			if (value != Value.GUI) {
+				Skript.error("You can't use '" + parseResult.expr + "' in a GUI open/close section.");
+				return false;
+			}
+			return true;
+		}
+
+		if (!SkriptUtils.isSection(parser, SecMakeGUI.class, SecGUIOpenClose.class)) {
 			Skript.error("You can't use '" + parseResult.expr + "' outside of a GUI make or open/close section.");
 			return false;
 		}
@@ -100,8 +117,6 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 			Skript.error("You can't use '" + parseResult.expr + "' in a GUI open/close section.");
 			return false;
 		}
-
-		this.isDelayed = !isDelayed.isFalse(); // TRUE or UNKNOWN
 
 		return true;
 	}
@@ -118,10 +133,16 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 			return switch (value) {
 				case INVENTORY -> new Inventory[]{inventoryEvent.getInventory()};
 				case PLAYER -> {
-					if (inventoryEvent instanceof InventoryCloseEvent) {
-						yield new HumanEntity[]{((InventoryCloseEvent) event).getPlayer()};
+					HumanEntity humanEntity;
+					if (inventoryEvent instanceof InventoryCloseEvent closeEvent) {
+						humanEntity = closeEvent.getPlayer();
+					} else {
+						humanEntity = ((InventoryOpenEvent) inventoryEvent).getPlayer();
 					}
-					yield new HumanEntity[]{((InventoryOpenEvent) inventoryEvent).getPlayer()};
+					if (humanEntity instanceof Player player) {
+						yield new Player[]{player};
+					}
+					yield new Object[0];
 				}
 				case VIEWERS -> (inventoryEvent.getViewers().toArray(new HumanEntity[0]));
 				default -> throw new IllegalStateException("Unexpected value: " + value);
@@ -141,15 +162,17 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 			case CLICK_TYPE -> new ClickType[]{clickEvent.getClick()};
 			case CURSOR_ITEM -> {
 				ItemStack cursor = clickEvent.getCursor();
-				yield cursor != null ? new ItemType[]{new ItemType(cursor)} : new ItemType[0];
+				yield new ItemType[]{new ItemType(cursor)};
 			}
 			case CLICKED_ITEM -> {
 				ItemStack currentItem = clickEvent.getCurrentItem();
 				yield currentItem != null ? new ItemType[]{new ItemType(currentItem)} : new ItemType[0];
 			}
 			case SLOT_TYPE -> new SlotType[]{clickEvent.getSlotType()};
-			case PLAYER -> new HumanEntity[]{clickEvent.getWhoClicked()};
-			case VIEWERS -> clickEvent.getViewers().toArray(new HumanEntity[0]);
+			case PLAYER -> clickEvent.getWhoClicked() instanceof Player player ? new Player[]{player} : new Player[0];
+			case VIEWERS -> clickEvent.getViewers().stream()
+				.filter(humanEntity -> humanEntity instanceof Player)
+				.toArray(Player[]::new);
 			case SLOT_ID -> {
 				GUI gui = SkriptGUI.getGUIManager().getGUI(event);
 				yield gui != null ? new String[]{String.valueOf(gui.convert(clickEvent.getSlot()))} : new GUI[0];
@@ -159,18 +182,14 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 	}
 
 	@Override
-	@Nullable
-	public Class<?>[] acceptChange(ChangeMode mode) {
-		if (isDelayed) {
-			String value = "the gui " + this.value.name().toLowerCase(Locale.ENGLISH).replace("_", "");
-			Skript.error("You can't set the '" + value  + "' when the event is already passed.");
-			return null;
-		}
-
+	public Class<?> @Nullable [] acceptChange(ChangeMode mode) {
 		if (mode == ChangeMode.SET && value == Value.CLICKED_ITEM) {
+			if (getParser().getHasDelayBefore().isTrue()) {
+				Skript.error("You can't set the 'gui clicked item' when the event is already passed.");
+				return null;
+			}
 			return CollectionUtils.array(ItemType.class);
 		}
-
 		return null;
 	}
 
@@ -196,7 +215,7 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 			case CLICK_TYPE -> ClickType.class;
 			case CURSOR_ITEM, CLICKED_ITEM -> ItemType.class;
 			case SLOT_TYPE -> SlotType.class;
-			case PLAYER, VIEWERS -> HumanEntity.class;
+			case PLAYER, VIEWERS -> Player.class;
 			case SLOT_ID -> String.class;
 			case GUI -> GUI.class;
 		};

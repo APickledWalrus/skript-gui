@@ -2,6 +2,7 @@ package io.github.apickledwalrus.skriptgui.elements.expressions;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Example;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
@@ -26,7 +27,7 @@ import org.skriptlang.skript.registration.SyntaxRegistry;
 	Obtains the next open slot of a GUI.
 	This is a single character representing the next available character of the shape.
 	""")
-@Examples("make the next gui slot with dirt named \"Slot: %the next gui slot%\"")
+@Example("make the next gui slot with dirt named \"Slot: %the next gui slot%\"")
 @Since("1.3.0")
 public class ExprNextSlot extends SimpleExpression<String> {
 
