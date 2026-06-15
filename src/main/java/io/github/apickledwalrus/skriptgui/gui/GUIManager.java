@@ -1,7 +1,6 @@
 package io.github.apickledwalrus.skriptgui.gui;
 
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-public class GUIManager {
+public final class GUIManager {
 
 	/**
 	 * A map for tracking all GUIs based on their Inventory.
@@ -86,32 +85,6 @@ public class GUIManager {
 		} else {
 			eventGUIs.remove(event);
 		}
-	}
-
-	/**
-	 * @param player The player to get the GUI from.
-	 * @return The open GUI of the player, or null if this player doesn't have a GUI open.
-	 */
-	public @Nullable GUI getGUI(Player player) {
-		for (GUI gui : getTrackedGUIs()) {
-			if (gui.getInventory().getViewers().contains(player)) {
-				return gui;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * @param player The player to check.
-	 * @return Whether the player has a GUI open.
-	 */
-	public boolean hasGUI(Player player) {
-		for (GUI gui : getTrackedGUIs()) {
-			if (gui.getInventory().getViewers().contains(player)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**

@@ -25,7 +25,7 @@ public class ExprGUI extends SimplePropertyExpression<Player, GUI> {
 
 	@Override
 	public @Nullable GUI convert(Player player) {
-		return SkriptGUI.getGUIManager().getGUI(player);
+		return SkriptGUI.getGUIManager().getGUI(player.getOpenInventory().getTopInventory());
 	}
 
 	@Override

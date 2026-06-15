@@ -30,10 +30,10 @@ import org.jetbrains.annotations.Nullable;
 		"\t\tcancel the gui closing"
 })
 @Since("1.2.0")
-public class EffCancelGuiClosing extends Effect {
+public class EffCancelGUIClosing extends Effect {
 
 	static {
-		Skript.registerEffect(EffCancelGuiClosing.class,
+		Skript.registerEffect(EffCancelGUIClosing.class,
 				"(:cancel|uncancel) [the] gui clos(e|ing)"
 		);
 	}
