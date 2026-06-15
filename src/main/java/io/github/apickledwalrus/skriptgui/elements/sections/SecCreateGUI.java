@@ -15,8 +15,8 @@ import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.elements.expressions.ExprVirtualInventory;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
+import net.kyori.adventure.text.Component;
 import org.bukkit.event.Event;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +34,7 @@ public class SecCreateGUI extends EffectSection {
 
 	static {
 		Skript.registerSection(SecCreateGUI.class,
-				"create [a] [new] gui [[with id[entifier]] %-string%] with %inventory% [removable:(and|with) ([re]move[e]able|stealable) items] [(and|with) shape %-strings%]",
+				"create [a] [new] gui [[with id[entifier]] %-string%] with [a] %inventory% [removable:(and|with) ([re]move[e]able|stealable) items] [(and|with) shape %-strings%]",
 				"(change|edit) [gui] %guiinventory%"
 		);
 	}
@@ -75,28 +75,21 @@ public class SecCreateGUI extends EffectSection {
 	public TriggerItem walk(Event event) {
 		GUI gui;
 		if (this.gui == null) { // Creating a new GUI.
-			Inventory inv = this.inventory.getSingle(event);
-			if (inv == null) { // Don't run the section if the GUI can't be created
+			Inventory inventory = this.inventory.getSingle(event);
+			if (inventory == null) { // Don't run the section if the GUI can't be created
+				return walk(event, false);
+			}
+			if (SkriptGUI.getGUIManager().getGUI(inventory) != null) {
+				error("Attempted to create a GUI using an inventory already associated with a GUI! This is not permitted.");
 				return walk(event, false);
 			}
 
-			InventoryType invType = inv.getType();
-			if (!invType.isCreatable()) { // We don't want to run this section as this is an invalid GUI type
-				SkriptGUI.getInstance().getLogger().warning("Unable to create an inventory of type: " + invType.name());
-				return walk(event, false);
+			Component name = null;
+			if (this.inventory instanceof ExprVirtualInventory exprVirtualInventory) {
+				name = exprVirtualInventory.getName();
 			}
 
-			if (this.inventory instanceof ExprVirtualInventory exprVirtualInventory) { // Try to set the name
-				gui = new GUI(inv, removableItems, exprVirtualInventory.getName());
-			} else {
-				gui = new GUI(inv, removableItems, null);
-			}
-
-			if (shape == null) {
-				gui.resetShape();
-			} else {
-				gui.setShape(shape.getArray(event));
-			}
+			gui = new GUI(inventory, removableItems, name, shape == null ? null : shape.getArray(event));
 
 			String id = this.id != null ? this.id.getSingle(event) : null;
 			if (id != null && !id.isEmpty()) {
@@ -148,21 +141,13 @@ public class SecCreateGUI extends EffectSection {
 		if (gui != null) {
 			return "edit gui " + gui.toString(event, debug);
 		}
-
-		SyntaxStringBuilder builder = new SyntaxStringBuilder(event, debug);
-		builder.append("create a gui");
-		if (id != null) {
-			builder.append("with id", id);
-		}
-		builder.append("with").append(inventory);
-		if (removableItems) {
-			builder.append("with removable items");
-		}
-		if (shape != null) {
-			builder.append("and shape", shape);
-		}
-
-		return builder.toString();
+		return new SyntaxStringBuilder(event, debug)
+			.append("create a gui")
+			.appendIf(id != null, "with id", id)
+			.append("with", inventory)
+			.appendIf(removableItems, "with removable items")
+			.appendIf(shape != null, "and shape", shape)
+			.toString();
 	}
 
 }

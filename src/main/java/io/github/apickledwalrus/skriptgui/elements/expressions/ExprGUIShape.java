@@ -28,7 +28,7 @@ public class ExprGUIShape extends SimplePropertyExpression<GUI, String> {
 	}
 
 	@Override
-	public @Nullable String convert(GUI gui) {
+	public String convert(GUI gui) {
 		return gui.getRawShape();
 	}
 

@@ -143,28 +143,30 @@ public class GUI {
 	};
 
 	private final Map<Character, SlotData> slots = new HashMap<>();
-	@Nullable
 	private String rawShape;
 
 	// Whether all items of this GUI (excluding buttons) can be taken.
 	private boolean removableItems;
 
 	// To be run when this inventory is opened.
-	@Nullable
-	private Consumer<InventoryOpenEvent> onOpen;
+	private @Nullable Consumer<InventoryOpenEvent> onOpen;
 	// To be run when this inventory is closed.
-	@Nullable
-	private Consumer<InventoryCloseEvent> onClose;
+	private @Nullable Consumer<InventoryCloseEvent> onClose;
 	// Whether the inventory close event for this event handler is cancelled.
 	private final Set<Event> closeCancelled = new HashSet<>();
 
-	@Nullable
-	private String id;
+	private @Nullable String id;
 
-	public GUI(Inventory inventory, boolean stealableItems, @Nullable Component name) {
+	public GUI(Inventory inventory, boolean stealableItems, @Nullable Component name, String @Nullable [] shape) {
 		this.inventory = inventory;
 		this.removableItems = stealableItems;
 		this.name = name == null ? inventory.getType().defaultTitle() : name;
+		if (shape == null) {
+			resetShape();
+		} else {
+			setShape(shape);
+		}
+
 		SkriptGUI.getGUIManager().register(this);
 	}
 
@@ -310,11 +312,6 @@ public class GUI {
 	 * @param consumer The {@link Consumer} that the slot will run when clicked. Put as null if the slot should not run anything when clicked.
 	 */
 	public void setItem(Object slot, @Nullable ItemStack item, boolean removable, @Nullable Consumer<InventoryClickEvent> consumer) {
-		if (rawShape == null) {
-			SkriptGUI.getInstance().getLogger().warning("Unable to set the item in a gui named '" + getName() + "' as it has a null shape.");
-			return;
-		}
-
 		char ch = convert(slot);
 		if (ch == ' ') {
 			return;
@@ -345,9 +342,6 @@ public class GUI {
 	 * @return The item at this slot, or AIR if the slot has no item, or the slot is not valid for this GUI.
 	 */
 	public ItemStack getItem(Object slot) {
-		if (rawShape == null) {
-			return new ItemStack(Material.AIR);
-		}
 		char ch = convert(slot);
 		if (ch == 0) {
 			return new ItemStack(Material.AIR);
@@ -357,10 +351,9 @@ public class GUI {
 	}
 
 	/**
-	 * @return The raw shape of this GUI. May be null if the shape has not yet been initialized.
+	 * @return The raw shape of this GUI.
 	 * @see #setShape(String...) 
 	 */
-	@Nullable
 	public String getRawShape() {
 		return rawShape;
 	}

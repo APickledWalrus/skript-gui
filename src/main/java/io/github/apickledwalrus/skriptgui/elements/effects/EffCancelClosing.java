@@ -31,11 +31,11 @@ import org.skriptlang.skript.registration.SyntaxRegistry;
 			cancel the gui closing
 	""")
 @Since("1.2.0")
-public class EffCancelGUIClosing extends Effect {
+public class EffCancelClosing extends Effect {
 
 	public static void register(SyntaxRegistry syntaxRegistry) {
-		syntaxRegistry.register(SyntaxRegistry.EFFECT, SyntaxInfo.builder(EffCancelGUIClosing.class)
-			.supplier(EffCancelGUIClosing::new)
+		syntaxRegistry.register(SyntaxRegistry.EFFECT, SyntaxInfo.builder(EffCancelClosing.class)
+			.supplier(EffCancelClosing::new)
 			.addPattern("(:cancel|uncancel) [the] gui clos(e|ing)")
 			.build());
 	}

@@ -94,6 +94,7 @@ public class SkriptGUI extends JavaPlugin implements AddonModule {
 			ExprGUIShape::register,
 			ExprGUIWithId::register,
 			ExprLastGUI::register,
+			ExprNextSlot::register,
 			ExprPaginatedList::register,
 			ExprVirtualInventory::register
 		);

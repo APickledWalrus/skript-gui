@@ -5,8 +5,8 @@ import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
+import ch.njol.skript.expressions.base.PropertyExpression;
 import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
@@ -18,25 +18,30 @@ import io.github.apickledwalrus.skriptgui.elements.sections.SecMakeGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.registration.SyntaxInfo;
+import org.skriptlang.skript.registration.SyntaxRegistry;
 
 @Name("Next GUI Slot")
-@Description("An expression that returns the number/character of the next open slot in a GUI.")
+@Description("""
+	Obtains the next open slot of a GUI.
+	This is a single character representing the next available character of the shape.
+	""")
 @Examples("make the next gui slot with dirt named \"Slot: %the next gui slot%\"")
-@Since("1.3")
-public class ExprNextGUISlot extends SimpleExpression<Character> {
+@Since("1.3.0")
+public class ExprNextSlot extends SimpleExpression<String> {
+
+	public static void register(SyntaxRegistry syntaxRegistry) {
+		syntaxRegistry.register(SyntaxRegistry.EXPRESSION,
+			SyntaxInfo.Expression.builder(ExprNextSlot.class, String.class)
+				.supplier(ExprNextSlot::new)
+				.addPatterns(PropertyExpression.getPatterns("next gui slot[s]", "guiinventories"))
+				.addPattern("[the] next gui slot")
+				.build());
+	}
 
 	private @Nullable Expression<GUI> guis;
 
-	static {
-		Skript.registerExpression(ExprNextGUISlot.class, Character.class, ExpressionType.SIMPLE,
-				"%guiinventorys%'[s] next gui slot[s]",
-				"[the] next gui slot[s] of %guiinventorys%",
-				"[the] next gui slot"
-		);
-	}
-
 	@Override
-	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		if (matchedPattern == 2) {
 			if (!SkriptUtils.isSection(getParser(), SecCreateGUI.class, SecMakeGUI.class, SecGUIOpenClose.class)) {
@@ -45,26 +50,26 @@ public class ExprNextGUISlot extends SimpleExpression<Character> {
 			}
 			guis = null;
 		} else {
+			//noinspection unchecked
 			guis = (Expression<GUI>) exprs[0];
 		}
 		return true;
 	}
 
 	@Override
-	@Nullable
-	protected Character[] get(Event event) {
+	protected String @Nullable [] get(Event event) {
 		if (guis == null) {
 			GUI gui = SkriptGUI.getGUIManager().getGUI(event);
 			if (gui != null) {
-				return new Character[]{gui.nextSlot()};
+				return new String[]{String.valueOf(gui.nextSlot())};
 			}
 		}
 
 		GUI[] guis = this.guis.getArray(event);
 		int size = guis.length;
-		Character[] slots = new Character[size];
+		String[] slots = new String[size];
 		for (int i = 0; i < size; i++) {
-			slots[i] = guis[i].nextSlot();
+			slots[i] = String.valueOf(guis[i].nextSlot());
 		}
 		return slots;
 	}
@@ -75,17 +80,16 @@ public class ExprNextGUISlot extends SimpleExpression<Character> {
 	}
 
 	@Override
-	public Class<? extends Character> getReturnType() {
-		return Character.class;
+	public Class<? extends String> getReturnType() {
+		return String.class;
 	}
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
 		if (guis != null) {
 			return "the next gui slot" + (guis.isSingle() ? "" : "s") + " of " + guis.toString(event, debug);
-		} else {
-			return "the next gui slot";
 		}
+		return "the next gui slot";
 	}
 
 }
