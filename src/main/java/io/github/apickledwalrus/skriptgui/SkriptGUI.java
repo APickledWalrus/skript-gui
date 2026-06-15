@@ -94,7 +94,8 @@ public class SkriptGUI extends JavaPlugin implements AddonModule {
 			ExprGUIShape::register,
 			ExprGUIWithId::register,
 			ExprLastGUI::register,
-			ExprPaginatedList::register
+			ExprPaginatedList::register,
+			ExprVirtualInventory::register
 		);
 		ClassLoader.loadClasses(SkriptGUI.class, getFile(), "io.github.apickledwalrus.skriptgui.elements");
 	}

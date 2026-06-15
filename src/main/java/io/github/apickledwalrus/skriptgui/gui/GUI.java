@@ -1,6 +1,7 @@
 package io.github.apickledwalrus.skriptgui.gui;
 
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -26,7 +27,7 @@ import java.util.function.Consumer;
 public class GUI {
 
 	private Inventory inventory;
-	private String name;
+	private Component name;
 
 	private final GUIEventHandler eventHandler = new GUIEventHandler() {
 		@Override
@@ -160,10 +161,10 @@ public class GUI {
 	@Nullable
 	private String id;
 
-	public GUI(Inventory inventory, boolean stealableItems, @Nullable String name) {
+	public GUI(Inventory inventory, boolean stealableItems, @Nullable Component name) {
 		this.inventory = inventory;
 		this.removableItems = stealableItems;
-		this.name = name != null ? name : inventory.getType().getDefaultTitle();
+		this.name = name == null ? inventory.getType().defaultTitle() : name;
 		SkriptGUI.getGUIManager().register(this);
 	}
 
@@ -175,11 +176,11 @@ public class GUI {
 		return eventHandler;
 	}
 
-	public String getName() {
+	public Component getName() {
 		return name;
 	}
 
-	public void setName(@Nullable String name) {
+	public void setName(@Nullable Component name) {
 		changeInventory(inventory.getSize(), name);
 	}
 
@@ -202,9 +203,9 @@ public class GUI {
 		slots.clear();
 	}
 
-	private void changeInventory(int size, @Nullable String name) {
+	private void changeInventory(int size, @Nullable Component name) {
 		if (name == null) {
-			name = inventory.getType().getDefaultTitle();
+			name = inventory.getType().defaultTitle();
 		} else if (size < 9) { // Minimum size
 			size = 9;
 		} else if (size > 54) { // Maximum size

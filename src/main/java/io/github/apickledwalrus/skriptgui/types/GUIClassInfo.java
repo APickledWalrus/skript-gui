@@ -6,6 +6,7 @@ import ch.njol.skript.classes.Parser;
 import ch.njol.skript.lang.ParseContext;
 import ch.njol.skript.registrations.Classes;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.addon.SkriptAddon;
@@ -55,17 +56,17 @@ public class GUIClassInfo extends ClassInfo<GUI> {
 
 	}
 
-	private static final class GUINameHandler implements ExpressionPropertyHandler<GUI, String> {
+	private static final class GUINameHandler implements ExpressionPropertyHandler<GUI, Component> {
 
 		@Override
-		public String convert(GUI gui) {
+		public Component convert(GUI gui) {
 			return gui.getName();
 		}
 
 		@Override
 		public Class<?> @Nullable [] acceptChange(ChangeMode mode) {
 			return switch (mode) {
-				case SET, RESET, DELETE -> new Class[]{String.class};
+				case SET, RESET, DELETE -> new Class[]{Component.class};
 				default -> null;
 			};
 		}
@@ -73,18 +74,18 @@ public class GUIClassInfo extends ClassInfo<GUI> {
 		@Override
 		public void change(GUI gui, Object @Nullable [] delta, ChangeMode mode) {
 			assert mode != ChangeMode.SET || delta != null;
-			String name = switch (mode) {
-				case SET -> (String) delta[0];
-				case DELETE -> "";
-				case RESET -> gui.getInventory().getType().getDefaultTitle();
+			Component name = switch (mode) {
+				case SET -> (Component) delta[0];
+				case DELETE -> Component.empty();
+				case RESET -> gui.getInventory().getType().defaultTitle();
 				default -> throw new IllegalArgumentException("Unsupported change mode for GUI rename");
 			};
 			gui.setName(name);
 		}
 
 		@Override
-		public @NotNull Class<String> returnType() {
-			return String.class;
+		public @NotNull Class<Component> returnType() {
+			return Component.class;
 		}
 
 	}

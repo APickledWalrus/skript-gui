@@ -1,46 +1,49 @@
 package io.github.apickledwalrus.skriptgui.elements.expressions;
 
-import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Example;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.SyntaxStringBuilder;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.skript.registrations.Classes;
 import ch.njol.util.Kleenean;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.registration.SyntaxInfo;
+import org.skriptlang.skript.registration.SyntaxRegistry;
 
 @Name("Virtual Inventory")
-@Description("An expression to create inventories that can be used with GUIs.")
-@Examples("create a gui with virtual chest inventory with 3 rows named \"My GUI\"")
-@Since("1.0.0")
-public class ExprVirtualInventory extends SimpleExpression<Inventory>{
+@Description("Obtains a new inventory that can be used for creating a GUI.")
+@Example("create a gui with virtual chest inventory with 3 rows named \"My GUI\"")
+@Since("1.0.0, 1.4.0 (text component support)")
+public class ExprVirtualInventory extends SimpleExpression<Inventory> {
 
-	static {
-		String common = "virtual (1:(crafting [table]|workbench)|2:chest|3:anvil|4:hopper|5:dropper|6:dispenser|%-inventorytype%)";
-		Skript.registerExpression(ExprVirtualInventory.class, Inventory.class, ExpressionType.COMBINED,
-				common + " [with size %-number%] [(named|with (name|title)) %-string%]",
-				common + " [with %-number% row[s]] [(named|with (name|title)) %-string%]",
-				common + " [(named|with (name|title)) %-string%] with size %-number%",
-				common + " [(named|with (name|title)) %-string%] with %-number% row[s]"
-		);
+	public static void register(SyntaxRegistry syntaxRegistry) {
+		String common = "virtual (1:crafting [table]|1:workbench|2:chest|3:anvil|4:hopper|5:dropper|6:dispenser|%-inventorytype%)";
+		syntaxRegistry.register(SyntaxRegistry.EXPRESSION,
+			SyntaxInfo.Expression.builder(ExprVirtualInventory.class, Inventory.class)
+				.supplier(ExprVirtualInventory::new)
+				.addPatterns(common + " [with size %-number%] [(named|with (name|title)) %-textcomponent%]",
+					common + " [with %-number% row[s]] [(named|with (name|title)) %-textcomponent%]",
+					common + " [(named|with (name|title)) %-textcomponent%] with size %-number%",
+					common + " [(named|with (name|title)) %-textcomponent%] with %-number% row[s]")
+				.build());
 	}
 
 	private @Nullable InventoryType specifiedType;
 	private @Nullable Expression<InventoryType> inventoryType;
 	private @Nullable Expression<Number> rows;
-	private @Nullable Expression<String> name;
+	private @Nullable Expression<Component> name;
 
 	// The last executed name. Used for runtime context purposes.
-	private @Nullable String lastInventoryName;
+	private @Nullable Component lastInventoryName;
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -59,10 +62,10 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 		}
 
 		if (matchedPattern > 1) {
-			name = (Expression<String>) exprs[1];
+			name = (Expression<Component>) exprs[1];
 			rows = (Expression<Number>) exprs[2];
 		} else {
-			name = (Expression<String>) exprs[2];
+			name = (Expression<Component>) exprs[2];
 			rows = (Expression<Number>) exprs[1];
 		}
 
@@ -71,15 +74,15 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 
 	@Override
 	protected Inventory[] get(Event event) {
-		InventoryType type = inventoryType != null ? inventoryType.getSingle(event) : specifiedType;
+		InventoryType type = inventoryType == null ? specifiedType : inventoryType.getSingle(event);
 		if (type == null || !type.isCreatable()) {
 			return new Inventory[0];
 		} else if (type == InventoryType.CRAFTING) { // Make it a valid inventory. It's not the same, but it's likely what the user wants.
 			type = InventoryType.WORKBENCH;
 		}
 
-		String name = this.name != null ? this.name.getSingle(event) : null;
-		lastInventoryName = name != null ? name : type.getDefaultTitle();
+		Component name = this.name != null ? this.name.getSingle(event) : null;
+		lastInventoryName = name != null ? name : type.defaultTitle();
 
 		Inventory inventory;
 		if (type == InventoryType.CHEST) {
@@ -116,8 +119,8 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		SyntaxStringBuilder builder = new SyntaxStringBuilder(event, debug);
-		builder.append("virtual");
+		SyntaxStringBuilder builder = new SyntaxStringBuilder(event, debug)
+			.append("virtual");
 
 		if (inventoryType != null) {
 			builder.append(inventoryType);
@@ -127,23 +130,18 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory>{
 			builder.append("inventory");
 		}
 
-		if (name != null) {
-			builder.append("with name", name);
-		}
-
-		if (rows != null) {
-			builder.append("with", rows, "rows");
-		}
+		builder.appendIf(name != null, "with name", name)
+			.appendIf(rows != null, "with", rows, "rows");
 
 		return builder.toString();
 	}
 
 	/**
 	 * @return The name of this inventory. If {@link #lastInventoryName} is null
-	 * when this method is called, an empty string will be returned.
+	 * when this method is called, an empty component will be returned.
 	 */
-	public String getName() {
-		return lastInventoryName != null ? lastInventoryName : "";
+	public Component getName() {
+		return lastInventoryName == null ? Component.empty() : lastInventoryName;
 	}
 
 }
