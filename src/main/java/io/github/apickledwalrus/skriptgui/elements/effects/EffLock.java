@@ -16,7 +16,7 @@ import org.skriptlang.skript.registration.SyntaxInfo;
 import org.skriptlang.skript.registration.SyntaxRegistry;
 
 @Name("Lock/Unlock GUI")
-@Description("Locks or unlocks a GUI, which controls whether its items without actions can be removed.")
+@Description("Locks or unlocks a GUI, which controls whether its items without actions can be removed or changed.")
 @Example("unlock the player's gui")
 @Since("1.4.0")
 public class EffLock extends Effect {
@@ -25,33 +25,33 @@ public class EffLock extends Effect {
 		syntaxRegistry.register(SyntaxRegistry.EFFECT, SyntaxInfo.builder(EffLock.class)
 			.supplier(EffLock::new)
 			.addPatterns("(:unlock|:lock) [gui[s]] %guis%",
-				"allow items to be removed from %guis%",
-				"(disallow|prevent) items [from] being removed from %guis%")
+				"allow items to be (removed|changed) from %guis%",
+				"(disallow|prevent) items [from] being (removed|changed) from %guis%")
 			.build());
 	}
 
 	private Expression<GUI> guis;
-	private boolean removable;
+	private boolean changeable;
 
 	@Override
 	public boolean init(Expression<?>[] expressions, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		//noinspection unchecked
 		this.guis = (Expression<GUI>) expressions[0];
-		this.removable = parseResult.hasTag("unlock") || matchedPattern == 1;
+		this.changeable = parseResult.hasTag("unlock") || matchedPattern == 1;
 		return true;
 	}
 
 	@Override
 	protected void execute(Event event) {
 		for (GUI gui : this.guis.getArray(event)) {
-			gui.setRemovable(removable);
+			gui.setChangeable(changeable);
 		}
 	}
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
 		return new SyntaxStringBuilder(event, debug)
-			.append(removable ? "unlock" : "lock", guis)
+			.append(changeable ? "unlock" : "lock", guis)
 			.toString();
 	}
 

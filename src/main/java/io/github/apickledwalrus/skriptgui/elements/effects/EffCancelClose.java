@@ -57,7 +57,7 @@ public class EffCancelClose extends Effect {
 	protected void execute(Event event) {
 		GUI gui = SkriptGUI.getGUIManager().getGUI(event);
 		if (gui != null) {
-			gui.setCloseCancelled(event, cancel);
+			gui.setCloseCanceled(event, cancel);
 		}
 	}
 

@@ -8,7 +8,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -36,7 +35,7 @@ public final class GUIEvents implements Listener {
 		for (int slot = 0; slot < size; slot++) {
 			ItemStack item = guiInventory.getItem(slot);
 			if (item != null && item.isSimilar(cursor)) {
-				if (!gui.isRemovable(gui.convert(slot))) {
+				if (!gui.isChangeable(gui.convert(slot))) {
 					event.setCancelled(true);
 					return;
 				}
@@ -120,7 +119,7 @@ public final class GUIEvents implements Listener {
 							if (item != null && item.getType() != Material.AIR && item.isSimilar(clicked) && item.getAmount() < item.getMaxStackSize()) {
 								InventoryClickEvent clickEvent = getClickEventWithSlot(event, slot);
 
-								if (!gui.isRemovable(gui.convert(slot))) {
+								if (!gui.isChangeable(gui.convert(slot))) {
 									event.setCancelled(true);
 									return;
 								} else {
@@ -132,7 +131,7 @@ public final class GUIEvents implements Listener {
 						}
 
 						int firstEmpty = guiInventory.firstEmpty();
-						if (firstEmpty != -1 && gui.isRemovable(gui.convert(firstEmpty))) { // Safe to be moved into the GUI
+						if (firstEmpty != -1 && gui.isChangeable(gui.convert(firstEmpty))) { // Safe to be moved into the GUI
 							InventoryClickEvent clickEvent = getClickEventWithSlot(event, firstEmpty);
 							eventHandler.onChange(clickEvent);
 							return;
@@ -145,7 +144,7 @@ public final class GUIEvents implements Listener {
 				case DOUBLE_CLICK:
 					// Only cancel if this will cause a change to the GUI itself
 					// We are checking if our GUI contains an item that could be merged with the event item
-					// If that item is mergeable but it isn't stealable, we will cancel the event now
+					// If that item is mergeable, but it isn't changeable, we will cancel the event now
 					handleDoubleClick(gui, event);
 					return;
 				default:
@@ -154,7 +153,7 @@ public final class GUIEvents implements Listener {
 		} else {
 			// Call onChange if a slot is changed due to interactions within the gui itself
 			if (event.getClick() == ClickType.DOUBLE_CLICK) {
-				if (!gui.isRemovable(gui.convert(event.getSlot()))) { // Doesn't change the slots
+				if (!gui.isChangeable(gui.convert(event.getSlot()))) { // Doesn't change the slots
 					event.setCancelled(true);
 					return;
 				}
@@ -167,28 +166,19 @@ public final class GUIEvents implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-	public void onInventoryDrag(InventoryDragEvent event) {
-		GUI gui = SkriptGUI.getGUIManager().getGUI(event.getInventory());
-		if (gui != null) {
-			GUIEventHandler eventHandler = gui.getEventHandler();
-			// Check if any slots in the actual GUI were changed. We don't care if only the player's inventory was changed.
-			int lastSlotIndex = gui.getInventory().getSize() - 1;
-			for (int slot : event.getRawSlots()) {
-				if (slot <= lastSlotIndex) { // A slot in the actual GUI was interacted with
-					eventHandler.onDrag(event);
-					break;
-				}
-			}
+	public void onInventoryDrag(InventoryDragEvent dragEvent) {
+		GUI gui = SkriptGUI.getGUIManager().getGUI(dragEvent.getInventory());
+		if (gui == null) {
+			return;
+		}
 
-			for (int slot : event.getInventorySlots()) {
-				InventoryClickEvent clickEvent = new InventoryClickEvent(
-						event.getView(),
-						event.getView().getSlotType(slot),
-						slot,
-						ClickType.UNKNOWN,
-						InventoryAction.UNKNOWN
-				);
-				eventHandler.onChange(clickEvent);
+		// check whether any slots in the actual GUI were changed
+		// we don't care if only the player's inventory was changed
+		int guiEnd = gui.getInventory().getSize();
+		for (int slot : dragEvent.getRawSlots()) {
+			if (slot < guiEnd) { // a slot in the actual GUI was interacted with
+				gui.getEventHandler().onDrag(dragEvent);
+				break;
 			}
 		}
 	}

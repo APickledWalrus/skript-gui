@@ -13,7 +13,7 @@ import org.skriptlang.skript.registration.SyntaxInfo;
 import org.skriptlang.skript.registration.SyntaxRegistry;
 
 @Name("Is GUI Locked")
-@Description("Whether a GUI is locked or unlocked, which controls whether its items without actions can be removed.")
+@Description("Whether a GUI is locked or unlocked, which controls whether its items without actions can be removed or changed.")
 @Example("""
 	if the player's gui is locked:
 		send "You cannot remove items from this GUI!" to the player
@@ -31,8 +31,8 @@ public class CondIsLocked extends PropertyCondition<GUI> {
 		syntaxRegistry.register(SyntaxRegistry.CONDITION, SyntaxInfo.builder(CondIsLocked.class)
 			.supplier(CondIsLocked::new)
 			.addPatterns(bePatterns)
-			.addPatterns("%guis% allow[s] items to be removed",
-				"%guis% (disallow|prevent)[s] items [from] being removed")
+			.addPatterns("%guis% allow[s] items to be (removed|changed)",
+				"%guis% (disallow|prevent)[s] items [from] being (removed|changed)")
 			.build());
 	}
 
@@ -44,7 +44,7 @@ public class CondIsLocked extends PropertyCondition<GUI> {
 
 	@Override
 	public boolean check(GUI gui) {
-		return gui.isRemovable() != locked;
+		return gui.isChangeable() != locked;
 	}
 
 	@Override

@@ -37,7 +37,7 @@ public class ExprGlobalGUIs extends SimpleExpression<GUI> {
 
 	@Override
 	protected GUI[] get(Event event) {
-		return SkriptGUI.getGUIManager().getTrackedGUIs().toArray(new GUI[0]);
+		return SkriptGUI.getGUIManager().getGlobalGUIs().toArray(new GUI[0]);
 	}
 
 	@Override

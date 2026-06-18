@@ -61,8 +61,10 @@ public final class GUIManager {
 	/**
 	 * @return A list of tracked GUIs.
 	 */
-	public Collection<GUI> getTrackedGUIs() {
-		return guis.values();
+	public Collection<GUI> getGlobalGUIs() {
+		return guis.values().stream()
+			.filter(gui -> gui.getID() != null)
+			.toList();
 	}
 
 	/**
@@ -80,10 +82,10 @@ public final class GUIManager {
 	 * @param gui The GUI of the given event.
 	 */
 	public void setGUI(Event event, @Nullable GUI gui) {
-		if (gui != null) {
-			eventGUIs.put(event, gui);
-		} else {
+		if (gui == null) {
 			eventGUIs.remove(event);
+		} else {
+			eventGUIs.put(event, gui);
 		}
 	}
 
@@ -92,7 +94,7 @@ public final class GUIManager {
 	 * @return The GUI with the given ID, or null if a GUI with this ID doesn't exist.
 	 */
 	public @Nullable GUI getGUI(String id) {
-		for (GUI gui : getTrackedGUIs()) {
+		for (GUI gui : getGlobalGUIs()) {
 			if (id.equals(gui.getID())) {
 				return gui;
 			}

@@ -41,7 +41,7 @@ public class ExprLockStatus extends SimplePropertyExpression<GUI, Boolean> {
 
 	@Override
 	public @Nullable Boolean convert(GUI gui) {
-		return !gui.isRemovable(); // Not removable = locked
+		return !gui.isChangeable(); // Not changeable = locked
 	}
 
 	@Override
@@ -54,9 +54,9 @@ public class ExprLockStatus extends SimplePropertyExpression<GUI, Boolean> {
 
 	@Override
 	public void change(Event event, Object @Nullable [] delta, ChangeMode mode) {
-		boolean removable = delta != null && !((boolean) delta[0]);
+		boolean changeable = delta != null && !((boolean) delta[0]);
 		for (GUI gui : getExpr().getArray(event)) {
-			gui.setRemovable(removable);
+			gui.setChangeable(changeable);
 		}
 	}
 
