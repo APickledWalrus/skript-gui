@@ -12,49 +12,47 @@ import org.bukkit.event.Event;
 import org.jspecify.annotations.Nullable;
 import org.skriptlang.skript.registration.SyntaxRegistry;
 
-@Name("GUI Shape")
-@Description("The shape of a GUI, which controls how its items are laid out.")
+@Name("GUI Layout")
+@Description("The layout of a GUI, which controls how its items are displayed.")
 @Example("""
-	set the shape of the player's gui to "xxxxxxxxx", "x-------x", and "xxxxxxxxx"
+	set the layout of the player's gui to "xxxxxxxxx", "x-------x", and "xxxxxxxxx"
 	""")
 @Since("1.0.0, 1.3.0 (support outside of edit sections)")
-public class ExprShape extends SimplePropertyExpression<GUI, String> {
+public class ExprLayout extends SimplePropertyExpression<GUI, String> {
 
 	public static void register(SyntaxRegistry syntaxRegistry) {
 		syntaxRegistry.register(SyntaxRegistry.EXPRESSION,
-			infoBuilder(ExprShape.class, String.class, "[gui] shape[s]", "guis", false)
-				.supplier(ExprShape::new)
+			infoBuilder(ExprLayout.class, String.class, "[gui] (layout|shape)[s]", "guis", false)
+				.supplier(ExprLayout::new)
 				.build());
 	}
 
 	@Override
 	public String convert(GUI gui) {
-		return gui.getRawShape();
+		return gui.getLayout();
 	}
 
 	@Override
 	public Class<?> @Nullable [] acceptChange(ChangeMode mode) {
 		return switch (mode) {
-			case ADD, DELETE, RESET -> CollectionUtils.array(String[].class);
+			case SET, DELETE, RESET -> CollectionUtils.array(String[].class);
 			default -> null;
 		};
 	}
 
 	@Override
 	public void change(Event event, Object @Nullable [] delta, ChangeMode mode) {
-		if (delta == null) {
-			for (GUI gui : getExpr().getArray(event)) {
-				gui.resetShape();
+		String layout = null;
+		if (delta != null) {
+			StringBuilder layoutBuilder = new StringBuilder();
+			for (Object string : delta) {
+				layoutBuilder.append((String) string);
 			}
-			return;
+			layout = layoutBuilder.toString();
 		}
 
-		String[] newShape = new String[delta.length];
-		for (int i = 0; i < delta.length; i++) {
-			newShape[i] = (String) delta[i];
-		}
 		for (GUI gui : getExpr().getArray(event)) {
-			gui.setShape(newShape);
+			gui.setLayout(layout);
 		}
 	}
 
@@ -65,7 +63,7 @@ public class ExprShape extends SimplePropertyExpression<GUI, String> {
 
 	@Override
 	protected String getPropertyName() {
-		return "shape";
+		return "layout";
 	}
 
 }

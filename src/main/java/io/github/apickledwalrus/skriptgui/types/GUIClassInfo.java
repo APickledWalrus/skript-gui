@@ -49,7 +49,7 @@ public class GUIClassInfo extends ClassInfo<GUI> {
 			return Classes.toString(gui.getInventory().getType()) +
 				" gui named " + gui.getName() +
 				" with " + gui.getInventory().getSize() / 9 + " rows" +
-				" and shape \"" + gui.getRawShape() + "\"";
+				" and layout \"" + gui.getLayout() + "\"";
 		}
 
 		@Override

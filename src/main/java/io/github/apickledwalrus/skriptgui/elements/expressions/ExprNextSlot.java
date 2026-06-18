@@ -24,7 +24,7 @@ import org.skriptlang.skript.registration.SyntaxRegistry;
 @Name("Next GUI Slot")
 @Description("""
 	Obtains the next open slot of a GUI.
-	This is a single character representing the next available character of the shape.
+	This is a single character representing the next available character of the layout.
 	""")
 @Example("make the next gui slot with dirt named \"Slot: %the next gui slot%\"")
 @Since("1.3.0")

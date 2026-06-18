@@ -27,10 +27,10 @@ import java.util.function.Consumer;
 @Name("GUI Slot Change")
 @Description("""
 	A section for executing code when a slot changes.
-	Note that for shaped GUIs, where multiple slots are represented by a single character, the section will execute when any of those slots change.
+	Note that for GUIs with a layout, where multiple slots are represented by a single character, the section will execute when any of those slots change.
 	""")
 @Example("""
-	create a gui with a virtual chest inventory with shape "xxxxxxxxx", "x-------x", and "xxxxxxxxx"
+	create a gui with a virtual chest inventory with layout "xxxxxxxxx", "x-------x", and "xxxxxxxxx"
 		run when slot 1 changes:
 			send "You changed slot 1"
 		run when slot "-" changes:

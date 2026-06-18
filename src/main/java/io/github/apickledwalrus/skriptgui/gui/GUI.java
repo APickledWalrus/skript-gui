@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 
 public class GUI {
 
-	private static final char UNKNOWN_SLOT = ' ';
+	public static final char UNKNOWN_LAYOUT_SLOT = ' ';
 
 	private Inventory inventory;
 	private Component name;
@@ -164,15 +164,11 @@ public class GUI {
 		}
 	};
 
-	public GUI(Inventory inventory, boolean changeable, @Nullable Component name, String @Nullable [] shape) {
+	public GUI(Inventory inventory, boolean changeable, @Nullable Component name, @Nullable String layout) {
 		this.inventory = inventory;
 		setChangeable(changeable);
 		this.name = name == null ? inventory.getType().defaultTitle() : name;
-		if (shape == null) {
-			resetShape();
-		} else {
-			setShape(shape);
-		}
+		setLayout(layout);
 
 		SkriptGUI.getGUIManager().register(this);
 	}
@@ -258,53 +254,6 @@ public class GUI {
 	}
 
 	/**
-	 * @param slot The object to convert to Character form
-	 * @return A Character that is usable in the item and slot maps.
-	 */
-	public Character convert(Object slot) {
-		return switch (slot) {
-			case Character character -> character;
-			case Number number -> {
-				int invSlot = number.intValue();
-				// Make sure inventory slot is at least 0 (see https://github.com/APickledWalrus/skript-gui/issues/48)
-				if (rawShape != null && invSlot >= 0 && invSlot < rawShape.length()) {
-					yield rawShape.charAt(invSlot);
-				}
-				yield UNKNOWN_SLOT;
-			}
-			case String string when !string.isEmpty() ->
-				(rawShape != null && rawShape.contains(string)) ? string.charAt(0) : UNKNOWN_SLOT;
-			default -> nextSlot();
-		};
-	}
-
-	/**
-	 * @return The next available slot in this GUI.
-	 */
-	public Character nextSlot() {
-		for (char ch : rawShape.toCharArray()) {
-			if (!slots.containsKey(ch)) {
-				return ch;
-			}
-		}
-		return UNKNOWN_SLOT;
-	}
-
-	/**
-	 * @return The newest slot that has been filled in this GUI.
-	 */
-	public Character nextSlotInverted() {
-		char[] chars = rawShape.toCharArray();
-		for (int i = chars.length - 1; i >= 0; i--) {
-			char ch = chars[i];
-			if (slots.containsKey(ch)) {
-				return ch;
-			}
-		}
-		return UNKNOWN_SLOT;
-	}
-
-	/**
 	 * Sets a slot's item.
 	 * @param slot The slot to put the item in. It will be converted by {@link GUI#convert(Object)}.
 	 * @param item The {@link ItemStack} to put in the slot.
@@ -315,16 +264,8 @@ public class GUI {
 	public void setItem(Object slot, @Nullable ItemStack item, boolean changeable,
 						@Nullable Consumer<InventoryClickEvent> consumer) {
 		char ch = convert(slot);
-		if (ch == UNKNOWN_SLOT) {
+		if (ch == UNKNOWN_LAYOUT_SLOT) {
 			return;
-		}
-		if (ch == '+' && rawShape.contains("+")) {
-			char ch2 = 'A';
-			while (rawShape.indexOf(ch2) >= 0) {
-				ch2++;
-			}
-			rawShape = rawShape.replaceFirst("\\+", "" + ch2);
-			ch = ch2;
 		}
 
 		// Although we may be adding null consumers, it lets us track what slots have been set
@@ -334,7 +275,7 @@ public class GUI {
 		slots.put(ch, slotData);
 
 		int i = 0;
-		for (char ch1 : rawShape.toCharArray()) {
+		for (char ch1 : layout.toCharArray()) {
 			if (ch == ch1 && i < inventory.getSize()) {
 				inventory.setItem(i, item);
 			}
@@ -342,106 +283,59 @@ public class GUI {
 		}
 	}
 
-	/**
-	 * @param slot The slot to get the item from. It will be converted.
-	 * @return The item at this slot, or AIR if the slot has no item, or the slot is not valid for this GUI.
-	 */
-	public ItemStack getItem(Object slot) {
-		char ch = convert(slot);
-		if (ch == 0) {
-			return new ItemStack(Material.AIR);
-		}
-		ItemStack item = inventory.getItem(rawShape.indexOf(ch));
-		return item != null ? item : new ItemStack(Material.AIR);
-	}
-
 	/*
-	 * Shape
+	 * Layout
 	 */
 
-	private String rawShape;
+	private String layout;
 
 	/**
-	 * @return The raw shape of this GUI.
-	 * @see #setShape(String...) 
+	 * @return The layout of this GUI.
+	 * @see #setLayout(String)
 	 */
-	public String getRawShape() {
-		return rawShape;
+	public String getLayout() {
+		return layout;
 	}
 
 	/**
-	 * Resets the shape of this {@link GUI}
+	 * Sets the layout of this GUI.
+	 * @param layout The new layout for this GUI.
+	 * @see GUI#getLayout()
 	 */
-	public void resetShape() {
-		int size = 54; // Max inventory size
-
-		String[] shape = new String[size / 9];
-
-		int position = 0;
-		StringBuilder sb = new StringBuilder();
-		for (char c = 'A'; c < size + 'A'; c++) { // Create the default shape in String form.
-			sb.append(c);
-			if (sb.length() == 9) {
-				shape[position] = sb.toString();
-				sb = new StringBuilder();
-				position++;
+	public void setLayout(@Nullable String layout) {
+		if (layout == null) {
+			StringBuilder layoutBuilder = new StringBuilder();
+			// Create a layout with only unique characters
+			int end = 'A' + getSize();
+			for (char c = 'A'; c < end; c++) {
+				layoutBuilder.append(c);
 			}
+			layout = layoutBuilder.toString();
+		} else if (layout.length() < getSize()) { // Append to empty
+			layout = layout + String.valueOf(UNKNOWN_LAYOUT_SLOT).repeat(getSize() - layout.length());
 		}
 
-		setShape(shape);
-	}
-
-	/**
-	 * Sets the shape of this {@link GUI}
-	 * @param shapes The new shape patterns for this {@link GUI}
-	 * @see GUI#getRawShape()
-	 */
-	public void setShape(String... shapes) {
-		if (shapes.length == 0) {
+		if (this.layout == null) { // Should only be true during initialization
+			this.layout = layout;
 			return;
 		}
 
-		int size = inventory.getSize();
-
-		StringBuilder sb = new StringBuilder();
-		for (String shape : shapes) {
-			sb.append(shape);
-		}
-		while (sb.length() < size) { // Fill it in if it's too small
-			sb.append(UNKNOWN_SLOT);
-		}
-
-		String newShape = sb.toString();
-		Map<Character, ItemStack> movedCharacters = new HashMap<>();
-
-		if (rawShape != null) {
-			int pos = 0;
-			for (char ch : rawShape.toCharArray()) {
-				if (rawShape.indexOf(ch) == pos) { // Only check a character once
-					if (newShape.indexOf(ch) == -1) { // This character IS NOT in the new shape
-						clear(ch);
-					} else { // This character IS in the new shape
-						movedCharacters.put(ch, getItem(ch));
-					}
-				}
-				pos++;
-			}
-		}
-
-		// Clear out the slots of characters that are new to the shape (just in case they were occupied before)
-		// We only need to clear the slot of the item as actions (clicking, stealing, etc.) will already have been changed
-		if (rawShape != null) {
-			for (int i = 0; i < inventory.getSize(); i++) {
-				if (rawShape.indexOf(newShape.charAt(i)) == -1) { // This character was NOT in the old shape
-					inventory.clear(i);
+		// Remove data for characters no longer part of the layout
+		Map<Character, ItemStack> retained = new HashMap<>();
+		int pos = 0;
+		for (char ch : this.layout.toCharArray()) {
+			if (this.layout.indexOf(ch) == pos) { // Only check a character once
+				int index = layout.indexOf(ch);
+				if (index == -1) { // This character IS NOT in the new layout
+					clear(ch);
+				} else { // This character IS in the new layout
+					retained.put(ch, inventory.getItem(index));
 				}
 			}
+			pos++;
 		}
-
-		rawShape = newShape;
-
-		// Move around items for the moved characters
-		for (Entry<Character, ItemStack> movedCharacter : movedCharacters.entrySet()) {
+		// Reposition items for retained characters
+		for (Entry<Character, ItemStack> movedCharacter : retained.entrySet()) {
 			Character ch = movedCharacter.getKey();
 			SlotData slotData = getSlotData(ch);
 			if (slotData != null) { // In case the moved character was not actually used
@@ -449,6 +343,56 @@ public class GUI {
 			}
 		}
 
+		this.layout = layout;
+	}
+
+	/**
+	 * Converters a {@link Character}, {@link Number}, or {@link String} into a character recognized by the layout.
+	 * @param slot The object to convert.
+	 * @return A character from the {@link #getLayout()} or {@link #UNKNOWN_LAYOUT_SLOT} if not recognized.
+	 */
+	public Character convert(Object slot) {
+		return switch (slot) {
+			case Character character -> character;
+			case Number number -> {
+				int invSlot = number.intValue();
+				// Make sure inventory slot is at least 0 (see https://github.com/APickledWalrus/skript-gui/issues/48)
+				if (invSlot >= 0 && invSlot < layout.length()) {
+					yield layout.charAt(invSlot);
+				}
+				yield UNKNOWN_LAYOUT_SLOT;
+			}
+			case String string -> layout.contains(string) ? string.charAt(0) : UNKNOWN_LAYOUT_SLOT;
+			default -> UNKNOWN_LAYOUT_SLOT;
+		};
+	}
+
+	/**
+	 * Obtains the next available slot in this GUI.
+	 * @return A character from the {@link #getLayout()} or {@link #UNKNOWN_LAYOUT_SLOT} if not recognized.
+	 */
+	public Character nextSlot() {
+		for (char ch : layout.toCharArray()) {
+			if (!slots.containsKey(ch)) {
+				return ch;
+			}
+		}
+		return UNKNOWN_LAYOUT_SLOT;
+	}
+
+	/**
+	 * Obtains the last character of the layout that has been used.
+	 * @return A character from the {@link #getLayout()} or {@link #UNKNOWN_LAYOUT_SLOT} if not recognized.
+	 */
+	public Character nextSlotInverted() {
+		char[] chars = layout.toCharArray();
+		for (int i = chars.length - 1; i >= 0; i--) {
+			char ch = chars[i];
+			if (slots.containsKey(ch)) {
+				return ch;
+			}
+		}
+		return UNKNOWN_LAYOUT_SLOT;
 	}
 
 	/*

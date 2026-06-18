@@ -30,7 +30,7 @@ import java.util.List;
 	create a gui with virtual chest inventory with 3 rows named "My GUI"
 	""")
 @Example("""
-	create a gui with a virtual chest inventory with shape "xxxxxxxxx", "x-------x", and "xxxxxxxxx"
+	create a gui with a virtual chest inventory with layout "xxxxxxxxx", "x-------x", and "xxxxxxxxx"
 	""")
 @Example("""
 	edit the player's gui:
@@ -42,7 +42,7 @@ public class SecCreateGUI extends EffectSection {
 	public static void register(SyntaxRegistry syntaxRegistry) {
 		syntaxRegistry.register(SyntaxRegistry.SECTION, SyntaxInfo.builder(SecCreateGUI.class)
 			.supplier(SecCreateGUI::new)
-			.addPatterns("create [a] [new] gui [[with id[entifier]] %-string%] with [a] %inventory% [removable:(and|with) ([re]mov[e]able|stealable) items] [(and|with) shape %-strings%]",
+			.addPatterns("create [a] [new] gui [[with id[entifier]] %-string%] with [a] %inventory% [removable:(and|with) ([re]mov[e]able|stealable) items] [(and|with) (layout|shape) %-strings%]",
 				"(change|edit) [gui] %gui%")
 			.build());
 	}
@@ -50,7 +50,7 @@ public class SecCreateGUI extends EffectSection {
 	private @Nullable Expression<String> id;
 	private Expression<Inventory> inventory;
 	private boolean removableItems;
-	private @Nullable Expression<String> shape;
+	private @Nullable Expression<String> layout;
 
 	private @Nullable Expression<GUI> gui;
 
@@ -67,7 +67,7 @@ public class SecCreateGUI extends EffectSection {
 		} else {
 			id = (Expression<String>) expressions[0];
 			inventory = (Expression<Inventory>) expressions[1];
-			shape = (Expression<String>) expressions[2];
+			layout = (Expression<String>) expressions[2];
 			removableItems = parseResult.hasTag("removable");
 		}
 
@@ -96,7 +96,16 @@ public class SecCreateGUI extends EffectSection {
 				name = exprVirtualInventory.getName();
 			}
 
-			gui = new GUI(inventory, removableItems, name, shape == null ? null : shape.getArray(event));
+			String layout = null;
+			if (this.layout != null) {
+				StringBuilder layoutBuilder = new StringBuilder();
+				for (String string : this.layout.getArray(event)) {
+					layoutBuilder.append(string);
+				}
+				layout = layoutBuilder.toString();
+			}
+
+			gui = new GUI(inventory, removableItems, name, layout);
 
 			String id = this.id == null ? null : this.id.getSingle(event);
 			if (id != null && !id.isEmpty()) {
@@ -152,7 +161,7 @@ public class SecCreateGUI extends EffectSection {
 			.appendIf(id != null, "with id", id)
 			.append("with", inventory)
 			.appendIf(removableItems, "with removable items")
-			.appendIf(shape != null, "and shape", shape)
+			.appendIf(layout != null, "and layout", layout)
 			.toString();
 	}
 
