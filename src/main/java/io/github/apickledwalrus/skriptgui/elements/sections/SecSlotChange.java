@@ -82,9 +82,14 @@ public class SecSlotChange extends Section {
 
 		Object[] slots = this.slots.getAll(event);
 		for (Object slot : slots) {
-			GUI.SlotData slotData = gui.getSlotData(gui.convert(slot));
-			if (slotData == null) {
-				continue;
+			Character converted = gui.convert(slot);
+			GUI.SlotData slotData = gui.getSlotData(converted);
+			if (slotData == null) { // slot has not been set yet, initialize with dummy values
+				gui.setItem(converted, null, false, null);
+				slotData = gui.getSlotData(converted);
+				if (slotData == null) {
+					continue;
+				}
 			}
 			slotData.setRunOnChange(onChange);
 		}

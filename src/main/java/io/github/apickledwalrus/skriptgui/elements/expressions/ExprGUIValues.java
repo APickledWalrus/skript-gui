@@ -18,6 +18,7 @@ import io.github.apickledwalrus.skriptgui.SkriptUtils;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecCreateGUI;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecOpenClose;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecMakeSlot;
+import io.github.apickledwalrus.skriptgui.elements.sections.SecSlotChange;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -99,14 +100,14 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 		ParserInstance parser = getParser();
 		if (SkriptUtils.isSection(parser, SecCreateGUI.class)) {
 			if (value != Value.GUI) {
-				Skript.error("You can't use '" + parseResult.expr + "' in a GUI open/close section.");
+				Skript.error("You can't use '" + parseResult.expr + "' in a GUI creation section.");
 				return false;
 			}
 			return true;
 		}
 
-		if (!SkriptUtils.isSection(parser, SecMakeSlot.class, SecOpenClose.class)) {
-			Skript.error("You can't use '" + parseResult.expr + "' outside of a GUI make or open/close section.");
+		if (!SkriptUtils.isSection(parser, SecMakeSlot.class, SecOpenClose.class, SecSlotChange.class)) {
+			Skript.error("You can't use '" + parseResult.expr + "' outside of a GUI section.");
 			return false;
 		}
 

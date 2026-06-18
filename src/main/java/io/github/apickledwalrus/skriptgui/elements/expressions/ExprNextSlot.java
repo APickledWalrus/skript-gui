@@ -15,6 +15,7 @@ import io.github.apickledwalrus.skriptgui.SkriptUtils;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecCreateGUI;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecOpenClose;
 import io.github.apickledwalrus.skriptgui.elements.sections.SecMakeSlot;
+import io.github.apickledwalrus.skriptgui.elements.sections.SecSlotChange;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
@@ -44,7 +45,7 @@ public class ExprNextSlot extends SimpleExpression<String> {
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		if (matchedPattern == 2) {
-			if (!SkriptUtils.isSection(getParser(), SecCreateGUI.class, SecMakeSlot.class, SecOpenClose.class)) {
+			if (!SkriptUtils.isSection(getParser(), SecCreateGUI.class, SecMakeSlot.class, SecOpenClose.class, SecSlotChange.class)) {
 				Skript.error("The 'next gui slot' expression must have a GUI specified unless it is used in a GUI section.");
 				return false;
 			}
