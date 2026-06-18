@@ -122,7 +122,6 @@ public class GUI {
 		@Override
 		public void onOpen(InventoryOpenEvent openEvent) {
 			if (!(openEvent.getPlayer() instanceof Player player) || isPaused(player)) {
-				openEvent.setCancelled(true);
 				return;
 			}
 
@@ -142,25 +141,26 @@ public class GUI {
 				SkriptGUI.getGUIManager().setGUI(closeEvent, GUI.this);
 				onClose.accept(closeEvent);
 				if (isCloseCanceled(closeEvent)) {
-					Bukkit.getScheduler().runTaskLater(SkriptGUI.getInstance(), () -> {
+					Bukkit.getGlobalRegionScheduler().run(SkriptGUI.getInstance(), ignored -> {
 						// Reset behavior (it shouldn't persist)
 						setCloseCanceled(closeEvent, false);
 
 						pause(player); // Avoid calling any open sections
 						player.openInventory(inventory);
 						resume(player);
-					}, 1);
+					});
 					return;
 				}
 			}
 
 			if (id == null && inventory.getViewers().size() == 1) { // Only stop tracking if it isn't a global GUI
-				Bukkit.getScheduler().runTaskLater(SkriptGUI.getInstance(),
-					() -> SkriptGUI.getGUIManager().unregister(GUI.this), 1);
+				Bukkit.getGlobalRegionScheduler().run(SkriptGUI.getInstance(),
+					ignored -> SkriptGUI.getGUIManager().unregister(GUI.this));
 			}
 
 			// To combat issues like https://github.com/APickledWalrus/skript-gui/issues/60
-			Bukkit.getScheduler().runTaskLater(SkriptGUI.getInstance(), player::updateInventory, 1);
+			Bukkit.getGlobalRegionScheduler().run(SkriptGUI.getInstance(),
+				ignored -> player.updateInventory());
 		}
 	};
 
