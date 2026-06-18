@@ -24,15 +24,15 @@ public class CondIsLocked extends PropertyCondition<GUI> {
 	private boolean locked;
 
 	public static void register(SyntaxRegistry syntaxRegistry) {
-		String[] bePatterns = getPatterns(PropertyType.BE, "(:locked|unlocked)", "guiinventories");
+		String[] bePatterns = getPatterns(PropertyType.BE, "(:locked|unlocked)", "guis");
 		for (int i = 0; i < bePatterns.length; i++) {
 			bePatterns[i] = "[gui[s]] " + bePatterns[i];
 		}
 		syntaxRegistry.register(SyntaxRegistry.CONDITION, SyntaxInfo.builder(CondIsLocked.class)
 			.supplier(CondIsLocked::new)
 			.addPatterns(bePatterns)
-			.addPatterns("%guiinventories% allow[s] items to be removed",
-				"%guiinventories% (disallow|prevent)[s] items [from] being removed")
+			.addPatterns("%guis% allow[s] items to be removed",
+				"%guis% (disallow|prevent)[s] items [from] being removed")
 			.build());
 	}
 

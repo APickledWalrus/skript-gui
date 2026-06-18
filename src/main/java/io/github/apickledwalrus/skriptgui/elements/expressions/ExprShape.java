@@ -22,7 +22,7 @@ public class ExprShape extends SimplePropertyExpression<GUI, String> {
 
 	public static void register(SyntaxRegistry syntaxRegistry) {
 		syntaxRegistry.register(SyntaxRegistry.EXPRESSION,
-			infoBuilder(ExprShape.class, String.class, "[gui] shape[s]", "guiinventories", false)
+			infoBuilder(ExprShape.class, String.class, "[gui] shape[s]", "guis", false)
 				.supplier(ExprShape::new)
 				.build());
 	}

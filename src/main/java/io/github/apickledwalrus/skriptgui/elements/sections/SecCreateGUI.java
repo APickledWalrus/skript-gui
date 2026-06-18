@@ -43,7 +43,7 @@ public class SecCreateGUI extends EffectSection {
 		syntaxRegistry.register(SyntaxRegistry.SECTION, SyntaxInfo.builder(SecCreateGUI.class)
 			.supplier(SecCreateGUI::new)
 			.addPatterns("create [a] [new] gui [[with id[entifier]] %-string%] with [a] %inventory% [removable:(and|with) ([re]mov[e]able|stealable) items] [(and|with) shape %-strings%]",
-				"(change|edit) [gui] %guiinventory%")
+				"(change|edit) [gui] %gui%")
 			.build());
 	}
 

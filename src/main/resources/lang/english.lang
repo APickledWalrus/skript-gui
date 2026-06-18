@@ -7,5 +7,5 @@ slot types:
 	quickbar: quickbar, quick bar, hotbar, hot bar, bottom row
 	result: result, crafting result, smelting result
 types:
-    guiinventory: gui inventor¦y¦ies
+    gui: gui¦s
     slottype: slot type¦s

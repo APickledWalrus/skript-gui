@@ -24,7 +24,7 @@ public class ExprLockStatus extends SimplePropertyExpression<GUI, Boolean> {
 
 	public static void register(SyntaxRegistry syntaxRegistry) {
 		syntaxRegistry.register(SyntaxRegistry.EXPRESSION,
-			infoBuilder(ExprLockStatus.class, Boolean.class, "[gui] lock status[es]", "guiinventories", false)
+			infoBuilder(ExprLockStatus.class, Boolean.class, "[gui] lock status[es]", "guis", false)
 				.supplier(ExprLockStatus::new)
 				.build());
 	}

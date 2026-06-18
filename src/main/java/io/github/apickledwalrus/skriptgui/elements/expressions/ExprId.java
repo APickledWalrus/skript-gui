@@ -29,7 +29,7 @@ public class ExprId extends SimplePropertyExpression<GUI, String> {
 
 	public static void register(SyntaxRegistry syntaxRegistry) {
 		syntaxRegistry.register(SyntaxRegistry.EXPRESSION,
-			infoBuilder(ExprId.class, String.class, "[gui] id[entifier][s]", "guiinventorys", false)
+			infoBuilder(ExprId.class, String.class, "[gui] id[entifier][s]", "guis", false)
 				.supplier(ExprId::new)
 				.build());
 	}

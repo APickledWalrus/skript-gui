@@ -34,7 +34,7 @@ public class ExprNextSlot extends SimpleExpression<String> {
 		syntaxRegistry.register(SyntaxRegistry.EXPRESSION,
 			SyntaxInfo.Expression.builder(ExprNextSlot.class, String.class)
 				.supplier(ExprNextSlot::new)
-				.addPatterns(PropertyExpression.getPatterns("next gui slot[s]", "guiinventories"))
+				.addPatterns(PropertyExpression.getPatterns("next gui slot[s]", "guis"))
 				.addPattern("[the] next gui slot")
 				.build());
 	}

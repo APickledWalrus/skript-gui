@@ -24,9 +24,9 @@ public class EffLock extends Effect {
 	public static void register(SyntaxRegistry syntaxRegistry) {
 		syntaxRegistry.register(SyntaxRegistry.EFFECT, SyntaxInfo.builder(EffLock.class)
 			.supplier(EffLock::new)
-			.addPatterns("(:unlock|:lock) [gui[s]] %guiinventories%",
-				"allow items to be removed from %guiinventories%",
-				"(disallow|prevent) items [from] being removed from %guiinventories%")
+			.addPatterns("(:unlock|:lock) [gui[s]] %guis%",
+				"allow items to be removed from %guis%",
+				"(disallow|prevent) items [from] being removed from %guis%")
 			.build());
 	}
 

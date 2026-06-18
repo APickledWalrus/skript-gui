@@ -19,8 +19,8 @@ import org.skriptlang.skript.lang.properties.handlers.base.ExpressionPropertyHan
 public class GUIClassInfo extends ClassInfo<GUI> {
 
 	public GUIClassInfo(SkriptAddon source) {
-		super(GUI.class, "guiinventory");
-		this.user("gui inventor(y|ies)?")
+		super(GUI.class, "gui");
+		this.user("gui(?:s| inventor(?:y|ies))?")
 			.name("GUI")
 			.description("Represents a skript-gui GUI")
 			.examples("See the GUI creation section.")
