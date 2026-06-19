@@ -42,8 +42,10 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory> {
 	private @Nullable Expression<Number> rows;
 	private @Nullable Expression<Component> name;
 
-	// The last executed name. Used for runtime context purposes.
-	private @Nullable Component lastInventoryName;
+	/**
+	 * Inventory name used during the most recent execution.
+	 */
+	public @Nullable Component lastInventoryName;
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -75,10 +77,12 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory> {
 	@Override
 	protected Inventory[] get(Event event) {
 		InventoryType type = inventoryType == null ? specifiedType : inventoryType.getSingle(event);
-		if (type == null || !type.isCreatable()) {
+		if (type == null) {
 			return new Inventory[0];
 		} else if (type == InventoryType.CRAFTING) { // Make it a valid inventory. It's not the same, but it's likely what the user wants.
 			type = InventoryType.WORKBENCH;
+		} else if (!type.isCreatable()) {
+			return new Inventory[0];
 		}
 
 		Component name = this.name != null ? this.name.getSingle(event) : null;
@@ -134,14 +138,6 @@ public class ExprVirtualInventory extends SimpleExpression<Inventory> {
 			.appendIf(rows != null, "with", rows, "rows");
 
 		return builder.toString();
-	}
-
-	/**
-	 * @return The name of this inventory. If {@link #lastInventoryName} is null
-	 * when this method is called, an empty component will be returned.
-	 */
-	public Component getName() {
-		return lastInventoryName == null ? Component.empty() : lastInventoryName;
 	}
 
 }

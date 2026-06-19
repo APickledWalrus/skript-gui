@@ -13,8 +13,11 @@ import ch.njol.skript.lang.SyntaxStringBuilder;
 import ch.njol.skript.lang.TriggerItem;
 import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
+import io.github.apickledwalrus.skriptgui.elements.expressions.ExprMenuInventory;
 import io.github.apickledwalrus.skriptgui.elements.expressions.ExprVirtualInventory;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
+import io.github.apickledwalrus.skriptgui.gui.MenuTypeGUI;
+import io.github.apickledwalrus.skriptgui.gui.VirtualGUI;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.Inventory;
@@ -91,11 +94,6 @@ public class SecCreateGUI extends EffectSection {
 				return walk(event, false);
 			}
 
-			Component name = null;
-			if (this.inventory instanceof ExprVirtualInventory exprVirtualInventory) {
-				name = exprVirtualInventory.getName();
-			}
-
 			String layout = null;
 			if (this.layout != null) {
 				StringBuilder layoutBuilder = new StringBuilder();
@@ -105,7 +103,20 @@ public class SecCreateGUI extends EffectSection {
 				layout = layoutBuilder.toString();
 			}
 
-			gui = new GUI(inventory, removableItems, name, layout);
+			if (this.inventory instanceof ExprMenuInventory exprMenuInventory) {
+				if (exprMenuInventory.lastInventoryView == null) {
+					return walk(event, false);
+				}
+				gui = new MenuTypeGUI(exprMenuInventory.lastInventoryView, removableItems, layout);
+				exprMenuInventory.lastInventoryView = null;
+			} else {
+				Component name = null;
+				if (this.inventory instanceof ExprVirtualInventory exprVirtualInventory) {
+					name = exprVirtualInventory.lastInventoryName;
+					exprVirtualInventory.lastInventoryName = null;
+				}
+				gui = new VirtualGUI(inventory, removableItems, name, layout);
+			}
 
 			String id = this.id == null ? null : this.id.getSingle(event);
 			if (id != null && !id.isEmpty()) {

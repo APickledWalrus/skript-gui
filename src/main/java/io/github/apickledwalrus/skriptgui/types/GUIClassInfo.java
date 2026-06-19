@@ -116,7 +116,7 @@ public class GUIClassInfo extends ClassInfo<GUI> {
 
 		@Override
 		public Integer convert(GUI gui) {
-			return gui.getSize();
+			return gui.getInventory().getSize();
 		}
 
 		@Override

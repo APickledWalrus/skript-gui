@@ -19,11 +19,16 @@ import io.github.apickledwalrus.skriptgui.gui.GUIManager;
 import org.skriptlang.skript.addon.AddonModule;
 import org.skriptlang.skript.addon.SkriptAddon;
 import org.skriptlang.skript.lang.converter.Converters;
+import org.skriptlang.skript.lang.experiment.Experiment;
+import org.skriptlang.skript.lang.experiment.LifeCycle;
 
 public class SkriptGUI extends JavaPlugin implements AddonModule {
 
 	private static SkriptGUI instance;
 	private static GUIManager manager;
+
+	public static final Experiment MENU_EXPERIMENT =
+		Experiment.constant("menu guis", LifeCycle.EXPERIMENTAL, "menu guis");
 
 	public static SkriptGUI getInstance() {
 		if (instance == null) {
@@ -78,6 +83,7 @@ public class SkriptGUI extends JavaPlugin implements AddonModule {
 		Classes.registerClass(new GUIClassInfo(addon));
 		Converters.registerConverter(GUI.class, Inventory.class, GUI::getInventory);
 		Classes.registerClass(new SlotTypeClassInfo());
+		Skript.experiments().register(Skript.getAddon(this), MENU_EXPERIMENT);
 	}
 
 	@Override
@@ -87,6 +93,7 @@ public class SkriptGUI extends JavaPlugin implements AddonModule {
 			CondIsLocked::register,
 			EffCancelClose::register,
 			EffLock::register,
+			EffShowGUI::register,
 			ExprGlobalGUIs::register,
 			ExprGUI::register,
 			ExprId::register,
@@ -95,6 +102,7 @@ public class SkriptGUI extends JavaPlugin implements AddonModule {
 			ExprLastGUI::register,
 			ExprLayout::register,
 			ExprLockStatus::register,
+			ExprMenuInventory::register,
 			ExprNextSlot::register,
 			ExprPaginatedList::register,
 			ExprVirtualInventory::register,

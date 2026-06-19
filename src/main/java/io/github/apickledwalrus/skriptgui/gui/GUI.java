@@ -4,7 +4,6 @@ import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.ClickType;
@@ -13,12 +12,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -26,14 +23,13 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class GUI {
+public abstract class GUI {
 
 	public static final char UNKNOWN_LAYOUT_SLOT = ' ';
 
-	private Inventory inventory;
-	private Component name;
+	protected Inventory inventory;
 
-	private final GUIEventHandler eventHandler = new GUIEventHandler() {
+	protected final GUIEventHandler eventHandler = new GUIEventHandler() {
 
 		@Override
 		public void onClick(InventoryClickEvent clickEvent) {
@@ -146,7 +142,7 @@ public class GUI {
 						setCloseCanceled(closeEvent, false);
 
 						pause(player); // Avoid calling any open sections
-						player.openInventory(inventory);
+						open(player);
 						resume(player);
 					});
 					return;
@@ -164,94 +160,31 @@ public class GUI {
 		}
 	};
 
-	public GUI(Inventory inventory, boolean changeable, @Nullable Component name, @Nullable String layout) {
+	public GUI(Inventory inventory, boolean changeable, @Nullable String layout) {
 		this.inventory = inventory;
 		setChangeable(changeable);
-		this.name = name == null ? inventory.getType().defaultTitle() : name;
 		setLayout(layout);
 
 		SkriptGUI.getGUIManager().register(this);
-	}
-
-	public Inventory getInventory() {
-		return inventory;
 	}
 
 	public GUIEventHandler getEventHandler() {
 		return eventHandler;
 	}
 
-	public Component getName() {
-		return name;
+	public Inventory getInventory() {
+		return inventory;
 	}
 
-	public void setName(@Nullable Component name) {
-		changeInventory(inventory.getSize(), name);
-	}
+	public abstract void open(Player player);
 
-	public int getSize() {
-		return inventory.getSize();
-	}
+	public abstract Component getName();
+	public abstract void setName(@Nullable Component name);
+	public abstract void setSize(int size);
 
-	public void setSize(int size) {
-		changeInventory(size, getName());
-	}
-
-	public void clear(Object slot) {
-		Character realSlot = convert(slot);
-		setItem(realSlot, new ItemStack(Material.AIR), false, null);
-		slots.remove(realSlot);
-	}
-
-	public void clear() {
-		inventory.clear();
-		slots.clear();
-	}
-
-	private void changeInventory(int size, @Nullable Component name) {
-		if (name == null) {
-			name = inventory.getType().defaultTitle();
-		} else if (size < 9) { // Minimum size
-			size = 9;
-		} else if (size > 54) { // Maximum size
-			size = 54;
-		} else if (size % 9 != 0) {
-			return;
-		}
-
-		if (size == inventory.getSize() && name.equals(this.name)) { // Nothing is actually changing
-			return;
-		}
-
-		Inventory newInventory;
-		if (inventory.getType() == InventoryType.CHEST) {
-			newInventory = Bukkit.getServer().createInventory(null, size, name);
-		} else {
-			newInventory = Bukkit.getServer().createInventory(null, inventory.getType(), name);
-		}
-
-		if (size >= inventory.getSize()) {
-			newInventory.setContents(inventory.getContents());
-		} else { // The inventory is shrinking
-			for (int slot = 0; slot < size; slot++) {
-				newInventory.setItem(slot, inventory.getItem(slot));
-			}
-		}
-
-		eventHandler.pause(); // Don't process any events as we transfer data and players
-
-		for (HumanEntity viewer : new ArrayList<>(inventory.getViewers())) {
-			ItemStack cursor = viewer.getItemOnCursor();
-			viewer.setItemOnCursor(null);
-			viewer.openInventory(newInventory);
-			viewer.setItemOnCursor(cursor);
-		}
-		SkriptGUI.getGUIManager().transferRegistration(this, newInventory);
-		inventory = newInventory;
-		this.name = name;
-
-		eventHandler.resume(); // It is safe to resume operations
-	}
+	/*
+	 * Inventory Management
+	 */
 
 	/**
 	 * Sets a slot's item.
@@ -283,6 +216,17 @@ public class GUI {
 		}
 	}
 
+	public void clear() {
+		inventory.clear();
+		slots.clear();
+	}
+
+	public void clear(Object slot) {
+		Character realSlot = convert(slot);
+		setItem(realSlot, new ItemStack(Material.AIR), false, null);
+		slots.remove(realSlot);
+	}
+
 	/*
 	 * Layout
 	 */
@@ -306,13 +250,13 @@ public class GUI {
 		if (layout == null) {
 			StringBuilder layoutBuilder = new StringBuilder();
 			// Create a layout with only unique characters
-			int end = 'A' + getSize();
+			int end = 'A' + inventory.getSize();
 			for (char c = 'A'; c < end; c++) {
 				layoutBuilder.append(c);
 			}
 			layout = layoutBuilder.toString();
-		} else if (layout.length() < getSize()) { // Append to empty
-			layout = layout + String.valueOf(UNKNOWN_LAYOUT_SLOT).repeat(getSize() - layout.length());
+		} else if (layout.length() < inventory.getSize()) { // Append to empty
+			layout = layout + String.valueOf(UNKNOWN_LAYOUT_SLOT).repeat(inventory.getSize() - layout.length());
 		}
 
 		if (this.layout == null) { // Should only be true during initialization
