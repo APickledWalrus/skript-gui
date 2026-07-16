@@ -97,6 +97,8 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 
 	@Override
 	public boolean init(Expression<?>[] expressions, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
+		value = Value.values()[matchedPattern];
+
 		ParserInstance parser = getParser();
 		if (SkriptUtils.isSection(parser, SecCreateGUI.class)) {
 			if (value != Value.GUI) {
@@ -111,7 +113,6 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 			return false;
 		}
 
-		value = Value.values()[matchedPattern];
 		openClose = SkriptUtils.isSection(parser, SecOpenClose.class);
 
 		if (openClose && value != Value.GUI && value != Value.INVENTORY && value != Value.PLAYER && value != Value.VIEWERS) {
