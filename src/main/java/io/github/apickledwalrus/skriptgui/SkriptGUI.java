@@ -21,6 +21,9 @@ import org.skriptlang.skript.addon.SkriptAddon;
 import org.skriptlang.skript.lang.converter.Converters;
 import org.skriptlang.skript.lang.experiment.Experiment;
 import org.skriptlang.skript.lang.experiment.LifeCycle;
+import org.skriptlang.skript.registration.SyntaxRegistry;
+
+import java.util.function.Consumer;
 
 public class SkriptGUI extends JavaPlugin implements AddonModule {
 
@@ -47,7 +50,7 @@ public class SkriptGUI extends JavaPlugin implements AddonModule {
 	@Override
 	public void onEnable() {
 		Plugin skript = getServer().getPluginManager().getPlugin("Skript");
-		Version minimumSupportedVersion = new Version(2, 15, 2);
+		Version minimumSupportedVersion = new Version(2, 14, 3);
 		if (skript == null) {
 			// Skript doesn't exist within the server plugins folder
 			getLogger().severe("Could not find Skript! Make sure you have it installed. Disabling...");
@@ -111,6 +114,14 @@ public class SkriptGUI extends JavaPlugin implements AddonModule {
 			SecOpenClose::register,
 			SecSlotChange::register
 		);
+	}
+
+	@SafeVarargs
+	private static void register(SkriptAddon addon, Consumer<SyntaxRegistry>... consumers) {
+		SyntaxRegistry syntaxRegistry = addon.syntaxRegistry();
+		for (Consumer<SyntaxRegistry> consumer : consumers) {
+			consumer.accept(syntaxRegistry);
+		}
 	}
 
 	@Override

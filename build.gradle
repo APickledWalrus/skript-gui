@@ -19,14 +19,13 @@ repositories {
     mavenCentral()
     maven { url = 'https://repo.skriptlang.org/releases' }
     maven { url = 'https://repo.papermc.io/repository/maven-public/' }
-    maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
 }
 
 dependencies {
     implementation group: 'org.jetbrains', name: 'annotations', version: '26.0.1'
     implementation group: 'com.google.code.findbugs', name: 'findbugs', version: '3.0.1'
     implementation group: 'io.papermc.paper', name: 'paper-api', version: '1.21.1-R0.1-SNAPSHOT'
-    implementation (group: 'com.github.SkriptLang', name: 'Skript', version: '2.15.3') {
+    implementation (group: 'com.github.SkriptLang', name: 'Skript', version: '2.14.3') {
         transitive = false
     }
 }
