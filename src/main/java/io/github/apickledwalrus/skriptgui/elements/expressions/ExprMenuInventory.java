@@ -8,11 +8,9 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.SyntaxStringBuilder;
 import ch.njol.skript.lang.util.SimpleExpression;
-import ch.njol.skript.registrations.Classes;
 import ch.njol.util.Kleenean;
 import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryType;
@@ -22,7 +20,6 @@ import org.bukkit.inventory.MenuType;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.lang.experiment.ExperimentSet;
 import org.skriptlang.skript.lang.experiment.ExperimentalSyntax;
-import org.skriptlang.skript.lang.experiment.SimpleExperimentalSyntax;
 import org.skriptlang.skript.registration.SyntaxInfo;
 import org.skriptlang.skript.registration.SyntaxRegistry;
 
@@ -42,9 +39,6 @@ import org.skriptlang.skript.registration.SyntaxRegistry;
 					set {_input} to anvil text input of gui
 					close the player's inventory
 					send title "You Entered" with subtitle {_input} to player
-				run on close:
-					# We format the slot with air so that the barrier does not end up in the player's inventory
-					make gui 0 with air
 			show the last gui to the player
 	""")
 @Since("1.4.0")

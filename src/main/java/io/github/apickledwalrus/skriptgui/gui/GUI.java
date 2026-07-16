@@ -136,20 +136,33 @@ public abstract class GUI {
 			if (onClose != null) {
 				SkriptGUI.getGUIManager().setGUI(closeEvent, GUI.this);
 				onClose.accept(closeEvent);
-				if (isCloseCanceled(closeEvent)) {
-					Bukkit.getGlobalRegionScheduler().run(SkriptGUI.getInstance(), ignored -> {
-						// Reset behavior (it shouldn't persist)
-						setCloseCanceled(closeEvent, false);
-
-						pause(player); // Avoid calling any open sections
-						open(player);
-						resume(player);
-					});
-					return;
-				}
 			}
 
-			if (id == null && inventory.getViewers().size() == 1) { // Only stop tracking if it isn't a global GUI
+			// for MenuType GUIs, we need to clear the contents in some cases (e.g. anvils)
+			// so that the player does not actually receive the item(s)
+			ItemStack[] contents;
+			if (GUI.this instanceof MenuTypeGUI) {
+				contents = inventory.getContents();
+				inventory.clear();
+			} else {
+				contents = null;
+			}
+
+			if (isCloseCanceled(closeEvent)) {
+				Bukkit.getGlobalRegionScheduler().run(SkriptGUI.getInstance(), ignored -> {
+					// Reset behavior (it shouldn't persist)
+					setCloseCanceled(closeEvent, false);
+
+					if (contents != null) {
+						inventory.setContents(contents);
+					}
+
+					pause(player); // Avoid calling any open sections
+					open(player);
+					resume(player);
+				});
+				return;
+			} else if (id == null && inventory.getViewers().size() == 1) { // Only stop tracking if it isn't a global GUI
 				Bukkit.getGlobalRegionScheduler().run(SkriptGUI.getInstance(),
 					ignored -> SkriptGUI.getGUIManager().unregister(GUI.this));
 			}
