@@ -286,11 +286,15 @@ public abstract class GUI {
 				if (index == -1) { // This character IS NOT in the new layout
 					clear(ch);
 				} else { // This character IS in the new layout
-					retained.put(ch, inventory.getItem(index));
+					retained.put(ch, inventory.getItem(pos));
 				}
 			}
 			pos++;
 		}
+
+		inventory.clear();
+		this.layout = layout;
+
 		// Reposition items for retained characters
 		for (Entry<Character, ItemStack> movedCharacter : retained.entrySet()) {
 			Character ch = movedCharacter.getKey();
@@ -299,8 +303,6 @@ public abstract class GUI {
 				setItem(ch, movedCharacter.getValue(), slotData.isChangeable(), slotData.getRunOnClick());
 			}
 		}
-
-		this.layout = layout;
 	}
 
 	/**
