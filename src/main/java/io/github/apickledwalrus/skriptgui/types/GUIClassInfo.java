@@ -47,7 +47,7 @@ public class GUIClassInfo extends ClassInfo<GUI> {
 		@Override
 		public String toString(GUI gui, int flags) {
 			return Classes.toString(gui.getInventory().getType()) +
-				" gui named " + gui.getName() +
+				" gui named " + Classes.toString(gui.getName()) +
 				" with " + gui.getInventory().getSize() / 9 + " rows" +
 				" and layout \"" + gui.getLayout() + "\"";
 		}

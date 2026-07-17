@@ -77,6 +77,7 @@ public class ExprPaginatedList extends SimpleExpression<Object> {
 		}
 
 		Object[] values = (Object[]) Array.newInstance(getReturnType(), pages.length * lines);
+		int pageCount = 0;
 		for (int page : pages) {
 			// map page to starting point
 			page = (page - 1) * lines;
@@ -88,7 +89,9 @@ public class ExprPaginatedList extends SimpleExpression<Object> {
 			}
 
 			// copy contents over
-			System.arraycopy(contents, page, values, page, max - page);
+			int length = max - page; // in case we had to copy less than lines length
+			System.arraycopy(contents, page, values, pageCount, length);
+			pageCount += length;
 		}
 
 		return values;
