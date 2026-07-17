@@ -29,8 +29,8 @@ public class ExprGUIWithId extends SimpleExpression<GUI> {
 
 	public static void register(SyntaxRegistry syntaxRegistry) {
 		syntaxRegistry.register(SyntaxRegistry.EXPRESSION,
-			SyntaxInfo.Expression.builder(ExprLastGUI.class, GUI.class)
-				.supplier(ExprLastGUI::new)
+			SyntaxInfo.Expression.builder(ExprGUIWithId.class, GUI.class)
+				.supplier(ExprGUIWithId::new)
 				.addPattern("[the] gui[s] [with [the] id[entifier][s]] %strings%")
 				.build());
 	}
@@ -66,9 +66,9 @@ public class ExprGUIWithId extends SimpleExpression<GUI> {
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
 		if (ids.isSingle()) {
-			return "the guis with the identifiers " + ids.getSingle(event);
+			return "the gui with the identifier " + ids.toString(event, debug);
 		}
-		return "the gui with the identifier " + ids.toString(event, debug);
+		return "the guis with the identifiers " + ids.toString(event, debug);
 	}
 
 }
