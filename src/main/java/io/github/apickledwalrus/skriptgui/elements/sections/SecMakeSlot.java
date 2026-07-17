@@ -101,6 +101,10 @@ public class SecMakeSlot extends EffectSection {
 		removable = parseResult.hasTag("removable");
 
 		if (sectionNode != null) {
+			if (!action.isMake()) {
+				Skript.error("An 'unformat GUI slot' effect can't have a section!");
+				return false;
+			}
 			trigger = loadCode(sectionNode, "inventory click", InventoryClickEvent.class);
 		}
 

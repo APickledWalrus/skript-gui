@@ -16,10 +16,10 @@ import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.registration.SyntaxInfo;
 import org.skriptlang.skript.registration.SyntaxRegistry;
 
-@Name("Last GUI")
+@Name("Last Created GUI")
 @Description("Obtains the last created/edited GUI in a trigger.")
 @Example("""
-	open the created gui for player
+	open the last created gui for player
 	""")
 @Since("1.0.0")
 public class ExprLastGUI extends SimpleExpression<GUI> {
