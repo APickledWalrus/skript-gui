@@ -76,7 +76,7 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 		SLOT_TYPE("slot type"),
 		PLAYER("player"),
 		VIEWERS("(viewer|player)s"),
-		SLOT_ID("slot id"),
+		SLOT_ID("slot id[entifier]"),
 		GUI("");
 
 		private final String pattern;
@@ -185,6 +185,9 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 
 	@Override
 	public Class<?> @Nullable [] acceptChange(ChangeMode mode) {
+		if (value == Value.GUI) {
+			return super.acceptChange(mode);
+		}
 		if (mode == ChangeMode.SET && value == Value.CLICKED_ITEM) {
 			if (getParser().getHasDelayBefore().isTrue()) {
 				Skript.error("You can't set the 'gui clicked item' when the event is already passed.");
@@ -197,6 +200,10 @@ public class ExprGUIValues extends SimpleExpression<Object> {
 
 	@Override
 	public void change(Event event, Object @Nullable [] delta, ChangeMode mode) {
+		if (value == Value.GUI) {
+			super.change(event, delta, mode);
+			return;
+		}
 		if (delta == null || !(event instanceof InventoryClickEvent inventoryClickEvent)) {
 			return;
 		}

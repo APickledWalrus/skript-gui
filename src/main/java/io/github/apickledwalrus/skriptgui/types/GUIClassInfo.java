@@ -7,6 +7,7 @@ import ch.njol.skript.classes.Parser;
 import ch.njol.skript.lang.ParseContext;
 import ch.njol.skript.registrations.Classes;
 import ch.njol.util.coll.CollectionUtils;
+import io.github.apickledwalrus.skriptgui.SkriptGUI;
 import io.github.apickledwalrus.skriptgui.gui.GUI;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
@@ -72,6 +73,7 @@ public class GUIClassInfo extends ClassInfo<GUI> {
 		@Override
 		public void change(GUI[] guis, Object @Nullable [] delta, ChangeMode mode) {
 			for (GUI gui : guis) {
+				SkriptGUI.getGUIManager().unregister(gui);
 				gui.setID(null);
 			}
 		}
