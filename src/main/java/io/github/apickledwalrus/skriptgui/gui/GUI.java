@@ -218,6 +218,10 @@ public abstract class GUI {
 		SlotData slotData = new SlotData();
 		slotData.setRunOnClick(consumer);
 		slotData.setChangeable(changeable);
+		SlotData existing = slots.get(ch);
+		if (existing != null) {
+			slotData.setRunOnChange(existing.getRunOnChange());
+		}
 		slots.put(ch, slotData);
 
 		int i = 0;
