@@ -1,5 +1,6 @@
 package io.github.apickledwalrus.skriptgui.elements.expressions;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Example;
 import ch.njol.skript.doc.Name;
@@ -45,6 +46,9 @@ import org.skriptlang.skript.registration.SyntaxRegistry;
 public class ExprMenuInventory extends SimpleExpression<Inventory> implements ExperimentalSyntax {
 
 	public static void register(SyntaxRegistry syntaxRegistry) {
+		if (!Skript.classExists("org.bukkit.inventory.MenuType")) {
+			return;
+		}
 		String common = "%inventorytype% menu ";
 		String suffix = "bound to %player%";
 		syntaxRegistry.register(SyntaxRegistry.EXPRESSION,
