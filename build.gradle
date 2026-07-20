@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'io.github.apickledwalrus'
-version = '1.4.0-dev'
+version = '1.4.0'
 
 compileJava.options.encoding = 'UTF-8'
 
