@@ -93,7 +93,9 @@ public class ExprMenuInventory extends SimpleExpression<Inventory> implements Ex
 			return new Inventory[0];
 		} else if (type == InventoryType.CRAFTING) { // Make it a valid inventory. It's not the same, but it's likely what the user wants.
 			type = InventoryType.WORKBENCH;
-		} else if (!type.isCreatable()) {
+		}
+		MenuType menuType = type.getMenuType();
+		if (menuType == null) {
 			return new Inventory[0];
 		}
 
@@ -105,8 +107,6 @@ public class ExprMenuInventory extends SimpleExpression<Inventory> implements Ex
 		Component name = this.name != null ? this.name.getSingle(event) : null;
 		name = name != null ? name : type.defaultTitle();
 
-		MenuType menuType = type.getMenuType();
-		assert menuType != null;
 		if (type == InventoryType.CHEST) {
 			int size = -1;
 			if (rows != null) {
